@@ -8,6 +8,7 @@
 
 html {
     font-family: 'Droid Sans', sans-serif;
+    background-color: rgb(20, 20, 20);
 }
 
 #time {
@@ -15,15 +16,13 @@ html {
     text-align: center;
     background-color: rgb(110, 110, 110);
     margin: 0;
+    color: white;
     padding: 1em;
     border-bottom: 2px solid rgb(50, 50, 50);
-    color: white;
-}
-#time:hover {
-    background-color: rgb(120, 120, 120);
 }
 
 #left, #right {
+    color: rgba(255, 255, 255, 0.8);
     margin: 0;
     width: 50%;
     padding: 10px;
