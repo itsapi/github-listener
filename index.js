@@ -11,8 +11,13 @@ var script_out = '';
 var SECRET;
 fs.readFile('secret.txt', function(err, data) {
   if (err) throw err;
+  data = data.toString();
+  while (data.slice(-1) == '\n') {
+    data = data.slice(0, -1);
+  }
   SECRET = data;
 });
+
 
 var template;
 fs.readFile('index.jade', function(err, data) {
@@ -25,12 +30,20 @@ http.createServer(function(req, response) {
     console.log('GET request.')
 
     response.writeHead(200, {'Content-Type': 'text/html'});
-    var html = template({
-      last_payload: JSON.stringify(last_payload, null, '\t'),
-      script_out: script_out
+
+    var css;
+    fs.readFile('style.css', function(err, data) {
+      if (err) throw err;
+      css = '\n'+data.toString()+'\n';
+
+      var html = template({
+        last_payload: JSON.stringify(last_payload, null, '\t'),
+        script_out: script_out,
+        css: css
+      });
+      response.write(html);
+      response.end();
     });
-    response.write(html);
-    response.end();
 
   } else {
 
@@ -62,8 +75,8 @@ http.createServer(function(req, response) {
             script_out = out;
           });
         } else {
-          console.log('Error: Invalid data: ' + last_payload);
-          response.end('Error: Invalid data: ' + last_payload);
+          console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
+          response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
         }
       });
     } else {
