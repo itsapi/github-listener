@@ -1,0 +1,7 @@
+{
+    "node": true,
+    "output": "/var/node/github-listener",
+    "ignore": [
+        "secret.txt"
+    ]
+}
