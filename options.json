@@ -1,6 +1,6 @@
 {
     "node": true,
-    "output": "/var/node/github-listener",
+    "output": "/var/node/git",
     "ignore": [
         "secret.txt"
     ]
