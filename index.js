@@ -10,45 +10,6 @@ var SECRET = '56237b8e3756fead5e5e1e78d5a3d1f7ba503e30acee56d990c6b09c9a6d1df1';
 var last_payload = {};
 var script_out = '';
 
-var styles = [
-  [/[30m/g, 'color: Black;'],
-  [/[34m/g, 'color: Blue;'],
-  [/[32m/g, 'color: Green;'],
-  [/[36m/g, 'color: Cyan;'],
-  [/[31m/g, 'color: Red;'],
-  [/[35m/g, 'color: Purple;'],
-  [/[33m/g, 'color: Brown;'],
-  [/[37m/g, 'color: LightGrey;'],
-  [/[30m/g, 'color: DarkGrey;'],
-  [/[34m/g, 'color: LightBlue;'],
-  [/[32m/g, 'color: LightGreen;'],
-  [/[36m/g, 'color: LightCyan;'],
-  [/[31m/g, 'color: Salmon;'],
-  [/[35m/g, 'color: Violet;'],
-  [/[33m/g, 'color: Yellow;'],
-  [/[37m/g, 'color: White;'],
-  [/[4m/g, 'text-decoration: underline;']
-];
-
-function bash_html_styles(string) {
-  console.log(string);
-  string = escape(string);
-  string = string.replace(/[38m/g, '</span>');
-  string = string.replace(/[24m/g, '</span>');
-
-  for (var i = 0; i < styles.length; i++) {
-    string = string.replace(styles[i][0], '<span style="' + styles[i][1] + '">');
-  }
-
-  // string = string.replace(/\032\[[0-9];[0-9]{2}m/g, function (match, index, string) {
-  //   var pos = match.search(/[01];[0-9]{2}/);
-  //   var color = match.slice(pos, pos + 4);
-
-  //   return '<span style="' + styles[color] + '">';
-  // });
-  return string;
-}
-
 var template;
 fs.readFile('index.jade', function(err, data) {
   if (err) throw err;
@@ -94,7 +55,7 @@ http.createServer( function(req, response) {
             var out = error ? stderr : stdout;
             console.log('\n' + out);
             console.log('Finished processing files\n');
-            script_out = bash_html_colors(out);
+            script_out = out;
           });
         } else {
           console.log('Error: Invalid data: ' + last_payload);
