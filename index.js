@@ -47,7 +47,6 @@ http.createServer(function(req, response) {
 
   } else {
 
-
     var secret = url.parse(req.url).pathname;
     secret = secret.substr(secret.lastIndexOf('/') + 1);
     if (secret == SECRET) {
@@ -75,9 +74,10 @@ http.createServer(function(req, response) {
             script_out = out;
           });
         } else {
-          response.writeHead(403, {'Content-Type': 'text/plain'});
+          response.writeHead(400, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
+          script_out = 'Error: Invalid data';
         }
       });
     } else {
