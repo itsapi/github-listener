@@ -57,7 +57,6 @@ http.createServer(function(req, response) {
         body += chunk.toString();
       });
 
-
       req.on('end', function() {
         last_payload = JSON.parse(body);
         console.log(new Date(), req.method, req.url);
