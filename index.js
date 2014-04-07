@@ -47,7 +47,6 @@ http.createServer(function(req, response) {
 
   } else {
 
-    response.writeHead(200, {'Content-Type': 'text/plain'});
 
     var secret = url.parse(req.url).pathname;
     secret = secret.substr(secret.lastIndexOf('/') + 1);
@@ -63,6 +62,7 @@ http.createServer(function(req, response) {
         console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
         if (last_payload.repository && last_payload.repository.url) {
+          response.writeHead(200, {'Content-Type': 'text/plain'});
           var url = last_payload.repository.url;
 
           response.end('Waiting for script to finish');
@@ -75,11 +75,13 @@ http.createServer(function(req, response) {
             script_out = out;
           });
         } else {
+          response.writeHead(403, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
         }
       });
     } else {
+      response.writeHead(401, {'Content-Type': 'text/plain'});
       console.log('Error: Incorrect secret: ' + secret);
       response.end('Error: Incorrect secret: ' + secret);
     }
