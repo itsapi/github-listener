@@ -5,7 +5,7 @@ var http = require('http'),
     jade = require('jade'),
     fs = require('fs');
 
-var SECRET = '56237b8e3756fead5e5e1e78d5a3d1f7ba503e30acee56d990c6b09c9a6d1df1';
+var SECRET = 'SECRET!';
 
 var last_payload = {};
 var script_out = '';
