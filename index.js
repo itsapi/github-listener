@@ -5,10 +5,14 @@ var http = require('http'),
     jade = require('jade'),
     fs = require('fs');
 
-var SECRET = 'SECRET!';
-
 var last_payload = {};
 var script_out = '';
+
+var SECRET;
+fs.readFile('secret.txt', function(err, data) {
+  if (err) throw err;
+  SECRET = data;
+});
 
 var template;
 fs.readFile('index.jade', function(err, data) {
@@ -16,7 +20,7 @@ fs.readFile('index.jade', function(err, data) {
   template = jade.compile(data.toString(), {pretty: true});
 });
 
-http.createServer( function(req, response) {
+http.createServer(function(req, response) {
   if (req.method == 'GET') {
     console.log('GET request.')
 
