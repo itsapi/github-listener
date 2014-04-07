@@ -2,16 +2,18 @@ html {
     font-family: sans-serif;
 }
 
+#time {
+    width: 100%;
+}
+
 #left {
     margin: 0;
     width: 50%;
-    height: 100%;
     float: left;
 }
 
 #right {
     margin: 0;
     width: 50%;
-    height: 100%;
     float: right;
 }

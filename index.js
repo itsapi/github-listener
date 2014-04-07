@@ -7,6 +7,7 @@ var http = require('http'),
 
 var last_payload = {};
 var script_out = '';
+var timestamp = new Date();
 
 var SECRET;
 fs.readFile('secret.txt', function(err, data) {
@@ -17,7 +18,6 @@ fs.readFile('secret.txt', function(err, data) {
   }
   SECRET = data;
 });
-
 
 var template;
 fs.readFile('index.jade', function(err, data) {
@@ -39,7 +39,8 @@ http.createServer(function(req, response) {
       var html = template({
         last_payload: JSON.stringify(last_payload, null, '\t'),
         script_out: script_out,
-        css: css
+        css: css,
+        timestamp: timestamp
       });
       response.write(html);
       response.end();
@@ -51,6 +52,7 @@ http.createServer(function(req, response) {
     secret = secret.substr(secret.lastIndexOf('/') + 1);
     if (secret == SECRET) {
       var body = '';
+      timestamp = new Date();
       req.on('data', function(chunk) {
         body += chunk.toString();
       });
@@ -72,6 +74,7 @@ http.createServer(function(req, response) {
             console.log('\n' + out);
             console.log('Finished processing files\n');
             script_out = out;
+            timestamp = new Date();
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
@@ -85,7 +88,6 @@ http.createServer(function(req, response) {
       console.log('Error: Incorrect secret: ' + secret);
       response.end('Error: Incorrect secret: ' + secret);
     }
-
   }
 }).listen(6003);
 
