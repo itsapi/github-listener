@@ -31,15 +31,13 @@ var app = http.createServer(function(request, response) {
   if (request.method == 'GET') {
     console.log('GET request.')
 
-    var socket_script;
     fs.readFile('main.js', function(err, data) {
       if (err) throw err;
-      socket_script = '\n'+data.toString()+'\n';
+      var socket_script = '\n'+data.toString()+'\n';
 
-      var css;
       fs.readFile('main.css', function(err, data) {
         if (err) throw err;
-        css = '\n'+data.toString()+'\n';
+        var css = '\n'+data.toString()+'\n';
 
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '\t'),
