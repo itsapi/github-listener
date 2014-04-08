@@ -1,4 +1,4 @@
-var socket = io.connect('http://node.dvbris.com');
+var socket = io.connect();
 socket.on('update_out', function (data) {
     console.log(data);
 });
