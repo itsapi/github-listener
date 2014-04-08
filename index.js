@@ -37,7 +37,7 @@ var app = http.createServer(function(request, response) {
       socket_script = '\n'+data.toString()+'\n';
 
       var css;
-      fs.readFile('style.css', function(err, data) {
+      fs.readFile('main.css', function(err, data) {
         if (err) throw err;
         css = '\n'+data.toString()+'\n';
 
