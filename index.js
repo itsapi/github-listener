@@ -4,7 +4,7 @@ var http = require('http'),
     exec = require('child_process').exec,
     jade = require('jade'),
     io = require('socket.io'),
-    events = require('events').EventEmitter,
+    events = new require('events').EventEmitter,
     fs = require('fs');
 
 var last_payload = {};
