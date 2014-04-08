@@ -27,23 +27,30 @@ fs.readFile('index.jade', function(err, data) {
 
 http.createServer(function(req, response) {
   if (req.method == 'GET') {
-    console.log('GET request.')
-
+    console.log('GET request.');
     response.writeHead(200, {'Content-Type': 'text/html'});
 
-    var css;
-    fs.readFile('style.css', function(err, data) {
+    var socket_script;
+    fs.readFile('main.js', function(err, data) {
       if (err) throw err;
-      css = '\n'+data.toString()+'\n';
+      socket_script = '\n'+data.toString()+'\n';
 
-      var html = template({
-        last_payload: JSON.stringify(last_payload, null, '\t'),
-        script_out: script_out,
-        css: css,
-        timestamp: timestamp
+      var css;
+      fs.readFile('main.css', function(err, data) {
+        if (err) throw err;
+        css = '\n'+data.toString()+'\n';
+
+        var html = template({
+          last_payload: JSON.stringify(last_payload, null, '\t'),
+          script_out: script_out,
+          socket_script: socket_script,
+          css: css,
+          timestamp: timestamp
+        });
+
+        response.write(html);
+        response.end();
       });
-      response.write(html);
-      response.end();
     });
 
   } else {
