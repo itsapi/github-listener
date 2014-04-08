@@ -3,11 +3,30 @@ var http = require('http'),
     querystring = require('querystring'),
     exec = require('child_process').exec,
     jade = require('jade'),
+    io = require('socket.io'),
+    events = require('events').EventEmitter,
     fs = require('fs');
 
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
+
+function get_output(response, request, cb) {
+  var css;
+  fs.readFile('style.css', function(err, data) {
+    if (err) throw err;
+    css = '\n'+data.toString()+'\n';
+
+    var html = template({
+      last_payload: JSON.stringify(last_payload, null, '\t'),
+      script_out: script_out,
+      css: css,
+      timestamp: timestamp
+    });
+
+    cb(html);
+  });
+}
 
 var SECRET;
 fs.readFile('secret.txt', function(err, data) {
@@ -25,41 +44,32 @@ fs.readFile('index.jade', function(err, data) {
   template = jade.compile(data.toString(), {pretty: true});
 });
 
-http.createServer(function(req, response) {
-  if (req.method == 'GET') {
+var app = http.createServer(function(request, response) {
+  if (request.method == 'GET') {
     console.log('GET request.')
 
-    response.writeHead(200, {'Content-Type': 'text/html'});
-
-    var css;
-    fs.readFile('style.css', function(err, data) {
-      if (err) throw err;
-      css = '\n'+data.toString()+'\n';
-
-      var html = template({
-        last_payload: JSON.stringify(last_payload, null, '\t'),
-        script_out: script_out,
-        css: css,
-        timestamp: timestamp
-      });
-      response.write(html);
+    get_output(response, request, function (output) {
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(output);
       response.end();
     });
 
   } else {
 
-    var secret = url.parse(req.url).pathname;
+    var secret = url.parse(request.url).pathname;
     secret = secret.substr(secret.lastIndexOf('/') + 1);
     if (secret == SECRET) {
       var body = '';
       timestamp = new Date();
-      req.on('data', function(chunk) {
+      request.on('data', function(chunk) {
         body += chunk.toString();
       });
 
-      req.on('end', function() {
+      request.on('end', function() {
         last_payload = JSON.parse(body);
-        console.log(new Date(), req.method, req.url);
+        events.emit('update_out', last_payload, script_out);
+
+        console.log(new Date(), request.method, request.url);
         console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
         if (last_payload.repository && last_payload.repository.url) {
@@ -73,14 +83,17 @@ http.createServer(function(req, response) {
             var out = error ? stderr : stdout;
             console.log('\n' + out);
             console.log('Finished processing files\n');
+
             script_out = out;
             timestamp = new Date();
+            events.emit('update_out', last_payload, script_out);
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
           script_out = 'Error: Invalid data';
+          events.emit('update_out');
         }
       });
     } else {
@@ -89,6 +102,15 @@ http.createServer(function(req, response) {
       response.end('Error: Incorrect secret: ' + secret);
     }
   }
-}).listen(6003);
+});
+
+io = io.listen(app);
+app.listen(6003);
+
+io.sockets.on('connection', function (socket) {
+  events.on('update_out', function (last_payload, script_out) {
+    socket.emit('update_out', {last_payload: last_payload, script_out: script_out});
+  });
+});
 
 console.log('Server running at http://node.dvbris.com/git');
