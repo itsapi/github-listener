@@ -1,7 +1,4 @@
-var socket = io.connect(
-    'http://node.dvbris.com/git/'
-    , {resource: 'git/socket.io'}
-);
+var socket = io.connect();
 socket.on('update_out', function (data) {
     console.log(data);
 });

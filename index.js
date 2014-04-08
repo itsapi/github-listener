@@ -107,7 +107,7 @@ var app = http.createServer(function(request, response) {
 io = io.listen(app);
 app.listen(6003);
 
-io.of('/git').on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
   ee.on('update_out', function (last_payload, script_out) {
     socket.emit('update_out', {last_payload: last_payload, script_out: script_out});
   });
