@@ -3,8 +3,11 @@ var http = require('http'),
     querystring = require('querystring'),
     exec = require('child_process').exec,
     jade = require('jade'),
+    io = require('socket.io'),
+    events = require('events'),
     fs = require('fs');
 
+var ee = new events.EventEmitter();
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
@@ -48,39 +51,23 @@ var app = http.createServer(function(request, response) {
   var path = url_parts.pathname.replace(/^\/|\/$/g, '');
 
   if (request.method == 'GET') {
+    console.log('GET request.');
 
     if (path == '') {
-      var get_data = url_parts.query;
-
       var header = timestamp.toString();
       if (last_payload.repository && last_payload.head_commit) {
         header += ' | Commit: ' + last_payload.head_commit.message +
                   ' | URL: ' + last_payload.repository.url;
       }
 
-      if (get_data.refresh == undefined) {
+      var html = template({
+        last_payload: JSON.stringify(last_payload, null, '  '),
+        script_out: toHtml(script_out),
+        header: toHtml(header)
+      });
 
-        var html = template({
-          last_payload: JSON.stringify(last_payload, null, '  '),
-          script_out: toHtml(script_out),
-          header: toHtml(header)
-        });
-
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(html);
-
-      } else {
-
-        response.writeHead(200, {'Content-Type': 'application/json'});
-        response.end(
-          JSON.stringify({
-            last_payload: last_payload,
-            script_out: toHtml(script_out),
-            header: toHtml(header)
-          })
-        );
-
-      }
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.end(html);
 
     } else if (path == 'main.js') {
       console.log('Sending JS');
@@ -109,6 +96,13 @@ var app = http.createServer(function(request, response) {
 
       request.on('end', function() {
         last_payload = JSON.parse(body);
+        ee.emit('update_out',
+          JSON.stringify({
+            last_payload: last_payload,
+            script_out: toHtml(script_out),
+            header: toHtml(header)
+          })
+        );
 
         console.log(new Date(), request.method, request.url);
         console.log(JSON.stringify(last_payload, null, '\t') + '\n');
@@ -127,12 +121,26 @@ var app = http.createServer(function(request, response) {
 
             script_out = out;
             timestamp = new Date();
+            ee.emit('update_out',
+              JSON.stringify({
+                last_payload: last_payload,
+                script_out: toHtml(script_out),
+                header: toHtml(header)
+              })
+            );
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
           script_out = 'Error: Invalid data';
+          ee.emit('update_out',
+            JSON.stringify({
+              last_payload: last_payload,
+              script_out: toHtml(script_out),
+              header: toHtml(header)
+            })
+          );
         }
       });
     } else {
@@ -147,8 +155,8 @@ io = io.listen(app);
 app.listen(6003);
 
 io.sockets.on('connection', function (socket) {
-  ee.on('update_out', function (last_payload, script_out) {
-    socket.emit('update_out', {last_payload: last_payload, script_out: script_out});
+  ee.on('update_out', function (data) {
+    socket.emit('update_out', data);
   });
 });
 
