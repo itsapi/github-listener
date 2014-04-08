@@ -4,9 +4,10 @@ var http = require('http'),
     exec = require('child_process').exec,
     jade = require('jade'),
     io = require('socket.io'),
-    events = new require('events').EventEmitter(),
+    events = require('events'),
     fs = require('fs');
 
+var ee = new events.EventEmitter();
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
@@ -29,7 +30,7 @@ fs.readFile('index.jade', function(err, data) {
 
 var app = http.createServer(function(request, response) {
   if (request.method == 'GET') {
-    console.log('GET request.')
+    console.log('GET request.');
 
     var socket_script;
     fs.readFile('main.js', function(err, data) {
@@ -44,6 +45,7 @@ var app = http.createServer(function(request, response) {
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '\t'),
           script_out: script_out,
+          socket_script: socket_script,
           css: css,
           timestamp: timestamp
         });
@@ -67,7 +69,7 @@ var app = http.createServer(function(request, response) {
 
       request.on('end', function() {
         last_payload = JSON.parse(body);
-        events.emit('update_out', last_payload, script_out);
+        ee.emit('update_out', last_payload, script_out);
 
         console.log(new Date(), request.method, request.url);
         console.log(JSON.stringify(last_payload, null, '\t') + '\n');
@@ -86,14 +88,14 @@ var app = http.createServer(function(request, response) {
 
             script_out = out;
             timestamp = new Date();
-            events.emit('update_out', last_payload, script_out);
+            ee.emit('update_out', last_payload, script_out);
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
           script_out = 'Error: Invalid data';
-          events.emit('update_out');
+          ee.emit('update_out');
         }
       });
     } else {
@@ -108,7 +110,7 @@ io = io.listen(app);
 app.listen(6003);
 
 io.sockets.on('connection', function (socket) {
-  events.on('update_out', function (last_payload, script_out) {
+  ee.on('update_out', function (last_payload, script_out) {
     socket.emit('update_out', {last_payload: last_payload, script_out: script_out});
   });
 });
