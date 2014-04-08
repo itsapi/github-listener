@@ -104,7 +104,7 @@ var app = http.createServer(function(request, response) {
   }
 });
 
-io = io.listen(app, { resource: '/git' });
+io = io.listen(app);
 app.listen(6003);
 
 io.sockets.on('connection', function (socket) {
