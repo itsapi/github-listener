@@ -28,12 +28,10 @@ html {
     padding: 10px;
 }
 #left {
-    text-align: left;
     float: left;
     border-right: 2px solid rgb(50, 50, 50);
 }
 #right {
-    text-align: right;
     float: right;
 }
 
