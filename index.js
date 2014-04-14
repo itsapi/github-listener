@@ -80,7 +80,7 @@ var app = http.createServer(function(request, response) {
     } else {
       console.log('404: '+url_parts.pathname)
       response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end('File not found: '+url_parts.pathname);
+      response.end('404 - File not found: '+url_parts.pathname);
     }
 
   } else {
