@@ -73,11 +73,12 @@ var app = http.createServer(function(request, response) {
 
     } else if (path == '/main.js') {
       console.log('Sending JS');
-      sendFile(response, 'main.js', 'application/javascript')
+      sendFile(response, 'main.js', 'application/javascript');
 
     } else if (path == '/main.css') {
       console.log('Sending CSS');
-      sendFile(response, 'main.css', 'text/css')
+      sendFile(response, 'main.css', 'text/css');
+
     } else {
       console.log('404: '+path)
       response.writeHead(404, {'Content-Type': 'text/plain'});
