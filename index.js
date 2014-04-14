@@ -38,10 +38,11 @@ function sendFile(response, filepath, type) {
 var app = http.createServer(function(request, response) {
 
   var url_parts = url.parse(request.url, true)
+  var path = url_parts.pathname.replace(/\/$/, '');
 
   if (request.method == 'GET') {
 
-    if (url_parts.pathname == '//') {
+    if (path == '/') {
       var get_data = url_parts.query;
 
       if (get_data.refresh == undefined) {
@@ -70,22 +71,22 @@ var app = http.createServer(function(request, response) {
 
       }
 
-    } else if (url_parts.pathname == '//main.js') {
+    } else if (path == '/main.js') {
       console.log('Sending JS');
       sendFile(response, 'main.js', 'application/javascript')
 
-    } else if (url_parts.pathname == '//main.css') {
+    } else if (path == '/main.css') {
       console.log('Sending CSS');
       sendFile(response, 'main.css', 'text/css')
     } else {
-      console.log('404: '+url_parts.pathname)
+      console.log('404: '+path)
       response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end('404 - File not found: '+url_parts.pathname);
+      response.end('404 - File not found: '+path);
     }
 
   } else {
 
-    var secret = url_parts.pathname;
+    var secret = path;
     secret = secret.substr(secret.lastIndexOf('/') + 1);
     if (secret == SECRET) {
       var body = '';
