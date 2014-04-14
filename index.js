@@ -49,7 +49,7 @@ var app = http.createServer(function(request, response) {
         console.log('Sending HTML');
 
         var html = template({
-          last_payload: JSON.stringify(last_payload, null, '\t'),
+          last_payload: JSON.stringify(last_payload, null, '  '),
           script_out: script_out,
           timestamp: timestamp.toString()
         });
