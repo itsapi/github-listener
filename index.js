@@ -38,7 +38,7 @@ function sendFile(response, filepath, type) {
 var app = http.createServer(function(request, response) {
 
   var url_parts = url.parse(request.url, true)
-  var path = url_parts.pathname.replace(/\/$/, '');
+  var path = url_parts.pathname.replace(/\/+$/, '');
 
   if (request.method == 'GET') {
 
