@@ -42,7 +42,7 @@ var app = http.createServer(function(request, response) {
 
   if (request.method == 'GET') {
 
-    if (path == '/') {
+    if (path == '') {
       var get_data = url_parts.query;
 
       if (get_data.refresh == undefined) {
