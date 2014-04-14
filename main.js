@@ -38,7 +38,7 @@ setInterval(function () {
   makeRequest('http://node.dvbris.com/git?refresh', function (data) {
     data = JSON.parse(data);
 
-    last_payload.innerText = JSON.stringify(data.last_payload);
+    last_payload.innerText = JSON.stringify(data.last_payload, null, '\t');
     script_out.innerText = data.script_out;
     timestamp.innerText = data.timestamp;
   });
