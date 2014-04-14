@@ -3,11 +3,8 @@ var http = require('http'),
     querystring = require('querystring'),
     exec = require('child_process').exec,
     jade = require('jade'),
-    io = require('socket.io'),
-    events = require('events'),
     fs = require('fs');
 
-var ee = new events.EventEmitter();
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
@@ -28,35 +25,64 @@ fs.readFile('index.jade', function(err, data) {
   template = jade.compile(data.toString(), {pretty: true});
 });
 
+function sendFile(response, filepath, type) {
+  fs.readFile(filepath, function (err, data) {
+    if (err) throw err;
+    var text = data.toString();
+
+    response.writeHead(200, {'Content-Type': type});
+    response.write(text);
+    response.end();
+  });
+}
+
 var app = http.createServer(function(request, response) {
+
+  var url_parts = url.parse(request.url, true)
+
   if (request.method == 'GET') {
-    console.log('GET request.');
 
-    fs.readFile('main.js', function(err, data) {
-      if (err) throw err;
-      var socket_script = '\n'+data.toString()+'\n';
+    if (url_parts.pathname == '/') {
+      var get_data = url_parts.query;
 
-      fs.readFile('main.css', function(err, data) {
-        if (err) throw err;
-        var css = '\n'+data.toString()+'\n';
+      if (get_data.refresh == undefined) {
+        console.log('Sending HTML');
 
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '\t'),
           script_out: script_out,
-          socket_script: socket_script,
-          css: css,
-          timestamp: timestamp
+          timestamp: timestamp.toString()
         });
 
         response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write(html);
-        response.end();
-      });
-    });
+        response.end(html);
+
+      } else {
+        console.log('Sending JSON');
+
+        response.writeHead(200, {'Content-Type': 'application/json'});
+        response.end(
+          JSON.stringify({
+            last_payload: last_payload,
+            script_out: script_out,
+            timestamp: timestamp.toString()
+          })
+        );
+
+      }
+
+    } else if (url_parts.pathname == '/main.js') {
+      console.log('Sending JS');
+      sendFile(response, 'main.js', 'application/javascript')
+
+    } else if (url_parts.pathname == '/main.css') {
+      console.log('Sending CSS');
+      sendFile(response, 'main.css', 'text/css')
+    }
 
   } else {
 
-    var secret = url.parse(request.url).pathname;
+    var secret = url_parts.pathname;
     secret = secret.substr(secret.lastIndexOf('/') + 1);
     if (secret == SECRET) {
       var body = '';
@@ -67,7 +93,6 @@ var app = http.createServer(function(request, response) {
 
       request.on('end', function() {
         last_payload = JSON.parse(body);
-        ee.emit('update_out', last_payload, script_out);
 
         console.log(new Date(), request.method, request.url);
         console.log(JSON.stringify(last_payload, null, '\t') + '\n');
@@ -86,14 +111,12 @@ var app = http.createServer(function(request, response) {
 
             script_out = out;
             timestamp = new Date();
-            ee.emit('update_out', last_payload, script_out);
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
           console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
           response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
           script_out = 'Error: Invalid data';
-          ee.emit('update_out');
         }
       });
     } else {
@@ -102,15 +125,6 @@ var app = http.createServer(function(request, response) {
       response.end('Error: Incorrect secret: ' + secret);
     }
   }
-});
-
-io = io.listen(app);
-app.listen(6003);
-
-io.sockets.on('connection', function (socket) {
-  ee.on('update_out', function (last_payload, script_out) {
-    socket.emit('update_out', {last_payload: last_payload, script_out: script_out});
-  });
-});
+}).listen(6003);
 
 console.log('Server running at http://node.dvbris.com/git');
