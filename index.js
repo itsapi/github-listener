@@ -70,11 +70,11 @@ var app = http.createServer(function(request, response) {
 
       }
 
-    } else if (url_parts.pathname == '/main.js') {
+    } else if (url_parts.pathname == '/git/main.js') {
       console.log('Sending JS');
       sendFile(response, 'main.js', 'application/javascript')
 
-    } else if (url_parts.pathname == '/main.css') {
+    } else if (url_parts.pathname == '/git/main.css') {
       console.log('Sending CSS');
       sendFile(response, 'main.css', 'text/css')
     } else {
