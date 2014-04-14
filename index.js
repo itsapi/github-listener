@@ -31,8 +31,7 @@ function sendFile(response, filepath, type) {
     var text = data.toString();
 
     response.writeHead(200, {'Content-Type': type});
-    response.write(text);
-    response.end();
+    response.end(text);
   });
 }
 
@@ -42,7 +41,7 @@ var app = http.createServer(function(request, response) {
 
   if (request.method == 'GET') {
 
-    if (url_parts.pathname == '/') {
+    if (url_parts.pathname == '/git') {
       var get_data = url_parts.query;
 
       if (get_data.refresh == undefined) {
@@ -78,6 +77,9 @@ var app = http.createServer(function(request, response) {
     } else if (url_parts.pathname == '/main.css') {
       console.log('Sending CSS');
       sendFile(response, 'main.css', 'text/css')
+    } else {
+      response.writeHead(404, {'Content-Type': text/plain});
+      response.end('File not found: ' + url_parts.pathname);
     }
 
   } else {
