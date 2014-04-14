@@ -78,8 +78,9 @@ var app = http.createServer(function(request, response) {
       console.log('Sending CSS');
       sendFile(response, 'main.css', 'text/css')
     } else {
+      console.log('404: '+url_parts.pathname)
       response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end('File not found: ' + url_parts.pathname);
+      response.end('File not found: '+url_parts.pathname);
     }
 
   } else {
