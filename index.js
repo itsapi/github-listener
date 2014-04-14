@@ -41,7 +41,7 @@ var app = http.createServer(function(request, response) {
 
   if (request.method == 'GET') {
 
-    if (url_parts.pathname == '/git') {
+    if (url_parts.pathname == '//') {
       var get_data = url_parts.query;
 
       if (get_data.refresh == undefined) {
@@ -70,11 +70,11 @@ var app = http.createServer(function(request, response) {
 
       }
 
-    } else if (url_parts.pathname == '/git/main.js') {
+    } else if (url_parts.pathname == '//main.js') {
       console.log('Sending JS');
       sendFile(response, 'main.js', 'application/javascript')
 
-    } else if (url_parts.pathname == '/git/main.css') {
+    } else if (url_parts.pathname == '//main.css') {
       console.log('Sending CSS');
       sendFile(response, 'main.css', 'text/css')
     } else {
