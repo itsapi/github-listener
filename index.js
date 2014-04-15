@@ -66,7 +66,7 @@ var app = http.createServer(function(request, response) {
 
       } else {
         console.log('Sending JSON');
-        console.log(toHtml(script_out));
+        console.log(script_out);
 
         response.writeHead(200, {'Content-Type': 'application/json'});
         response.end(
