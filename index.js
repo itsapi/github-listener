@@ -35,6 +35,13 @@ function sendFile(response, filepath, type) {
   });
 }
 
+function toHtml(string) {
+  return string.replace(
+    /((https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/,
+    '<a href="$1">$1</a>'
+  )
+}
+
 var app = http.createServer(function(request, response) {
 
   var url_parts = url.parse(request.url, true)
@@ -50,7 +57,7 @@ var app = http.createServer(function(request, response) {
 
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '  '),
-          script_out: script_out,
+          script_out: toHtml(script_out),
           timestamp: timestamp.toString()
         });
 
@@ -64,7 +71,7 @@ var app = http.createServer(function(request, response) {
         response.end(
           JSON.stringify({
             last_payload: last_payload,
-            script_out: script_out,
+            script_out: toHtml(script_out),
             timestamp: timestamp.toString()
           })
         );
