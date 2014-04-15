@@ -37,7 +37,7 @@ function sendFile(response, filepath, type) {
 
 function toHtml(string) {
   return string.replace(
-    /((https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/,
+    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
     '<a href=\"$1\">$1</a>'
   );
 }
