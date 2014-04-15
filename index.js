@@ -39,7 +39,7 @@ function toHtml(string) {
   return string.replace(
     /((https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/,
     '<a href=\"$1\">$1</a>'
-  )
+  );
 }
 
 var app = http.createServer(function(request, response) {
@@ -66,7 +66,6 @@ var app = http.createServer(function(request, response) {
 
       } else {
         console.log('Sending JSON');
-        console.log(script_out);
 
         response.writeHead(200, {'Content-Type': 'application/json'});
         response.end(
