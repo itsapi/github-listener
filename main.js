@@ -39,7 +39,7 @@ setInterval(function () {
     data = JSON.parse(data);
 
     last_payload.innerText = JSON.stringify(data.last_payload, null, '  ');
-    script_out.innerText = data.script_out;
+    script_out.innerHTML = data.script_out;
     timestamp.innerText = data.timestamp;
   });
 }, 2000);
