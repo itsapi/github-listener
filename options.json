@@ -1,0 +1,7 @@
+{
+    "node": true,
+    "output": "/var/node/git",
+    "ignore": [
+        "secret.txt"
+    ]
+}
