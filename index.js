@@ -10,7 +10,7 @@ var script_out = '';
 var timestamp = new Date();
 
 var SECRET;
-fs.readFile('secret.txt', function(err, data) {
+fs.readFile(__dirname + '/secret.txt', function(err, data) {
   if (err) throw err;
   data = data.toString();
   while (data.slice(-1) == '\n') {
@@ -20,7 +20,7 @@ fs.readFile('secret.txt', function(err, data) {
 });
 
 var template;
-fs.readFile('index.jade', function(err, data) {
+fs.readFile(__dirname + '/index.jade', function(err, data) {
   if (err) throw err;
   template = jade.compile(data.toString(), {pretty: true});
 });
@@ -80,11 +80,11 @@ var app = http.createServer(function(request, response) {
 
     } else if (path == '/main.js') {
       console.log('Sending JS');
-      sendFile(response, 'main.js', 'application/javascript');
+      sendFile(response, __dirname + '/main.js', 'application/javascript');
 
     } else if (path == '/main.css') {
       console.log('Sending CSS');
-      sendFile(response, 'main.css', 'text/css');
+      sendFile(response, __dirname + '/main.css', 'text/css');
 
     } else {
       console.log('404: '+path)
