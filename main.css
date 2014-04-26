@@ -40,3 +40,7 @@ pre {
     font-family: 'Droid Sans Mono', monospace;
     font-size: 0.8em;
 }
+
+a {
+    color: rgba(255, 255, 255, 0.4)
+}
