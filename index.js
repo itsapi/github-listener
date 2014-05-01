@@ -51,6 +51,9 @@ var app = http.createServer(function(request, response) {
 
     if (path == '') {
       var get_data = url_parts.query;
+      header = timestamp.toString() +
+               ' | Commit: ' + last_payload.head_commit.message +
+               ' | URL: ' + last_payload.repository.url
 
       if (get_data.refresh == undefined) {
         console.log('Sending HTML');
@@ -58,7 +61,7 @@ var app = http.createServer(function(request, response) {
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '  '),
           script_out: toHtml(script_out),
-          timestamp: timestamp.toString()
+          header: header
         });
 
         response.writeHead(200, {'Content-Type': 'text/html'});
@@ -72,7 +75,7 @@ var app = http.createServer(function(request, response) {
           JSON.stringify({
             last_payload: last_payload,
             script_out: toHtml(script_out),
-            timestamp: timestamp.toString()
+            header: header
           })
         );
 
