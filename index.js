@@ -51,9 +51,13 @@ var app = http.createServer(function(request, response) {
 
     if (path == '') {
       var get_data = url_parts.query;
-      header = timestamp.toString() +
-               ' | Commit: ' + last_payload.head_commit.message +
-               ' | URL: ' + last_payload.repository.url
+
+      var info = '';
+      if (last_payload.repository && last_payload.head_commit) {
+        info = ' | Commit: ' + last_payload.head_commit.message +
+               ' | URL: ' + last_payload.repository.url;
+
+      var header = timestamp.toString() + info;
 
       if (get_data.refresh == undefined) {
         console.log('Sending HTML');
