@@ -32,7 +32,7 @@ function makeRequest(url, cb) {
 
 var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
 var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
-var timestamp = document.getElementById('time');
+var header = document.getElementsByTagName('header')[0];
 
 setInterval(function () {
   if (!window.blurred) {
@@ -41,7 +41,7 @@ setInterval(function () {
 
       last_payload.innerText = JSON.stringify(data.last_payload, null, '  ');
       script_out.innerHTML = data.script_out;
-      timestamp.innerText = data.timestamp;
+      header.innerText = data.header;
     });
   }
 }, 2000);
