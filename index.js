@@ -56,6 +56,7 @@ var app = http.createServer(function(request, response) {
       if (last_payload.repository && last_payload.head_commit) {
         info = ' | Commit: ' + last_payload.head_commit.message +
                ' | URL: ' + last_payload.repository.url;
+      }
 
       var header = timestamp.toString() + info;
 
