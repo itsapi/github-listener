@@ -64,7 +64,7 @@ var app = http.createServer(function(request, response) {
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '  '),
           script_out: toHtml(script_out),
-          header: header
+          header: toHtml(header)
         });
 
         response.writeHead(200, {'Content-Type': 'text/html'});
@@ -78,7 +78,7 @@ var app = http.createServer(function(request, response) {
           JSON.stringify({
             last_payload: last_payload,
             script_out: toHtml(script_out),
-            header: header
+            header: toHtml(header)
           })
         );
 

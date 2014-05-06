@@ -35,16 +35,11 @@ var script_out = document.getElementById('right').getElementsByTagName('pre')[0]
 var header = document.getElementsByTagName('header')[0];
 
 setInterval(function () {
-  if (!window.blurred) {
-    makeRequest('http://node.dvbris.com/git?refresh', function (data) {
-      data = JSON.parse(data);
+  makeRequest('http://node.dvbris.com/git?refresh', function (data) {
+    data = JSON.parse(data);
 
-      last_payload.innerText = JSON.stringify(data.last_payload, null, '  ');
-      script_out.innerHTML = data.script_out;
-      header.innerText = data.header;
-    });
-  }
+    last_payload.innerText = JSON.stringify(data.last_payload, null, '  ');
+    script_out.innerHTML = data.script_out;
+    header.innerText = data.header;
+  });
 }, 2000);
-
-window.onblur = function() { window.blurred = true; };
-window.onfocus = function() { window.blurred = false; };
