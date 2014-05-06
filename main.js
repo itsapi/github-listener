@@ -38,8 +38,8 @@ setInterval(function () {
   makeRequest('http://node.dvbris.com/git?refresh', function (data) {
     data = JSON.parse(data);
 
-    last_payload.innerText = JSON.stringify(data.last_payload, null, '  ');
+    last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
     script_out.innerHTML = data.script_out;
-    header.innerText = data.header;
+    header.innerHTML = data.header;
   });
 }, 2000);
