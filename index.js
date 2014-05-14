@@ -59,7 +59,6 @@ var app = http.createServer(function(request, response) {
       }
 
       if (get_data.refresh == undefined) {
-        console.log('Sending HTML');
 
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '  '),
@@ -71,7 +70,6 @@ var app = http.createServer(function(request, response) {
         response.end(html);
 
       } else {
-        console.log('Sending JSON');
 
         response.writeHead(200, {'Content-Type': 'application/json'});
         response.end(
@@ -93,9 +91,9 @@ var app = http.createServer(function(request, response) {
       sendFile(response, __dirname + '/main.css', 'text/css');
 
     } else {
-      console.log('404: '+path)
+      console.log('404: ' + path)
       response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end('404 - File not found: '+path);
+      response.end('404 - File not found: ' + path);
     }
 
   } else {
