@@ -82,11 +82,11 @@ var app = http.createServer(function(request, response) {
 
       }
 
-    } else if (path == '/main.js') {
+    } else if (path == 'main.js') {
       console.log('Sending JS');
       sendFile(response, __dirname + '/main.js', 'application/javascript');
 
-    } else if (path == '/main.css') {
+    } else if (path == 'main.css') {
       console.log('Sending CSS');
       sendFile(response, __dirname + '/main.css', 'text/css');
 
