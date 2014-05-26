@@ -143,4 +143,4 @@ var app = http.createServer(function(request, response) {
   }
 }).listen(6003);
 
-console.log('Server running at http://node.dvbris.com/git');
+console.log('Server running at http://git.dvbris.com/');
