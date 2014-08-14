@@ -35,7 +35,7 @@ var script_out = document.getElementById('right').getElementsByTagName('pre')[0]
 var header = document.getElementsByTagName('header')[0];
 
 setInterval(function () {
-  makeRequest('http://git.dvbris.com?refresh', function (data) {
+  makeRequest(window.location.href+'?refresh', function (data) {
     data = JSON.parse(data);
 
     last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
