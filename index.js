@@ -47,12 +47,12 @@ var port = 6003;
 
 http.createServer(function(request, response) {
 
-  var url_parts = url.parse(request.url, true)
+  var url_parts = url.parse(request.url, true);
   var path = url_parts.pathname.replace(/^\/|\/$/g, '');
 
   if (request.method == 'GET') {
 
-    if (path == '') {
+    if (path === '') {
       var get_data = url_parts.query;
 
       var header = timestamp.toString();
@@ -61,7 +61,7 @@ http.createServer(function(request, response) {
                   ' | URL: ' + last_payload.repository.url;
       }
 
-      if (get_data.refresh == undefined) {
+      if (get_data.refresh === undefined) {
 
         var html = template({
           last_payload: JSON.stringify(last_payload, null, '  '),
@@ -94,7 +94,7 @@ http.createServer(function(request, response) {
       sendFile(response, __dirname + '/main.css', 'text/css');
 
     } else {
-      console.log('404: ' + path)
+      console.log('404: ' + path);
       response.writeHead(404, {'Content-Type': 'text/plain'});
       response.end('404 - File not found: ' + path);
     }
