@@ -34,7 +34,7 @@ var last_payload = document.getElementById('left').getElementsByTagName('pre')[0
 var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
 var header = document.getElementsByTagName('header')[0];
 
-setInterval(function () {
+function refresh() {
   makeRequest(window.location.href+'?refresh', function (data) {
     data = JSON.parse(data);
 
@@ -42,4 +42,6 @@ setInterval(function () {
     script_out.innerHTML = data.script_out;
     header.innerHTML = data.header;
   });
-}, 2000);
+  setTimeout(refresh, 2000);
+}
+refresh();
