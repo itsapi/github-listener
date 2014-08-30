@@ -8,6 +8,7 @@ var http = require('http'),
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
+var running;
 
 var SECRET;
 fs.readFile(__dirname + '/secret.txt', function(err, data) {
@@ -110,6 +111,16 @@ http.createServer(function(request, response) {
       });
 
       request.on('end', function() {
+
+        function wait() {
+            if (running) setTimeout(wait, 100);
+        }
+        if (running) {
+            console.log('Already running script');
+            wait();
+        }
+
+        running = true;
         last_payload = JSON.parse(body);
 
         console.log(new Date(), request.method, request.url);
@@ -129,6 +140,7 @@ http.createServer(function(request, response) {
 
             script_out = out;
             timestamp = new Date();
+            running = false;
           });
         } else {
           response.writeHead(400, {'Content-Type': 'text/plain'});
