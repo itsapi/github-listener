@@ -42,7 +42,9 @@ function toHtml(string) {
   );
 }
 
-var app = http.createServer(function(request, response) {
+var port = 6003;
+
+http.createServer(function(request, response) {
 
   var url_parts = url.parse(request.url, true)
   var path = url_parts.pathname.replace(/^\/|\/$/g, '');
@@ -141,6 +143,6 @@ var app = http.createServer(function(request, response) {
       response.end('Error: Incorrect secret: ' + secret);
     }
   }
-}).listen(6003);
+}).listen(port);
 
-console.log('Server running at http://git.dvbris.com/');
+console.log('Server running on port', port);
