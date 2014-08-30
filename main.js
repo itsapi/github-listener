@@ -41,7 +41,8 @@ function refresh() {
     last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
     script_out.innerHTML = data.script_out;
     header.innerHTML = data.header;
+
+    setTimeout(refresh, 2000);
   });
-  setTimeout(refresh, 2000);
 }
 refresh();
