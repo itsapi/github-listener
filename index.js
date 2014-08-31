@@ -8,7 +8,7 @@ var http = require('http'),
 var last_payload = {};
 var script_out = '';
 var timestamp = new Date();
-var running;
+var running = false;
 
 var SECRET;
 fs.readFile(__dirname + '/secret.txt', function(err, data) {
@@ -112,41 +112,44 @@ http.createServer(function(request, response) {
 
       request.on('end', function() {
 
+        if (running) console.log('Script already running');
         function wait() {
             if (running) setTimeout(wait, 100);
+            else done();
         }
-        if (running) {
-            console.log('Already running script');
-            wait();
-        }
+        wait();
 
-        running = true;
-        last_payload = JSON.parse(body);
+        function done() {
+          running = true;
+          last_payload = JSON.parse(body);
 
-        console.log(new Date(), request.method, request.url);
-        console.log(JSON.stringify(last_payload, null, '\t') + '\n');
+          console.log(new Date(), request.method, request.url);
+          console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
-        if (last_payload.repository && last_payload.repository.url) {
-          response.writeHead(200, {'Content-Type': 'text/plain'});
-          var url = last_payload.repository.url;
+          if (last_payload.repository && last_payload.repository.url) {
+            response.writeHead(200, {'Content-Type': 'text/plain'});
+            var url = last_payload.repository.url;
 
-          response.end('Waiting for script to finish');
-          console.log('Waiting for script to finish\n');
-          script_out = 'Waiting for script to finish';
-          exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
-            var out = error ? stderr : stdout;
-            console.log('\n' + out);
-            console.log('Finished processing files\n');
+            response.end('Waiting for script to finish');
+            console.log('Waiting for script to finish\n');
+            script_out = 'Waiting for script to finish';
+            exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
+              var out = error ? stderr : stdout;
+              console.log('\n' + out);
+              console.log('Finished processing files\n');
 
-            script_out = out;
-            timestamp = new Date();
+              script_out = out;
+              timestamp = new Date();
+              running = false;
+            });
+
+          } else {
+            response.writeHead(400, {'Content-Type': 'text/plain'});
+            console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
+            response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
+            script_out = 'Error: Invalid data';
             running = false;
-          });
-        } else {
-          response.writeHead(400, {'Content-Type': 'text/plain'});
-          console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
-          response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
-          script_out = 'Error: Invalid data';
+          }
         }
       });
     } else {
