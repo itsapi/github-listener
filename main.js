@@ -33,6 +33,15 @@ function makeRequest(url, cb) {
 var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
 var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
 var header = document.getElementsByTagName('header')[0];
+var socket = io();
+
+socket.on('refresh', function(data) {
+  data = JSON.parse(data);
+
+  last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
+  script_out.innerHTML = data.script_out;
+  header.innerHTML = data.header;
+});
 
 function refresh() {
   makeRequest(window.location.href+'?refresh', function (data) {
@@ -41,8 +50,9 @@ function refresh() {
     last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
     script_out.innerHTML = data.script_out;
     header.innerHTML = data.header;
-
-    setTimeout(refresh, 2000);
   });
 }
-refresh();
+
+setInterval(function() {
+  if (!socket.connected) refresh();
+}, 2000);

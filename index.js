@@ -1,11 +1,14 @@
-var http = require('http'),
+var app = require('http').createServer(handler),
+    io = require('socket.io')(app),
     url = require('url'),
     exec = require('child_process').exec,
+    events = new (require('events').EventEmitter)(),
     jade = require('jade'),
     fs = require('fs');
 
 var last_payload = {};
 var script_out = '';
+var header = '';
 var timestamp = new Date();
 var running = false;
 
@@ -132,6 +135,7 @@ function handler(req, res) {
             res.end('Waiting for script to finish');
             console.log('Waiting for script to finish\n');
             script_out = 'Waiting for script to finish';
+            events.emit('refresh');
             exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
               var out = error ? stderr : stdout;
               console.log('\n' + out);
@@ -139,7 +143,7 @@ function handler(req, res) {
 
               script_out = out;
               timestamp = new Date();
-              running = false;
+              events.emit('refresh');
             });
 
           } else {
@@ -147,7 +151,7 @@ function handler(req, res) {
             console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
             res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
             script_out = 'Error: Invalid data';
-            running = false;
+            events.emit('refresh');
           }
         }
       });
@@ -159,4 +163,25 @@ function handler(req, res) {
   }
 }
 
+io.on('connection', function(socket) {
+  events.on('refresh', function() {
+    running = false;
+    header = timestamp.toString();
+    if (last_payload.repository && last_payload.head_commit) {
+      header += ' | Commit: ' + last_payload.head_commit.message +
+                ' | URL: ' + last_payload.repository.url;
+    }
+    socket.emit('refresh',
+      JSON.stringify({
+        last_payload: last_payload,
+        script_out: toHtml(script_out),
+        header: toHtml(header)
+      })
+    );
+  });
+});
+
+
+var port = 6003;
+app.listen(port);
 console.log('Server running on port', port);
