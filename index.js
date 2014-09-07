@@ -1,6 +1,5 @@
 var http = require('http'),
     url = require('url'),
-    querystring = require('querystring'),
     exec = require('child_process').exec,
     jade = require('jade'),
     fs = require('fs');
@@ -26,13 +25,13 @@ fs.readFile(__dirname + '/index.jade', function(err, data) {
   template = jade.compile(data.toString(), {pretty: true});
 });
 
-function sendFile(response, filepath, type) {
-  fs.readFile(filepath, function (err, data) {
+function sendFile(res, path, type) {
+  fs.readFile(path, function (err, data) {
     if (err) throw err;
     var text = data.toString();
 
-    response.writeHead(200, {'Content-Type': type});
-    response.end(text);
+    res.writeHead(200, {'Content-Type': type});
+    res.end(text);
   });
 }
 
@@ -43,74 +42,74 @@ function toHtml(string) {
   );
 }
 
-var port = 6003;
+function handler(req, res) {
 
-http.createServer(function(request, response) {
+  var url_parts = url.parse(req.url, true);
 
-  var url_parts = url.parse(request.url, true);
-  var path = url_parts.pathname.replace(/^\/|\/$/g, '');
+  if (req.method == 'GET') {
 
-  if (request.method == 'GET') {
+    switch (url_parts.pathname) {
+      case '/':
 
-    if (path === '') {
-      var get_data = url_parts.query;
+        if (url_parts.query.refresh === undefined) {
 
-      var header = timestamp.toString();
-      if (last_payload.repository && last_payload.head_commit) {
-        header += ' | Commit: ' + last_payload.head_commit.message +
-                  ' | URL: ' + last_payload.repository.url;
-      }
-
-      if (get_data.refresh === undefined) {
-
-        var html = template({
-          last_payload: JSON.stringify(last_payload, null, '  '),
-          script_out: toHtml(script_out),
-          header: toHtml(header)
-        });
-
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(html);
-
-      } else {
-
-        response.writeHead(200, {'Content-Type': 'application/json'});
-        response.end(
-          JSON.stringify({
-            last_payload: last_payload,
+          var html = template({
+            last_payload: JSON.stringify(last_payload, null, '  '),
             script_out: toHtml(script_out),
             header: toHtml(header)
-          })
-        );
+          });
 
-      }
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.end(html);
 
-    } else if (path == 'main.js') {
-      console.log('Sending JS');
-      sendFile(response, __dirname + '/main.js', 'application/javascript');
+        } else {
 
-    } else if (path == 'main.css') {
-      console.log('Sending CSS');
-      sendFile(response, __dirname + '/main.css', 'text/css');
+          header = timestamp.toString();
+          if (last_payload.repository && last_payload.head_commit) {
+            header += ' | Commit: ' + last_payload.head_commit.message +
+                      ' | URL: ' + last_payload.repository.url;
+          }
 
-    } else {
-      console.log('404: ' + path);
-      response.writeHead(404, {'Content-Type': 'text/plain'});
-      response.end('404 - File not found: ' + path);
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(
+            JSON.stringify({
+              last_payload: last_payload,
+              script_out: toHtml(script_out),
+              header: toHtml(header)
+            })
+          );
+
+        }
+
+        break;
+
+      case '/main.js':
+        console.log('Sending JS');
+        sendFile(res, __dirname + '/main.js', 'application/javascript');
+        break;
+
+      case '/main.css':
+        console.log('Sending CSS');
+        sendFile(res, __dirname + '/main.css', 'text/css');
+        break;
+
+      default:
+        console.log('404: ' + url_parts.pathname);
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.end('404 - File not found: ' + url_parts.pathname);
     }
 
   } else {
 
-    var secret = path;
-    secret = secret.substr(secret.lastIndexOf('/') + 1);
+    var secret = url_parts.pathname.slice(1);
     if (secret == SECRET) {
       var body = '';
       timestamp = new Date();
-      request.on('data', function(chunk) {
+      req.on('data', function(chunk) {
         body += chunk.toString();
       });
 
-      request.on('end', function() {
+      req.on('end', function() {
 
         if (running) console.log('Script already running');
         function wait() {
@@ -123,14 +122,14 @@ http.createServer(function(request, response) {
           running = true;
           last_payload = JSON.parse(body);
 
-          console.log(new Date(), request.method, request.url);
+          console.log(new Date(), req.method, req.url);
           console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
           if (last_payload.repository && last_payload.repository.url) {
-            response.writeHead(200, {'Content-Type': 'text/plain'});
+            res.writeHead(200, {'Content-Type': 'text/plain'});
             var url = last_payload.repository.url;
 
-            response.end('Waiting for script to finish');
+            res.end('Waiting for script to finish');
             console.log('Waiting for script to finish\n');
             script_out = 'Waiting for script to finish';
             exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
@@ -144,20 +143,20 @@ http.createServer(function(request, response) {
             });
 
           } else {
-            response.writeHead(400, {'Content-Type': 'text/plain'});
+            res.writeHead(400, {'Content-Type': 'text/plain'});
             console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
-            response.end('Error: Invalid data: ' + JSON.stringify(last_payload));
+            res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
             script_out = 'Error: Invalid data';
             running = false;
           }
         }
       });
     } else {
-      response.writeHead(401, {'Content-Type': 'text/plain'});
+      res.writeHead(401, {'Content-Type': 'text/plain'});
       console.log('Error: Incorrect secret: ' + secret);
-      response.end('Error: Incorrect secret: ' + secret);
+      res.end('Error: Incorrect secret: ' + secret);
     }
   }
-}).listen(port);
+}
 
 console.log('Server running on port', port);
