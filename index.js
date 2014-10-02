@@ -49,7 +49,7 @@ function toHtml(string) {
 
 function assembleData() {
   return {
-    last_payload: JSON.stringify(last_payload, null, '  '),
+    last_payload: last_payload,
     script_out: toHtml(script_out),
     header: toHtml(header),
     status: status
@@ -67,7 +67,12 @@ function handler(req, res) {
 
         if (url_parts.query.refresh === undefined) { // Send the HTML
 
-          var html = template(assembleData());
+          var html = template({
+            last_payload: JSON.stringify(last_payload, null, '  '),
+            script_out: toHtml(script_out),
+            header: toHtml(header),
+            status: status
+          });
 
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end(html);
