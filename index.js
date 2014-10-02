@@ -8,6 +8,7 @@ var app = require('http').createServer(handler),
 
 var last_payload = {};
 var script_out = '';
+var status = 'Hello :D';
 var header = '';
 var timestamp = new Date();
 var running = false;
@@ -138,6 +139,7 @@ function handler(req, res) {
             res.end('Waiting for script to finish');
             console.log('Waiting for script to finish\n');
             script_out = 'Waiting for script to finish';
+            status = 'Waiting';
             events.emit('refresh');
             exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
               var out = error ? stderr : stdout;
@@ -145,6 +147,7 @@ function handler(req, res) {
               console.log('Finished processing files\n');
 
               script_out = out;
+              status = 'Done';
               timestamp = new Date();
               events.emit('refresh');
             });
@@ -154,6 +157,7 @@ function handler(req, res) {
             console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
             res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
             script_out = 'Error: Invalid data';
+            status = 'Error';
             events.emit('refresh');
           }
         }

@@ -36,7 +36,8 @@ function refresh(data) {
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
   script_out.innerHTML = data.script_out;
   header.innerHTML = data.header;
-});
+  document.title = data.status + ' - Git';
+}
 
 
 var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
