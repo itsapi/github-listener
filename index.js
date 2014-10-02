@@ -39,6 +39,7 @@ function sendFile(res, path, type) {
 }
 
 function toHtml(string) {
+  // Converts URLs to HTML links
   return string.replace(
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
     '<a href=\"$1\">$1</a>'
@@ -54,7 +55,7 @@ function handler(req, res) {
     switch (url_parts.pathname) {
       case '/':
 
-        if (url_parts.query.refresh === undefined) {
+        if (url_parts.query.refresh === undefined) { // Send the HTML
 
           var html = template({
             last_payload: JSON.stringify(last_payload, null, '  '),
@@ -65,7 +66,8 @@ function handler(req, res) {
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end(html);
 
-        } else {
+        } else { // Send the data
+          console.log('Data requested by GET')
 
           header = timestamp.toString();
           if (last_payload.repository && last_payload.head_commit) {
@@ -171,6 +173,7 @@ io.on('connection', function(socket) {
       header += ' | Commit: ' + last_payload.head_commit.message +
                 ' | URL: ' + last_payload.repository.url;
     }
+    console.log('Data requested by socket')
     socket.emit('refresh',
       JSON.stringify({
         last_payload: last_payload,
