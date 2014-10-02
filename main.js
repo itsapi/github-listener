@@ -30,12 +30,7 @@ function makeRequest(url, cb) {
   httpRequest.send()
 }
 
-var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
-var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
-var header = document.getElementsByTagName('header')[0];
-var socket = io();
-
-socket.on('refresh', function(data) {
+function refresh(data) {
   data = JSON.parse(data);
 
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
@@ -43,16 +38,20 @@ socket.on('refresh', function(data) {
   header.innerHTML = data.header;
 });
 
-function refresh() {
-  makeRequest(window.location.href+'?refresh', function (data) {
-    data = JSON.parse(data);
 
-    last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
-    script_out.innerHTML = data.script_out;
-    header.innerHTML = data.header;
-  });
-}
+var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
+var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
+var header = document.getElementsByTagName('header')[0];
+var socket = io();
+
+socket.on('refresh', function(data) {
+  console.log('Received a refresh');
+  refresh(data);
+});
 
 setInterval(function() {
-  if (!socket.connected) refresh();
+  if (!socket.connected) {
+    console.log('Polling for refresh');
+    makeRequest(window.location.href+'?refresh', refresh);
+  }
 }, 2000);
