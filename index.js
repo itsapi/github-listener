@@ -46,6 +46,15 @@ function toHtml(string) {
   );
 }
 
+function assembleData() {
+  return {
+    last_payload: JSON.stringify(last_payload, null, '  '),
+    script_out: toHtml(script_out),
+    header: toHtml(header),
+    status: status
+  };
+}
+
 function handler(req, res) {
 
   var url_parts = url.parse(req.url, true);
@@ -57,11 +66,7 @@ function handler(req, res) {
 
         if (url_parts.query.refresh === undefined) { // Send the HTML
 
-          var html = template({
-            last_payload: JSON.stringify(last_payload, null, '  '),
-            script_out: toHtml(script_out),
-            header: toHtml(header)
-          });
+          var html = template(assembleData());
 
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end(html);
@@ -77,11 +82,7 @@ function handler(req, res) {
 
           res.writeHead(200, {'Content-Type': 'application/json'});
           res.end(
-            JSON.stringify({
-              last_payload: last_payload,
-              script_out: toHtml(script_out),
-              header: toHtml(header)
-            })
+            JSON.stringify(assembleData())
           );
 
         }
@@ -175,11 +176,7 @@ io.on('connection', function(socket) {
     }
     console.log('Data requested by socket')
     socket.emit('refresh',
-      JSON.stringify({
-        last_payload: last_payload,
-        script_out: toHtml(script_out),
-        header: toHtml(header)
-      })
+      JSON.stringify(assembleData())
     );
   });
 });
