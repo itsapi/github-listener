@@ -49,7 +49,7 @@ function toHtml(string) {
 
 function assembleData(format) {
   return {
-    last_payload: (format == undefined) ? last_payload : JSON.stringify(last_payload, null, '  '),
+    last_payload: format ? JSON.stringify(last_payload, null, '  ') : last_payload,
     script_out: toHtml(script_out),
     header: toHtml(header),
     status: status
