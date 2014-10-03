@@ -8,7 +8,7 @@ var app = require('http').createServer(handler),
 
 var last_payload = {};
 var script_out = '';
-var status = 'Hello :D';
+var status = 'Ready';
 var header = '';
 var timestamp = new Date();
 var running = false;
