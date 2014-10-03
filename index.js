@@ -47,9 +47,9 @@ function toHtml(string) {
   );
 }
 
-function assembleData() {
+function assembleData(format) {
   return {
-    last_payload: last_payload,
+    last_payload: (format == undefined) ? last_payload : JSON.stringify(last_payload, null, '  '),
     script_out: toHtml(script_out),
     header: toHtml(header),
     status: status
@@ -67,12 +67,7 @@ function handler(req, res) {
 
         if (url_parts.query.refresh === undefined) { // Send the HTML
 
-          var html = template({
-            last_payload: JSON.stringify(last_payload, null, '  '),
-            script_out: toHtml(script_out),
-            header: toHtml(header),
-            status: status
-          });
+          var html = template(assembleData(true));
 
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end(html);
