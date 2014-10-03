@@ -47,13 +47,12 @@ function toHtml(string) {
   );
 }
 
-function sendData(cb) {
+function genHeader() {
   header = timestamp.toString();
   if (last_payload.repository && last_payload.head_commit) {
     header += ' | Commit: ' + last_payload.head_commit.message +
               ' | URL: ' + last_payload.repository.url;
   }
-  cb(JSON.stringify(assembleData()));
 }
 
 function assembleData(format) {
@@ -78,8 +77,9 @@ function handler(req, res) {
 
         } else { // Send the data
           console.log('Data requested by GET');
+          genHeader();
           res.writeHead(200, {'Content-Type': 'application/json'});
-          sendData(res.end);
+          res.end(JSON.stringify(assembleData()));
         }
         break;
 
@@ -166,7 +166,8 @@ io.on('connection', function(socket) {
   events.on('refresh', function() {
     running = false;
     console.log('Data requested by socket');
-    sendData(function(data){socket.emit('refresh',data)});
+    genHeader();
+    socket.emit('refresh', JSON.stringify(assembleData()));
   });
 });
 
