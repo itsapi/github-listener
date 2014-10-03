@@ -57,18 +57,13 @@ function assembleData(format) {
 }
 
 function handler(req, res) {
-
   var url_parts = url.parse(req.url, true);
 
   if (req.method == 'GET') {
-
     switch (url_parts.pathname) {
       case '/':
-
         if (url_parts.query.refresh === undefined) { // Send the HTML
-
           var html = template(assembleData(true));
-
           res.writeHead(200, {'Content-Type': 'text/html'});
           res.end(html);
 
@@ -87,7 +82,6 @@ function handler(req, res) {
           );
 
         }
-
         break;
 
       case '/main.js':
@@ -105,7 +99,6 @@ function handler(req, res) {
         res.writeHead(404, {'Content-Type': 'text/plain'});
         res.end('404 - File not found: ' + url_parts.pathname);
     }
-
   } else {
 
     var secret = url_parts.pathname.slice(1);
