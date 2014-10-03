@@ -47,6 +47,15 @@ function toHtml(string) {
   );
 }
 
+function sendData(cb) {
+  header = timestamp.toString();
+  if (last_payload.repository && last_payload.head_commit) {
+    header += ' | Commit: ' + last_payload.head_commit.message +
+              ' | URL: ' + last_payload.repository.url;
+  }
+  cb(JSON.stringify(assembleData()));
+}
+
 function assembleData(format) {
   return {
     last_payload: format ? JSON.stringify(last_payload, null, '  ') : last_payload,
@@ -68,19 +77,9 @@ function handler(req, res) {
           res.end(html);
 
         } else { // Send the data
-          console.log('Data requested by GET')
-
-          header = timestamp.toString();
-          if (last_payload.repository && last_payload.head_commit) {
-            header += ' | Commit: ' + last_payload.head_commit.message +
-                      ' | URL: ' + last_payload.repository.url;
-          }
-
+          console.log('Data requested by GET');
           res.writeHead(200, {'Content-Type': 'application/json'});
-          res.end(
-            JSON.stringify(assembleData())
-          );
-
+          sendData(res.end);
         }
         break;
 
@@ -166,15 +165,8 @@ function handler(req, res) {
 io.on('connection', function(socket) {
   events.on('refresh', function() {
     running = false;
-    header = timestamp.toString();
-    if (last_payload.repository && last_payload.head_commit) {
-      header += ' | Commit: ' + last_payload.head_commit.message +
-                ' | URL: ' + last_payload.repository.url;
-    }
-    console.log('Data requested by socket')
-    socket.emit('refresh',
-      JSON.stringify(assembleData())
-    );
+    console.log('Data requested by socket');
+    sendData(function(data){socket.emit('refresh',data)});
   });
 });
 
