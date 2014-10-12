@@ -7,17 +7,6 @@ var app = require('http').createServer(handler),
     fs = require('fs');
 
 
-function sendFile(res, path, type) {
-  fs.readFile(path, function (err, data) {
-    if (err) throw err;
-    var text = data.toString();
-
-    res.writeHead(200, {'Content-Type': type});
-    res.end(text);
-  });
-}
-
-
 function toHtml(string) {
   // Converts URLs to HTML links
   return string.replace(
@@ -25,6 +14,7 @@ function toHtml(string) {
     '<a href=\"$1\">$1</a>'
   );
 }
+
 
 function genHeader() {
   header = timestamp.toString();
@@ -42,6 +32,17 @@ function assembleData(format) {
     header: toHtml(header),
     status: status
   };
+}
+
+
+function sendFile(res, path, type) {
+  fs.readFile(path, function (err, data) {
+    if (err) throw err;
+    var text = data.toString();
+
+    res.writeHead(200, {'Content-Type': type});
+    res.end(text);
+  });
 }
 
 
