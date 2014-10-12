@@ -39,10 +39,9 @@ function refresh(data) {
   document.title = data.status + ' - Git';
 }
 
-
-var last_payload = document.getElementById('left').getElementsByTagName('pre')[0];
-var script_out = document.getElementById('right').getElementsByTagName('pre')[0];
-var header = document.getElementsByTagName('header')[0];
+var last_payload = document.querySelector('#left pre');
+var script_out = document.querySelector('#right pre');
+var header = document.querySelector('header');
 var socket = io();
 
 socket.on('refresh', function(data) {

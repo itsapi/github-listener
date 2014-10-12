@@ -126,6 +126,7 @@ function handler(req, res) {
 
               script_out = out;
               status = 'Done';
+              running = false;
               timestamp = new Date();
               events.emit('refresh');
             });
@@ -179,7 +180,6 @@ fs.readFile(__dirname + '/index.jade', function(err, data) {
 
 io.on('connection', function(socket) {
   events.on('refresh', function() {
-    running = false;
     console.log('Data sent by socket');
     genHeader();
     socket.emit('refresh', JSON.stringify(assembleData()));
