@@ -7,7 +7,7 @@ var app = require('http').createServer(handler),
     fs = require('fs');
 
 
-function toHtml(string) {
+function to_html(string) {
   // Converts URLs to HTML links
   return string.replace(
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
@@ -16,7 +16,7 @@ function toHtml(string) {
 }
 
 
-function genHeader() {
+function gen_header() {
   header = timestamp.toString();
   if (last_payload.repository && last_payload.head_commit) {
     header += ' | Commit: ' + last_payload.head_commit.message +
@@ -25,17 +25,17 @@ function genHeader() {
 }
 
 
-function assembleData(format) {
+function assemble_data(format) {
   return {
     last_payload: format ? JSON.stringify(last_payload, null, '  ') : last_payload,
-    script_out: toHtml(script_out),
-    header: toHtml(header),
+    script_out: to_html(script_out),
+    header: to_html(header),
     status: status
   };
 }
 
 
-function sendFile(res, path, type) {
+function send_file(res, path, type) {
   fs.readFile(path, function (err, data) {
     if (err) throw err;
     var text = data.toString();
@@ -50,26 +50,26 @@ function serve(url_parts, res) {
   switch (url_parts.pathname) {
     case '/':
       if (url_parts.query.refresh === undefined) { // Send the HTML
-        var html = template(assembleData(true));
+        var html = template(assemble_data(true));
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(html);
 
       } else { // Send the data
         console.log('Data requested by GET');
-        genHeader();
+        gen_header();
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(assembleData()));
+        res.end(JSON.stringify(assemble_data()));
       }
       break;
 
     case '/main.js':
       console.log('Sending JS');
-      sendFile(res, __dirname + '/static/main.js', 'application/javascript');
+      send_file(res, __dirname + '/static/main.js', 'application/javascript');
       break;
 
     case '/main.css':
       console.log('Sending CSS');
-      sendFile(res, __dirname + '/static/main.css', 'text/css');
+      send_file(res, __dirname + '/static/main.css', 'text/css');
       break;
 
     default:
@@ -183,8 +183,8 @@ fs.readFile(__dirname + '/index.jade', function(err, data) {
 io.on('connection', function(socket) {
   events.on('refresh', function() {
     console.log('Data sent by socket');
-    genHeader();
-    socket.emit('refresh', JSON.stringify(assembleData()));
+    gen_header();
+    socket.emit('refresh', JSON.stringify(assemble_data()));
   });
 });
 
