@@ -178,6 +178,7 @@ fs.readFile(__dirname + '/index.jade', function(err, data) {
 });
 
 
+// Set up the socket to send new data to the client.
 io.on('connection', function(socket) {
   events.on('refresh', function() {
     console.log('Data sent by socket');
