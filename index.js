@@ -38,44 +38,44 @@ function assemble_data(format) {
 function send_file(res, path, type) {
   fs.readFile(path, function (err, data) {
     if (err) throw err;
-    var text = data.toString();
 
     res.writeHead(200, {'Content-Type': type});
-    res.end(text);
+    res.end(data);
   });
 }
 
 
 function serve(url_parts, res) {
-  switch (url_parts.pathname) {
-    case '/':
-      if (url_parts.query.refresh === undefined) { // Send the HTML
-        var html = template(assemble_data(true));
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(html);
+  if (url_parts.pathname == '/') {
+    if (url_parts.query.refresh === undefined) { // Send the HTML
+      var html = template(assemble_data(true));
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(html);
 
-      } else { // Send the data
-        console.log('Data requested by GET');
-        gen_header();
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(assemble_data()));
-      }
-      break;
+    } else { // Send the data
+      console.log('Data requested by GET');
+      gen_header();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify(assemble_data()));
+    }
 
-    case '/main.js':
-      console.log('Sending JS');
-      send_file(res, __dirname + '/static/main.js', 'application/javascript');
-      break;
+  } else if (url_parts.pathname == '/main.js') {
+    console.log('Sending JS');
+    send_file(res, __dirname + '/static/main.js', 'application/javascript');
+  
+  } else if (url_parts.pathname == '/main.css') {
+    console.log('Sending CSS');
+    send_file(res, __dirname + '/static/main.css', 'text/css');
+  
+  } else if (url_parts.pathname.match(/\/icons\/\w*/)) {
+    var name = url_parts.pathname.split('/').slice(-1)[0].toLowerCase();
+    console.log('Sending icon: ' + name);
+    send_file(res, __dirname + '/static/icons/' + name + '.png', 'image/png');
 
-    case '/main.css':
-      console.log('Sending CSS');
-      send_file(res, __dirname + '/static/main.css', 'text/css');
-      break;
-
-    default:
-      console.log('404: ' + url_parts.pathname);
-      res.writeHead(404, {'Content-Type': 'text/plain'});
-      res.end('404 - File not found: ' + url_parts.pathname);
+  } else {
+    console.log('404: ' + url_parts.pathname);
+    res.writeHead(404, {'Content-Type': 'text/plain'});
+    res.end('404 - File not found: ' + url_parts.pathname);
   }
 }
 

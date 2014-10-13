@@ -1,3 +1,6 @@
+document.head = document.head || document.getElementsByTagName('head')[0];
+
+
 function makeRequest(url, cb) {
   var httpRequest
   if (window.XMLHttpRequest) { // Mozilla, Safari, ...
@@ -30,6 +33,20 @@ function makeRequest(url, cb) {
   httpRequest.send()
 }
 
+
+function changeFavicon(src) {
+  var link = document.createElement('link'),
+      oldLink = document.getElementById('dynamic-favicon');
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+  link.href = src;
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+  document.head.appendChild(link);
+}
+
+
 function refresh(data) {
   data = JSON.parse(data);
 
@@ -37,7 +54,9 @@ function refresh(data) {
   script_out.innerHTML = data.script_out;
   header.innerHTML = data.header;
   document.title = data.status + ' - Git';
+  changeFavicon('icons/' + data.status);
 }
+
 
 var last_payload = document.querySelector('#left pre');
 var script_out = document.querySelector('#right pre');
@@ -48,6 +67,8 @@ socket.on('refresh', function(data) {
   console.log('Received a refresh');
   refresh(data);
 });
+
+changeFavicon('icons/waiting');
 
 setInterval(function() {
   if (!socket.connected) {
