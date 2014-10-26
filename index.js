@@ -121,7 +121,7 @@ function handler(req, res) {
             status = 'Waiting';
             events.emit('refresh');
             exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
-              var out = error ? stderr : stdout;
+              var out = stdout + stderr;
               console.log('\n' + out);
               console.log('Finished processing files\n');
 
