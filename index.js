@@ -111,16 +111,16 @@ function handler(req, res) {
           console.log(new Date(), req.method, req.url);
           console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
-          if (last_payload.repository && last_payload.repository.url) {
+          if (last_payload.repository && last_payload.repository.full_name) {
             res.writeHead(200, {'Content-Type': 'text/plain'});
-            var url = last_payload.repository.url;
+            var name = last_payload.repository.full_name;
 
             res.end('Waiting for script to finish');
             console.log('Waiting for script to finish\n');
             script_out = 'Waiting for script to finish';
             status = 'Waiting';
             events.emit('refresh');
-            exec('/home/git/post-receive/run.sh ' + url, function(error, stdout, stderr) {
+            exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
               var out = stdout + stderr;
               console.log('\n' + out);
               console.log('Finished processing files\n');
