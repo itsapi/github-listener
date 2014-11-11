@@ -113,9 +113,13 @@ function handler(req, res) {
           console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
           if (last_payload.repository && last_payload.repository.full_name) {
-            if (last_payload.repository.owner && github.trusted.indexOf(last_payload.repository.owner.name) != -1) {
+            var name = last_payload.repository.full_name;
+
+            // Test ownership
+            var name_matches = name.split('/').length == 2 && name.split('/')[0] == last_payload.repository.owner.name;
+            var name_trusted = last_payload.repository.owner && github.trusted.indexOf(last_payload.repository.owner.name) != -1;
+            if (name_matches && name_trusted) {
               res.writeHead(200, {'Content-Type': 'text/plain'});
-              var name = last_payload.repository.full_name;
 
               res.end('Waiting for script to finish');
               console.log('Waiting for script to finish\n');
