@@ -4,7 +4,8 @@ var app = require('http').createServer(handler),
     exec = require('child_process').exec,
     events = new (require('events').EventEmitter)(),
     jade = require('jade'),
-    fs = require('fs');
+    fs = require('fs'),
+    github = require('./github');
 
 
 function to_html(string) {
@@ -88,7 +89,7 @@ function handler(req, res) {
   } else {
 
     var secret = url_parts.pathname.slice(1);
-    if (secret == SECRET) {
+    if (secret == github.secret) {
       var body = '';
       timestamp = new Date();
       req.on('data', function(chunk) {
@@ -112,25 +113,35 @@ function handler(req, res) {
           console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
           if (last_payload.repository && last_payload.repository.full_name) {
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            var name = last_payload.repository.full_name;
+            if (last_payload.repository.owner && github.trusted.indexOf(last_payload.repository.owner.name) != -1) {
+              res.writeHead(200, {'Content-Type': 'text/plain'});
+              var name = last_payload.repository.full_name;
 
-            res.end('Waiting for script to finish');
-            console.log('Waiting for script to finish\n');
-            script_out = 'Waiting for script to finish';
-            status = 'Waiting';
-            events.emit('refresh');
-            exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
-              var out = stdout + stderr;
-              console.log('\n' + out);
-              console.log('Finished processing files\n');
-
-              script_out = out;
-              status = 'Done';
-              running = false;
-              timestamp = new Date();
+              res.end('Waiting for script to finish');
+              console.log('Waiting for script to finish\n');
+              script_out = 'Waiting for script to finish';
+              status = 'Waiting';
               events.emit('refresh');
-            });
+              exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
+                var out = stdout + stderr;
+                console.log('\n' + out);
+                console.log('Finished processing files\n');
+
+                script_out = out;
+                status = 'Done';
+                running = false;
+                timestamp = new Date();
+                events.emit('refresh');
+              });
+
+            } else {
+              res.writeHead(401, {'Content-Type': 'text/plain'});
+              console.log('Error: Untrusted user: ' + JSON.stringify(last_payload.repository.owner.name));
+              res.end('Error: Untrusted user: ' + JSON.stringify(last_payload.repository.owner.name));
+              script_out = 'Error: Untrusted user';
+              status = 'Error';
+              events.emit('refresh');
+            }
 
           } else {
             res.writeHead(400, {'Content-Type': 'text/plain'});
@@ -146,6 +157,9 @@ function handler(req, res) {
       res.writeHead(401, {'Content-Type': 'text/plain'});
       console.log('Error: Incorrect secret: ' + secret);
       res.end('Error: Incorrect secret: ' + secret);
+      script_out = 'Error: Incorrect secret';
+      status = 'Error';
+      events.emit('refresh');
     }
   }
 }
@@ -157,18 +171,6 @@ var status = 'Ready';
 var header = '';
 var timestamp = new Date();
 var running = false;
-
-
-// Load the secret from the file
-var SECRET;
-fs.readFile(__dirname + '/secret.txt', function(err, data) {
-  if (err) throw err;
-  data = data.toString();
-  while (data.slice(-1) == '\n') {
-    data = data.slice(0, -1);
-  }
-  SECRET = data;
-});
 
 
 // Load the Jade template

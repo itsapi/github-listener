@@ -2,6 +2,6 @@
     "output": "/var/node/git",
     "node": true,
     "ignore": [
-        "secret.txt"
+        "github.json"
     ]
 }
