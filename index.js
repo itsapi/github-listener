@@ -3,6 +3,7 @@ var http = require('http'),
     url = require('url'),
     exec = require('child_process').exec,
     events = new (require('events').EventEmitter)(),
+    crypto = require('crypto'),
     jade = require('jade'),
     fs = require('fs');
 
@@ -62,11 +63,11 @@ function serve(url_parts, res) {
   } else if (url_parts.pathname == '/main.js') {
     console.log('Sending JS');
     send_file(res, __dirname + '/static/main.js', 'application/javascript');
-  
+
   } else if (url_parts.pathname == '/main.css') {
     console.log('Sending CSS');
     send_file(res, __dirname + '/static/main.css', 'text/css');
-  
+
   } else if (url_parts.pathname.match(/\/icons\/\w*/)) {
     var name = url_parts.pathname.split('/').slice(-1)[0].toLowerCase();
     console.log('Sending icon: ' + name);
@@ -93,7 +94,7 @@ function run_when_ready(func) {
 
 function respond(res, http_code, message) {
   console.log(message);
-  
+
   script_out = message;
   events.emit('refresh');
 
@@ -104,20 +105,20 @@ function respond(res, http_code, message) {
 
 function handle_hook(url_parts, req, res) {
 
-  // Check secret
-  var secret = url_parts.pathname.slice(1);
-  if (secret != SECRET) {
-    respond(res, 401, 'Error: Incorrect secret: ' + secret);
-    return false;
-  }
-
   // Get payload
-  timestamp = new Date();
   var body = '';
   req.on('data', function(chunk) {
     body += chunk.toString();
   });
 
+  // Verify payload signature
+  signature = req.headers['x-hub-signature'];
+  if (!verify_payload(signature, SECRET, JSON.parse(body))) {
+    respond(res, 401, 'Error: Incorrect secret: ' + secret);
+    return false;
+  }
+
+  timestamp = new Date();
   req.on('end', function() {
     run_when_ready(function () {
       running = true;
@@ -162,6 +163,13 @@ var status = 'Ready';
 var header = '';
 var timestamp = new Date();
 var running = false;
+
+
+// Verify payload signature
+function verify_payload(signature, secret, payload) {
+  var hash = 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
+  return signature == hash;
+}
 
 
 // Load the secret from the file
