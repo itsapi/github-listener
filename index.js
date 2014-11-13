@@ -103,6 +103,13 @@ function respond(res, http_code, message) {
 }
 
 
+// Verify payload signature
+function verify_payload(signature, secret, payload) {
+  var hash = 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
+  return signature == hash;
+}
+
+
 function handle_hook(url_parts, req, res) {
 
   // Get payload
@@ -163,13 +170,6 @@ var status = 'Ready';
 var header = '';
 var timestamp = new Date();
 var running = false;
-
-
-// Verify payload signature
-function verify_payload(signature, secret, payload) {
-  var hash = 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
-  return signature == hash;
-}
 
 
 // Load the secret from the file
