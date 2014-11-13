@@ -80,68 +80,83 @@ function serve(url_parts, res) {
 }
 
 
-function handle_hook(req, res) {
-
-  var secret = url_parts.pathname.slice(1);
-  if (secret == SECRET) {
-    var body = '';
-    timestamp = new Date();
-    req.on('data', function(chunk) {
-      body += chunk.toString();
-    });
-
-    req.on('end', function() {
-
-      if (running) console.log('Script already running');
-      function wait() {
-        if (running) setTimeout(wait, 100);
-        else done();
-      }
-      wait();
-
-      function done() {
-        running = true;
-        last_payload = JSON.parse(body);
-
-        console.log(new Date(), req.method, req.url);
-        console.log(JSON.stringify(last_payload, null, '\t') + '\n');
-
-        if (last_payload.repository && last_payload.repository.full_name) {
-          res.writeHead(200, {'Content-Type': 'text/plain'});
-          var name = last_payload.repository.full_name;
-
-          res.end('Waiting for script to finish');
-          console.log('Waiting for script to finish\n');
-          script_out = 'Waiting for script to finish';
-          status = 'Waiting';
-          events.emit('refresh');
-          exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
-            var out = stdout + stderr;
-            console.log('\n' + out);
-            console.log('Finished processing files\n');
-
-            script_out = out;
-            status = 'Done';
-            running = false;
-            timestamp = new Date();
-            events.emit('refresh');
-          });
-
-        } else {
-          res.writeHead(400, {'Content-Type': 'text/plain'});
-          console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
-          res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
-          script_out = 'Error: Invalid data';
-          status = 'Error';
-          events.emit('refresh');
-        }
-      }
-    });
-  } else {
-    res.writeHead(401, {'Content-Type': 'text/plain'});
-    console.log('Error: Incorrect secret: ' + secret);
-    res.end('Error: Incorrect secret: ' + secret);
+function run_when_ready(func) {
+  // Avoids running multiple requests at once.
+  if (running) console.log('Script already running');
+  function wait() {
+    if (running) setTimeout(wait, 100);
+    else func();
   }
+  wait();
+}
+
+
+function respond(res, http_code, message, script_out_msg) {
+  console.log(message);
+  
+  if (script_out_msg == undefined) {
+    script_out = message;
+  } else {
+    script_out = script_out_msg;
+  }
+  events.emit('refresh');
+
+  res.writeHead(http_code, {'Content-Type': 'text/plain'});
+  res.end(message);
+}
+
+
+function handle_hook(url_parts, req, res) {
+
+  // Check secret
+  var secret = url_parts.pathname.slice(1);
+  if (secret != SECRET) {
+    respond(res, 401, 'Error: Incorrect secret: ' + secret);
+    return false;
+  }
+
+  // Get payload
+  timestamp = new Date();
+  var body = '';
+  req.on('data', function(chunk) {
+    body += chunk.toString();
+  });
+
+  req.on('end', function() {
+    run_when_ready(function () {
+      running = true;
+
+      last_payload = JSON.parse(body);
+      console.log(new Date(), req.method, req.url);
+      console.log(JSON.stringify(last_payload, null, '\t') + '\n');
+
+      // Check we have the information we need
+      if (!(last_payload.repository && last_payload.repository.full_name)) {
+        respond(res, 400, 'Error: Invalid data: ' + JSON.stringify(last_payload), 'Error: Invalid data');
+        status = 'Error';
+        running = false;
+        return false;
+      }
+
+      // Run script
+      respond(res, 200, 'Waiting for script to finish');
+      status = 'Waiting';
+
+      var command = '/home/git/post-receive/run.sh ' + last_payload.repository.full_name;
+      exec(command, function(error, stdout, stderr) {
+        var out = stdout + stderr;
+        console.log('\n' + out);
+        console.log('Finished processing files\n');
+
+        script_out = out;
+        status = 'Done';
+        running = false;
+        timestamp = new Date();
+        events.emit('refresh');
+      });
+
+    });
+  });
 }
 
 
@@ -180,7 +195,7 @@ var app = http.createServer(function (req, res) {
   if (req.method == 'GET') {
     serve(url_parts, res);
   } else {
-    handle_hook(req, res);
+    handle_hook(url_parts, req, res);
   }
 });
 
