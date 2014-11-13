@@ -118,21 +118,22 @@ function handle_hook(url_parts, req, res) {
     body += chunk.toString();
   });
 
-  // Verify payload signature
-  signature = req.headers['x-hub-signature'];
-  if (!verify_payload(signature, SECRET, JSON.parse(body))) {
-    respond(res, 401, 'Error: Incorrect secret: ' + secret);
-    return false;
-  }
-
   timestamp = new Date();
   req.on('end', function() {
     run_when_ready(function () {
       running = true;
 
       last_payload = JSON.parse(body);
+
       console.log(new Date(), req.method, req.url);
       console.log(JSON.stringify(last_payload, null, '\t') + '\n');
+
+      // Verify payload signature
+      signature = req.headers['x-hub-signature'];
+      if (!verify_payload(signature, SECRET, last_payload)) {
+        respond(res, 401, 'Error: Incorrect secret: ' + secret);
+        return false;
+      }
 
       // Check we have the information we need
       if (!(last_payload.repository && last_payload.repository.full_name)) {
