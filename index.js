@@ -1,5 +1,5 @@
-var app = require('http').createServer(handler),
-    io = require('socket.io')(app),
+var http = require('http'),
+    socketio = require('socket.io'),
     url = require('url'),
     exec = require('child_process').exec,
     events = new (require('events').EventEmitter)(),
@@ -80,73 +80,67 @@ function serve(url_parts, res) {
 }
 
 
-function handler(req, res) {
-  var url_parts = url.parse(req.url, true);
+function handle_hook(req, res) {
 
-  if (req.method == 'GET') {
-    serve(url_parts, res);
+  var secret = url_parts.pathname.slice(1);
+  if (secret == SECRET) {
+    var body = '';
+    timestamp = new Date();
+    req.on('data', function(chunk) {
+      body += chunk.toString();
+    });
+
+    req.on('end', function() {
+
+      if (running) console.log('Script already running');
+      function wait() {
+        if (running) setTimeout(wait, 100);
+        else done();
+      }
+      wait();
+
+      function done() {
+        running = true;
+        last_payload = JSON.parse(body);
+
+        console.log(new Date(), req.method, req.url);
+        console.log(JSON.stringify(last_payload, null, '\t') + '\n');
+
+        if (last_payload.repository && last_payload.repository.full_name) {
+          res.writeHead(200, {'Content-Type': 'text/plain'});
+          var name = last_payload.repository.full_name;
+
+          res.end('Waiting for script to finish');
+          console.log('Waiting for script to finish\n');
+          script_out = 'Waiting for script to finish';
+          status = 'Waiting';
+          events.emit('refresh');
+          exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
+            var out = stdout + stderr;
+            console.log('\n' + out);
+            console.log('Finished processing files\n');
+
+            script_out = out;
+            status = 'Done';
+            running = false;
+            timestamp = new Date();
+            events.emit('refresh');
+          });
+
+        } else {
+          res.writeHead(400, {'Content-Type': 'text/plain'});
+          console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
+          res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
+          script_out = 'Error: Invalid data';
+          status = 'Error';
+          events.emit('refresh');
+        }
+      }
+    });
   } else {
-
-    var secret = url_parts.pathname.slice(1);
-    if (secret == SECRET) {
-      var body = '';
-      timestamp = new Date();
-      req.on('data', function(chunk) {
-        body += chunk.toString();
-      });
-
-      req.on('end', function() {
-
-        if (running) console.log('Script already running');
-        function wait() {
-            if (running) setTimeout(wait, 100);
-            else done();
-        }
-        wait();
-
-        function done() {
-          running = true;
-          last_payload = JSON.parse(body);
-
-          console.log(new Date(), req.method, req.url);
-          console.log(JSON.stringify(last_payload, null, '\t') + '\n');
-
-          if (last_payload.repository && last_payload.repository.full_name) {
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            var name = last_payload.repository.full_name;
-
-            res.end('Waiting for script to finish');
-            console.log('Waiting for script to finish\n');
-            script_out = 'Waiting for script to finish';
-            status = 'Waiting';
-            events.emit('refresh');
-            exec('/home/git/post-receive/run.sh ' + name, function(error, stdout, stderr) {
-              var out = stdout + stderr;
-              console.log('\n' + out);
-              console.log('Finished processing files\n');
-
-              script_out = out;
-              status = 'Done';
-              running = false;
-              timestamp = new Date();
-              events.emit('refresh');
-            });
-
-          } else {
-            res.writeHead(400, {'Content-Type': 'text/plain'});
-            console.log('Error: Invalid data: ' + JSON.stringify(last_payload));
-            res.end('Error: Invalid data: ' + JSON.stringify(last_payload));
-            script_out = 'Error: Invalid data';
-            status = 'Error';
-            events.emit('refresh');
-          }
-        }
-      });
-    } else {
-      res.writeHead(401, {'Content-Type': 'text/plain'});
-      console.log('Error: Incorrect secret: ' + secret);
-      res.end('Error: Incorrect secret: ' + secret);
-    }
+    res.writeHead(401, {'Content-Type': 'text/plain'});
+    console.log('Error: Incorrect secret: ' + secret);
+    res.end('Error: Incorrect secret: ' + secret);
   }
 }
 
@@ -179,7 +173,20 @@ fs.readFile(__dirname + '/index.jade', function(err, data) {
 });
 
 
+// Setup server
+var app = http.createServer(function (req, res) {
+  var url_parts = url.parse(req.url, true);
+
+  if (req.method == 'GET') {
+    serve(url_parts, res);
+  } else {
+    handle_hook(req, res);
+  }
+});
+
+
 // Set up the socket to send new data to the client.
+var io = socketio(app);
 io.on('connection', function(socket) {
   events.on('refresh', function() {
     console.log('Data sent by socket');
@@ -189,6 +196,7 @@ io.on('connection', function(socket) {
 });
 
 
+// Start the server
 var port = 6003;
 app.listen(port);
 console.log('Server running on port', port);
