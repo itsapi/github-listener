@@ -91,14 +91,10 @@ function run_when_ready(func) {
 }
 
 
-function respond(res, http_code, message, script_out_msg) {
+function respond(res, http_code, message) {
   console.log(message);
   
-  if (script_out_msg == undefined) {
-    script_out = message;
-  } else {
-    script_out = script_out_msg;
-  }
+  script_out = message;
   events.emit('refresh');
 
   res.writeHead(http_code, {'Content-Type': 'text/plain'});
@@ -132,7 +128,7 @@ function handle_hook(url_parts, req, res) {
 
       // Check we have the information we need
       if (!(last_payload.repository && last_payload.repository.full_name)) {
-        respond(res, 400, 'Error: Invalid data: ' + JSON.stringify(last_payload), 'Error: Invalid data');
+        respond(res, 400, 'Error: Invalid data');
         status = 'Error';
         running = false;
         return false;
