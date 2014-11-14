@@ -159,6 +159,8 @@ function handle_hook(url_parts, req, res) {
       respond(res, 200, 'Waiting for script to finish');
       status = 'Waiting';
 
+      branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+
       var command = '/home/git/post-receive/run.sh ' + last_payload.repository.full_name;
       exec(command, function(error, stdout, stderr) {
         var out = stdout + stderr;
