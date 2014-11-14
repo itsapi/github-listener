@@ -119,13 +119,21 @@ function handle_hook(url_parts, req, res) {
   req.pipe(bl(function (err, data) {
     if (err) {
       respond(res, 400, 'Error whilst receiving payload');
+      status = 'Error';
       return false;
     }
 
     run_when_ready(function () {
       running = true;
 
-      last_payload = JSON.parse(data);
+      try {
+        last_payload = JSON.parse(data);
+      } catch (e) {
+        respond(res, 400, 'Error: Invalid payload');
+        status = 'Error';
+        running = false;
+        return false;
+      }
 
       console.log(new Date(), req.method, req.url);
       console.log(JSON.stringify(last_payload, null, '\t') + '\n');

@@ -46,19 +46,25 @@ function gen_payload_sig(secret, payload) {
 
 async.series([
   function(cb) {
-    console.log('Test 1: pass invalid JSON object');
+    console.log('Test 1: pass string as payload');
+    payload = 'asdf';
+    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
+    make_req(options, payload, cb);
+  },
+  function(cb) {
+    console.log('Test 2: pass invalid JSON object');
     payload = JSON.stringify({ property: 'false' });
     options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
     make_req(options, payload, cb);
   },
   function(cb) {
-    console.log('Test 2: pass valid JSON object but invalid signature');
+    console.log('Test 3: pass valid JSON object but invalid signature');
     payload = JSON.stringify({ repository: { full_name: 'repo' } });
     options.headers['x-hub-signature'] = gen_payload_sig(SECRET, 'bogus');
     make_req(options, payload, cb);
   },
   function(cb) {
-    console.log('Test 3: pass valid JSON object and valid signature');
+    console.log('Test 4: pass valid JSON object and valid signature');
     payload = JSON.stringify({ repository: { full_name: 'repo' } });
     options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
     make_req(options, payload, cb);
