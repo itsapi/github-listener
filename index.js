@@ -5,7 +5,8 @@ var http = require('http'),
     events = new (require('events').EventEmitter)(),
     crypto = require('crypto'),
     jade = require('jade'),
-    fs = require('fs');
+    fs = require('fs'),
+    bl = require('bl');
 
 
 function to_html(string) {
@@ -112,25 +113,26 @@ function verify_payload(signature, secret, payload) {
 
 function handle_hook(url_parts, req, res) {
 
-  // Get payload
-  var body = '';
-  req.on('data', function(chunk) {
-    body += chunk.toString();
-  });
-
   timestamp = new Date();
-  req.on('end', function() {
+
+  // Get payload
+  req.pipe(bl(function (err, data) {
+    if (err) {
+      respond(res, 400, 'Error whilst receiving payload');
+      return false;
+    }
+
     run_when_ready(function () {
       running = true;
 
-      last_payload = JSON.parse(body);
+      last_payload = JSON.parse(data);
 
       console.log(new Date(), req.method, req.url);
       console.log(JSON.stringify(last_payload, null, '\t') + '\n');
 
       // Verify payload signature
       signature = req.headers['x-hub-signature'];
-      if (!verify_payload(signature, SECRET, body)) {
+      if (!verify_payload(signature, SECRET, data)) {
         respond(res, 401, 'Error: Cannot verify payload signature');
         status = 'Error';
         running = false;
@@ -163,7 +165,7 @@ function handle_hook(url_parts, req, res) {
       });
 
     });
-  });
+  }));
 }
 
 
