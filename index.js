@@ -132,7 +132,7 @@ function handle_hook(url_parts, req, res) {
 
       // Verify payload signature
       signature = req.headers['x-hub-signature'];
-      if (!verify_payload(signature, SECRET, data)) {
+      if (!(signature && verify_payload(signature, SECRET, data))) {
         respond(res, 401, 'Error: Cannot verify payload signature');
         status = 'Error';
         running = false;
