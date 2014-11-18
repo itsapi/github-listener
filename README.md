@@ -1,4 +1,20 @@
 Github Listener
 ===============
 
-A Node.js continuous deployment system for Github. Detects a hook from Github when a repo is pushed to, and pulls the changes in the server side repo. Then it runs the script in [post-receive](http://github.com/itsapi/post-receive) to build and push live.
+A Node.js continuous deployment system for Github. Detects a hook from Github when a repo is pushed to, and pulls the changes in the server side repo using [github-getter](http://github.com/itsapi/github-getter). Then it runs the script in [post-receive](http://github.com/itsapi/post-receive) to build and push live.
+
+Config
+------
+
+A `config.json` file is needed to tell the server what commands are run and the secret used in the Github hook.
+
+Example:
+
+```json
+{
+  "processing": "/home/git/deploy/processing",
+  "getter": ". /home/git/deploy/github-getter/run.sh {output} {repo} {branch}",
+  "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir}",
+  "secret": "HelloWorld"
+}
+```
