@@ -7,6 +7,7 @@
     "socket.io": "~1.1.0",
     "jasmine-node": "~1.14.5",
     "async": "~0.9.0",
-    "bl": "~0.9.3"
+    "bl": "~0.9.3",
+    "string-format": "~0.2.1"
   }
 }

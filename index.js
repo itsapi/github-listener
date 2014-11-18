@@ -6,7 +6,10 @@ var http = require('http'),
     crypto = require('crypto'),
     jade = require('jade'),
     fs = require('fs'),
-    bl = require('bl');
+    bl = require('bl'),
+    config = require('./config.json');
+
+require('string-format');
 
 
 function to_html(string) {
@@ -82,6 +85,28 @@ function serve(url_parts, res) {
 }
 
 
+function getter(repo, branch, cb) {
+  var command = config.getter.format({
+    output: config.processing,
+    repo: repo,
+    branch: branch
+  });
+  console.log(command)
+  exec(command, function(error, stdout, stderr) {
+    cb(stdout + stderr);
+  });
+}
+
+
+function post_receive(cb) {
+  var command = config.post_receive.format({dir: config.processing});
+  console.log(command)
+  exec(command, function(error, stdout, stderr) {
+    cb(stdout + stderr);
+  });
+}
+
+
 function run_when_ready(func) {
   // Avoids running multiple requests at once.
   if (running) console.log('Script already running');
@@ -140,7 +165,7 @@ function handle_hook(url_parts, req, res) {
 
       // Verify payload signature
       signature = req.headers['x-hub-signature'];
-      if (!(signature && verify_payload(signature, SECRET, data))) {
+      if (!(signature && verify_payload(signature, config.secret, data))) {
         respond(res, 401, 'Error: Cannot verify payload signature');
         status = 'Error';
         running = false;
@@ -161,19 +186,21 @@ function handle_hook(url_parts, req, res) {
 
       branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
 
-      var command = '/home/git/post-receive/run.sh ' + last_payload.repository.full_name;
-      exec(command, function(error, stdout, stderr) {
-        var out = stdout + stderr;
-        console.log('\n' + out);
-        console.log('Finished processing files\n');
+      var out = ''
+      getter(last_payload.repository.full_name, branch, function (getter_out) {
+        out += getter_out;
+        post_receive(function (post_receive_out) {
+          out += post_receive_out;
+          console.log('\n' + out);
+          console.log('Finished processing files\n');
 
-        script_out = out;
-        status = 'Done';
-        running = false;
-        timestamp = new Date();
-        events.emit('refresh');
+          script_out = out;
+          status = 'Done';
+          running = false;
+          timestamp = new Date();
+          events.emit('refresh');
+        });
       });
-
     });
   }));
 }
@@ -185,18 +212,6 @@ var status = 'Ready';
 var header = '';
 var timestamp = new Date();
 var running = false;
-
-
-// Load the secret from the file
-var SECRET;
-fs.readFile(__dirname + '/secret.txt', function(err, data) {
-  if (err) throw err;
-  data = data.toString();
-  while (data.slice(-1) == '\n') {
-    data = data.slice(0, -1);
-  }
-  SECRET = data;
-});
 
 
 // Load the Jade template
