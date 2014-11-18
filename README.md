@@ -13,7 +13,8 @@ Example:
 ```json
 {
   "processing": "/home/git/deploy/processing",
-  "getter": ". /home/git/deploy/github-getter/run.sh {output} {repo} {branch}",
+  "repo_dir": "/home/git/deploy/repos",
+  "getter": ". /home/git/deploy/github-getter/get.sh {output} {repo} {branch}",
   "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir}",
   "secret": "HelloWorld"
 }
