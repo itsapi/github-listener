@@ -87,6 +87,7 @@ function serve(url_parts, res) {
 
 function getter(repo, branch, cb) {
   var command = config.getter.format({
+    repo_dir: config.repo_dir,
     output: config.processing,
     repo: repo,
     branch: branch
