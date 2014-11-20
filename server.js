@@ -84,7 +84,7 @@ function serve(url_parts, res) {
 var header = '';
 
 // Make listener
-var listener = new Listener(config);
+var listener = new Listener(config, true);
 
 
 // Load the Jade template

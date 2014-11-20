@@ -14,7 +14,7 @@ function verify_payload(signature, secret, payload) {
 }
 
 
-var Listener = function (config) {
+var Listener = function (config, logs) {
   this.config = config;
   this.timestamp = new Date();
   this.running = false;
@@ -44,8 +44,8 @@ var Listener = function (config) {
           return false;
         }
 
-        console.log(new Date(), req.method, req.url);
-        console.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+        self.log(new Date(), req.method, req.url);
+        self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
         // Verify payload signature
         signature = req.headers['x-hub-signature'];
@@ -75,8 +75,8 @@ var Listener = function (config) {
           out += getter_out;
           self.post_receive(function (post_receive_out) {
             out += post_receive_out;
-            console.log('\n' + out);
-            console.log('Finished processing files\n');
+            self.log('\n' + out);
+            self.log('Finished processing files\n');
 
             self.script_out = out;
             self.status = 'Done';
@@ -96,7 +96,7 @@ var Listener = function (config) {
       repo: repo,
       branch: branch
     });
-    console.log(command)
+    this.log(command)
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
     });
@@ -104,7 +104,7 @@ var Listener = function (config) {
 
   this.post_receive = function(cb) {
     var command = this.config.post_receive.format({dir: this.config.processing});
-    console.log(command)
+    this.log(command)
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
     });
@@ -112,7 +112,7 @@ var Listener = function (config) {
 
   this.run_when_ready = function(func) {
     // Avoids running multiple requests at once.
-    if (this.running) console.log('Script already running');
+    if (this.running) this.log('Script already running');
     function wait() {
       if (this.running) setTimeout(wait, 100);
       else func();
@@ -121,13 +121,17 @@ var Listener = function (config) {
   }
 
   this.respond = function(res, http_code, message) {
-    console.log(message);
+    this.log(message);
 
     this.script_out = message;
     events.emit('refresh');
 
     res.writeHead(http_code, {'Content-Type': 'text/plain'});
     res.end(message);
+  }
+
+  this.log = function(msg) {
+    if (logs) console.log(msg);
   }
 };
 
