@@ -89,7 +89,7 @@ var listener = new Listener(config, true);
 
 // Load the Jade template
 var template;
-fs.readFile(__dirname + '/index.jade', function(err, data) {
+fs.readFile(__dirname + '/index.jade', function (err, data) {
   if (err) throw err;
   template = jade.compile(data.toString(), {pretty: true});
 });
@@ -109,8 +109,8 @@ var app = http.createServer(function (req, res) {
 
 // Set up the socket to send new data to the client.
 var io = socketio(app);
-io.on('connection', function(socket) {
-  events.on('refresh', function() {
+io.on('connection', function (socket) {
+  events.on('refresh', function () {
     console.log('Data sent by socket');
     gen_header();
     socket.emit('refresh', JSON.stringify(assemble_data()));

@@ -70,7 +70,7 @@ var Listener = function (config, logs) {
 
         branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
 
-        var out = ''
+        var out = '';
         self.getter(self.last_payload.repository.full_name, branch, function (getter_out) {
           out += getter_out;
           self.post_receive(function (post_receive_out) {
@@ -87,7 +87,7 @@ var Listener = function (config, logs) {
         });
       });
     }));
-  }
+  };
 
   this.getter = function (repo, branch, cb) {
     var command = this.config.getter.format({
@@ -96,21 +96,21 @@ var Listener = function (config, logs) {
       repo: repo,
       branch: branch
     });
-    this.log(command)
+    this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
     });
-  }
+  };
 
-  this.post_receive = function(cb) {
+  this.post_receive = function (cb) {
     var command = this.config.post_receive.format({dir: this.config.processing});
-    this.log(command)
+    this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
     });
-  }
+  };
 
-  this.run_when_ready = function(func) {
+  this.run_when_ready = function (func) {
     // Avoids running multiple requests at once.
     if (this.running) this.log('Script already running');
     function wait() {
@@ -118,9 +118,9 @@ var Listener = function (config, logs) {
       else func();
     }
     wait();
-  }
+  };
 
-  this.respond = function(res, http_code, message) {
+  this.respond = function (res, http_code, message) {
     this.log(message);
 
     this.script_out = message;
@@ -128,11 +128,11 @@ var Listener = function (config, logs) {
 
     res.writeHead(http_code, {'Content-Type': 'text/plain'});
     res.end(message);
-  }
+  };
 
-  this.log = function(msg) {
+  this.log = function (msg) {
     if (logs) console.log(msg);
-  }
+  };
 };
 
 
