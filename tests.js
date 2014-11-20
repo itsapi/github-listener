@@ -1,8 +1,8 @@
-var http = require('http'),
-    crypto = require('crypto'),
+var crypto = require('crypto'),
     test = require('tape'),
     through2 = require('through2'),
     Listener = require('./listener');
+
 
 var config = {
   processing: "/home/git/deploy/processing",
