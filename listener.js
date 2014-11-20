@@ -22,7 +22,7 @@ var Listener = function (config) {
   this.script_out = '';
   this.status = 'Ready';
 
-  this.hook = function (url_parts, req, res) {
+  this.hook = function (req, res) {
     // Get payload
     var self = this;
     req.pipe(bl(function (err, data) {

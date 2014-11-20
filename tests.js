@@ -3,7 +3,10 @@ var http = require('http'),
     fs = require('fs'),
     async = require('async'),
     test = require('tape'),
+    through2 = require('through2'),
+    Listener = require('./listener'),
     config = require('./config');
+
 
 var options = {
   host: 'localhost',
@@ -16,19 +19,20 @@ var options = {
 
 // Make request and log response
 function make_req(options, payload, cb) {
-  var req = http.request(options, function(res) {
-    var str = '';
-    res.on('data', function (chunk) {
-      str += chunk;
-    });
-    res.on('end', function () {
-      console.log(str + '\n');
-      cb();
-    });
-  });
+  var listener = new Listener(config),
+      req = through2();
 
-  req.write(payload);
-  req.end();
+  var res = {
+    writeHead: function(code, type) { console.log(code, type); },
+    end: function(data) { cb(); }
+  }
+
+  req.method = options.method;
+  req.url = options.path;
+  req.headers = options.headers;
+
+  listener.hook(req, res);
+  req.end(payload);
 }
 
 
@@ -68,7 +72,7 @@ async.series([
   },
   function(cb) {
     console.log('Test 5: pass custom branch name');
-    payload = JSON.stringify({ repository: { full_name: 'repo' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' } });
     options.path = '/dev/';
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
     make_req(options, payload, cb);

@@ -102,7 +102,7 @@ var app = http.createServer(function (req, res) {
   if (req.method == 'GET') {
     serve(url_parts, res);
   } else {
-    listener.hook(url_parts, req, res);
+    listener.hook(req, res);
   }
 });
 
