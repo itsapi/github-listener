@@ -3,6 +3,7 @@
   "repository": "http://github.com/itsapi/github-listener.git",
   "version": "1.0.0",
   "main": "server.js",
+  "scripts": { "test": "node tests.js" },
   "devDependencies": {
     "async": "~0.9.0",
     "bl": "~0.9.3",
