@@ -1,7 +1,9 @@
 var http = require('http'),
     crypto = require('crypto'),
     fs = require('fs'),
-    async = require('async');
+    async = require('async'),
+    test = require('tape'),
+    config = require('./config');
 
 var options = {
   host: 'localhost',
@@ -30,10 +32,6 @@ function make_req(options, payload, cb) {
 }
 
 
-// Load the secret from the file
-var SECRET = fs.readFileSync(__dirname + '/secret.txt').toString().replace(/\s/g,'');
-
-
 // Generate payload signature
 function gen_payload_sig(secret, payload) {
   return 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
@@ -47,32 +45,32 @@ async.series([
   function(cb) {
     console.log('Test 1: pass string as payload');
     var payload = 'asdf';
-    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
     make_req(options, payload, cb);
   },
   function(cb) {
     console.log('Test 2: pass invalid JSON object');
     var payload = JSON.stringify({ property: 'false' });
-    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
     make_req(options, payload, cb);
   },
   function(cb) {
     console.log('Test 3: pass valid JSON object but invalid signature');
     var payload = JSON.stringify({ repository: { full_name: 'repo' } });
-    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, 'asdf');
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, 'asdf');
     make_req(options, payload, cb);
   },
   function(cb) {
     console.log('Test 4: pass valid JSON object and valid signature');
     var payload = JSON.stringify({ repository: { full_name: 'repo' } });
-    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
     make_req(options, payload, cb);
   },
   function(cb) {
     console.log('Test 5: pass custom branch name');
     payload = JSON.stringify({ repository: { full_name: 'repo' } });
     options.path = '/dev/';
-    options.headers['x-hub-signature'] = gen_payload_sig(SECRET, payload);
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
     make_req(options, payload, cb);
   }
 ]);
