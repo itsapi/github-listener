@@ -16,16 +16,20 @@ var options = {
   headers: {}
 };
 
+  var res = {
+    writeHead: function(statusCode, headers) {
+      res.statusCode = statusCode;
+      res.headers = headers;
+    }
+  }
+
 
 // Make request and log response
 function make_req(options, payload, cb) {
   var listener = new Listener(config),
       req = through2();
 
-  var res = {
-    writeHead: function(code, type) { console.log(code, type); },
-    end: function(data) { cb(); }
-  }
+  res.end = function(data) { cb(); };
 
   req.method = options.method;
   req.url = options.path;
@@ -78,3 +82,15 @@ async.series([
     make_req(options, payload, cb);
   }
 ]);
+
+test('Test 1: pass string as payload', function(t) {
+  var payload = 'asdf';
+  options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+  make_req(options, payload, function() {
+    t.equal(res.statusCode, 400);
+    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
+  });
+
+  t.end()
+});
