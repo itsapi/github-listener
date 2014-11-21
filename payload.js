@@ -2,7 +2,7 @@ var http = require('http'),
     crypto = require('crypto'),
     config = require('./config');
 
-var payload = JSON.stringify({ repository: { full_name: 'repo' } });
+var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
 var options = {
   hostname: 'localhost',
   port: 6003,

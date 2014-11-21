@@ -58,7 +58,7 @@ var Listener = function (config, logs) {
         // Check we have the information we need
         if (!(self.last_payload.repository &&
             self.last_payload.repository.full_name &&
-            self.last_payload.repository.ref)) {
+            self.last_payload.ref)) {
           self.status = 'Error';
           self.running = false;
           self.respond(res, 400, 'Error: Invalid data');
@@ -67,8 +67,8 @@ var Listener = function (config, logs) {
 
         // Check branch in payload matches branch in URL
         branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-        if (self.last_payload.repository.ref.replace(/^refs\/heads\//, '') != branch) {
-          self.status = 'Error';
+        if (self.last_payload.ref.replace(/^refs\/heads\//, '') != branch) {
+          self.status = 'Ready';
           self.running = false;
           self.respond(res, 400, 'Error: Branches do not match');
           return false;

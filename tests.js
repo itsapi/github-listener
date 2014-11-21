@@ -82,7 +82,7 @@ test('Test 2: pass invalid JSON object', function (t) {
 test('Test 3: pass valid JSON object but invalid signature', function (t) {
 
   t.test('3.1: valid secret but invalid payload', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs' });
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, 'asdf');
 
     make_req(options, payload, function (data) {
@@ -93,7 +93,7 @@ test('Test 3: pass valid JSON object but invalid signature', function (t) {
   });
 
   t.test('3.2: valid payload but invalid secret', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs' });
     options.headers['x-hub-signature'] = gen_payload_sig('asdf', payload);
 
     make_req(options, payload, function (data) {
@@ -108,7 +108,7 @@ test('Test 3: pass valid JSON object but invalid signature', function (t) {
 test('Test 4: pass valid JSON object and valid signature', function (t) {
 
   t.test('4.1: valid data but invalid branch ref', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs' });
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
     make_req(options, payload, function (data) {
@@ -119,7 +119,7 @@ test('Test 4: pass valid JSON object and valid signature', function (t) {
   });
 
   t.test('4.2: valid data and valid branch ref', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/master' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
     make_req(options, payload, function (data) {
@@ -134,7 +134,7 @@ test('Test 4: pass valid JSON object and valid signature', function (t) {
 test('Test 5: pass custom branch name', function (t) {
 
   t.test('5.1: valid branch in path but invalid branch ref', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs' });
     options.path = '/dev';
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
@@ -146,7 +146,7 @@ test('Test 5: pass custom branch name', function (t) {
   });
 
   t.test('5.2: valid branch in path and valid branch ref', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/dev' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/dev' });
     options.path = '/dev';
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
@@ -158,7 +158,7 @@ test('Test 5: pass custom branch name', function (t) {
   });
 
   t.test('5.3: trailing slash in path', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/dev' } });
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/dev' });
     options.path = '/dev/';
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
