@@ -56,18 +56,27 @@ var Listener = function (config, logs) {
         }
 
         // Check we have the information we need
-        if (!(self.last_payload.repository && self.last_payload.repository.full_name)) {
+        if (!(self.last_payload.repository &&
+            self.last_payload.repository.full_name &&
+            self.last_payload.repository.ref)) {
           self.status = 'Error';
           self.running = false;
           self.respond(res, 400, 'Error: Invalid data');
           return false;
         }
 
+        // Check branch in payload matches branch in URL
+        branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+        if (self.last_payload.repository.ref.replace(/^refs\/heads\//, '') != branch) {
+          self.status = 'Error';
+          self.running = false;
+          self.respond(res, 400, 'Error: Branches do not match');
+          return false;
+        }
+
         // Run script
         self.status = 'Waiting';
         self.respond(res, 200, 'Waiting for script to finish');
-
-        branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
 
         var out = '';
         self.getter(self.last_payload.repository.full_name, branch, function (getter_out) {

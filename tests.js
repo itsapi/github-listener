@@ -54,62 +54,116 @@ function gen_payload_sig(secret, payload) {
 
 
 test('Test 1: pass string as payload', function (t) {
+  t.plan(2)
+
   var payload = 'asdf';
   options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
   make_req(options, payload, function (data) {
-    t.equal(data, 'Error: Invalid payload');
-    t.equal(res.statusCode, 400);
-    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
-    t.end()
+    t.equal(data, 'Error: Invalid payload', 'correct server response');
+    t.equal(res.statusCode, 400, 'correct status code');
   });
 });
 
 test('Test 2: pass invalid JSON object', function (t) {
+  t.plan(2)
+
   var payload = JSON.stringify({ property: 'false' });
   options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
   make_req(options, payload, function (data) {
-    t.equal(data, 'Error: Invalid data');
-    t.equal(res.statusCode, 400);
-    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
-    t.end()
+    t.equal(data, 'Error: Invalid data', 'correct server response');
+    t.equal(res.statusCode, 400, 'correct status code');
   });
 });
 
 test('Test 3: pass valid JSON object but invalid signature', function (t) {
-  var payload = JSON.stringify({ repository: { full_name: 'repo' } });
-  options.headers['x-hub-signature'] = gen_payload_sig(config.secret, 'asdf');
 
-  make_req(options, payload, function (data) {
-    t.equal(data, 'Error: Cannot verify payload signature');
-    t.equal(res.statusCode, 401);
-    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
-    t.end()
+  t.test('3.1: valid secret but invalid payload', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, 'asdf');
+
+    make_req(options, payload, function (data) {
+      t.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
+      t.equal(res.statusCode, 401, 'correct status code');
+      st.end();
+    });
   });
+
+  t.test('3.2: valid payload but invalid secret', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    options.headers['x-hub-signature'] = gen_payload_sig('asdf', payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(res.statusCode, 401, 'correct status code');
+      st.end();
+    });
+  });
+
 });
 
 test('Test 4: pass valid JSON object and valid signature', function (t) {
-  var payload = JSON.stringify({ repository: { full_name: 'repo' } });
-  options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
-  make_req(options, payload, function (data) {
-    t.equal(data, 'Waiting for script to finish');
-    t.equal(res.statusCode, 200);
-    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
-    t.end()
+  t.test('4.1: valid data but invalid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Error: Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
+      st.end();
+    });
   });
+
+  t.test('4.2: valid data and valid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/master' } });
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.end();
+    });
+  });
+
 });
 
 test('Test 5: pass custom branch name', function (t) {
-  var payload = JSON.stringify({ repository: { full_name: 'repo' } });
-  options.path = '/dev/';
-  options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
-  make_req(options, payload, function (data) {
-    t.equal(data, 'Waiting for script to finish');
-    t.equal(res.statusCode, 200);
-    t.deepEqual(res.headers, {'Content-Type': 'text/plain'});
-    t.end()
+  t.test('5.1: valid branch in path but invalid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs' } });
+    options.path = '/dev';
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Error: Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('5.2: valid branch in path and valid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/dev' } });
+    options.path = '/dev';
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('5.3: trailing slash in path', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo', ref: 'refs/heads/dev' } });
+    options.path = '/dev/';
+    options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
+
+    make_req(options, payload, function (data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.end();
+    });
   });
 });
