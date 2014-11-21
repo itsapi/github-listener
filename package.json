@@ -1,7 +1,7 @@
 {
   "name": "github-listener",
   "repository": "http://github.com/itsapi/github-listener.git",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "server.js",
   "scripts": { "test": "node tests.js" },
   "devDependencies": {
