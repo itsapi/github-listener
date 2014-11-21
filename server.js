@@ -1,7 +1,6 @@
 var http = require('http'),
     socketio = require('socket.io'),
     url = require('url'),
-    events = new (require('events').EventEmitter)(),
     jade = require('jade'),
     fs = require('fs'),
     config = require('./config.json'),
@@ -110,7 +109,7 @@ var app = http.createServer(function (req, res) {
 // Set up the socket to send new data to the client.
 var io = socketio(app);
 io.on('connection', function (socket) {
-  events.on('refresh', function () {
+  process.on('refresh', function () {
     console.log('Data sent by socket');
     gen_header();
     socket.emit('refresh', JSON.stringify(assemble_data()));

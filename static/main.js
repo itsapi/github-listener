@@ -68,7 +68,7 @@ socket.on('refresh', function(data) {
   refresh(data);
 });
 
-changeFavicon('icons/waiting');
+makeRequest(window.location.href+'?refresh', refresh);
 
 setInterval(function() {
   if (!socket.connected) {

@@ -1,6 +1,5 @@
 var url = require('url'),
     exec = require('child_process').exec,
-    events = new (require('events').EventEmitter)(),
     crypto = require('crypto'),
     bl = require('bl');
 
@@ -27,8 +26,8 @@ var Listener = function (config, logs) {
     var self = this;
     req.pipe(bl(function (err, data) {
       if (err) {
-        self.respond(res, 400, 'Error whilst receiving payload');
         self.status = 'Error';
+        self.respond(res, 400, 'Error whilst receiving payload');
         return false;
       }
 
@@ -38,9 +37,9 @@ var Listener = function (config, logs) {
         try {
           self.last_payload = JSON.parse(data);
         } catch (e) {
-          self.respond(res, 400, 'Error: Invalid payload');
           self.status = 'Error';
           self.running = false;
+          self.respond(res, 400, 'Error: Invalid payload');
           return false;
         }
 
@@ -50,23 +49,23 @@ var Listener = function (config, logs) {
         // Verify payload signature
         signature = req.headers['x-hub-signature'];
         if (!(signature && verify_payload(signature, self.config.secret, data))) {
-          self.respond(res, 401, 'Error: Cannot verify payload signature');
           self.status = 'Error';
           self.running = false;
+          self.respond(res, 401, 'Error: Cannot verify payload signature');
           return false;
         }
 
         // Check we have the information we need
         if (!(self.last_payload.repository && self.last_payload.repository.full_name)) {
-          self.respond(res, 400, 'Error: Invalid data');
           self.status = 'Error';
           self.running = false;
+          self.respond(res, 400, 'Error: Invalid data');
           return false;
         }
 
         // Run script
-        self.respond(res, 200, 'Waiting for script to finish');
         self.status = 'Waiting';
+        self.respond(res, 200, 'Waiting for script to finish');
 
         branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
 
@@ -82,7 +81,7 @@ var Listener = function (config, logs) {
             self.status = 'Done';
             self.running = false;
             self.timestamp = new Date();
-            events.emit('refresh');
+            process.emit('refresh');
           });
         });
       });
@@ -124,7 +123,7 @@ var Listener = function (config, logs) {
     this.log(message);
 
     this.script_out = message;
-    events.emit('refresh');
+    process.emit('refresh');
 
     res.writeHead(http_code, {'Content-Type': 'text/plain'});
     res.end(message);
