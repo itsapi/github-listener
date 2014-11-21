@@ -54,7 +54,6 @@ function gen_payload_sig(secret, payload) {
 
 
 test('Test 1: pass string as payload', function (t) {
-  t.plan(2)
 
   var payload = 'asdf';
   options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
@@ -62,11 +61,12 @@ test('Test 1: pass string as payload', function (t) {
   make_req(options, payload, function (data) {
     t.equal(data, 'Error: Invalid payload', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
+    t.end();
   });
+
 });
 
 test('Test 2: pass invalid JSON object', function (t) {
-  t.plan(2)
 
   var payload = JSON.stringify({ property: 'false' });
   options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
@@ -74,7 +74,9 @@ test('Test 2: pass invalid JSON object', function (t) {
   make_req(options, payload, function (data) {
     t.equal(data, 'Error: Invalid data', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
+    t.end();
   });
+
 });
 
 test('Test 3: pass valid JSON object but invalid signature', function (t) {
@@ -166,4 +168,5 @@ test('Test 5: pass custom branch name', function (t) {
       st.end();
     });
   });
+
 });
