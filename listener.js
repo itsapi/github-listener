@@ -51,7 +51,7 @@ var Listener = function (config, logs) {
         if (!(signature && verify_payload(signature, self.config.secret, data))) {
           self.status = 'Error';
           self.running = false;
-          self.respond(res, 401, 'Error: Cannot verify payload signature');
+          self.respond(res, 403, 'Error: Cannot verify payload signature');
           return false;
         }
 
@@ -70,7 +70,7 @@ var Listener = function (config, logs) {
         if (self.last_payload.ref.replace(/^refs\/heads\//, '') != branch) {
           self.status = 'Ready';
           self.running = false;
-          self.respond(res, 400, 'Error: Branches do not match');
+          self.respond(res, 202, 'Branches do not match', true);
           return false;
         }
 
@@ -128,11 +128,13 @@ var Listener = function (config, logs) {
     wait();
   };
 
-  this.respond = function (res, http_code, message) {
+  this.respond = function (res, http_code, message, refresh) {
     this.log(message);
 
-    this.script_out = message;
-    process.emit('refresh');
+    if (refresh === undefined) {
+      this.script_out = message;
+      process.emit('refresh');
+    }
 
     res.writeHead(http_code, {'Content-Type': 'text/plain'});
     res.end(message);

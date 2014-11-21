@@ -87,7 +87,7 @@ test('Test 3: pass valid JSON object but invalid signature', function (t) {
 
     make_req(options, payload, function (data) {
       t.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
-      t.equal(res.statusCode, 401, 'correct status code');
+      t.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
   });
@@ -98,7 +98,7 @@ test('Test 3: pass valid JSON object but invalid signature', function (t) {
 
     make_req(options, payload, function (data) {
       st.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
-      st.equal(res.statusCode, 401, 'correct status code');
+      st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
   });
@@ -112,8 +112,8 @@ test('Test 4: pass valid JSON object and valid signature', function (t) {
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
     make_req(options, payload, function (data) {
-      st.equal(data, 'Error: Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 400, 'correct status code');
+      st.equal(data, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
@@ -139,8 +139,8 @@ test('Test 5: pass custom branch name', function (t) {
     options.headers['x-hub-signature'] = gen_payload_sig(config.secret, payload);
 
     make_req(options, payload, function (data) {
-      st.equal(data, 'Error: Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 400, 'correct status code');
+      st.equal(data, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
