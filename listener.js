@@ -128,10 +128,10 @@ var Listener = function (config, logs) {
     wait();
   };
 
-  this.respond = function (res, http_code, message, refresh) {
+  this.respond = function (res, http_code, message, not_refresh) {
     this.log(message);
 
-    if (refresh === undefined) {
+    if (not_refresh === undefined) {
       this.script_out = message;
       process.emit('refresh');
     }
