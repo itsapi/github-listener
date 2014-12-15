@@ -7,6 +7,8 @@ var http = require('http'),
     Listener = require('./listener');
 
 
+var header = '';
+
 function gen_header() {
   header = listener.timestamp.toString();
   if (listener.last_payload.repository && listener.last_payload.head_commit) {
@@ -79,8 +81,6 @@ function serve(url_parts, res) {
   }
 }
 
-
-var header = '';
 
 // Make listener
 var listener = new Listener(config, true);
