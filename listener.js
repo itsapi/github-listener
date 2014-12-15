@@ -9,7 +9,7 @@ require('string-format');
 // Verify payload signature
 function verify_payload(signature, secret, payload) {
   var hash = 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
-  return signature == hash;
+  return signature === hash;
 }
 
 
@@ -47,7 +47,7 @@ var Listener = function (config, logs) {
         self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
         // Verify payload signature
-        signature = req.headers['x-hub-signature'];
+        var signature = req.headers['x-hub-signature'];
         if (!(signature && verify_payload(signature, self.config.secret, data))) {
           self.status = 'Error';
           self.running = false;
@@ -66,7 +66,7 @@ var Listener = function (config, logs) {
         }
 
         // Check branch in payload matches branch in URL
-        branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+        var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
         if (self.last_payload.ref.replace(/^refs\/heads\//, '') != branch) {
           self.status = 'Ready';
           self.running = false;
