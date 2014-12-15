@@ -17,7 +17,7 @@ function gen_payload_sig(secret, payload) {
   return 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
 }
 
-var req = http.request(options, function (res) {
+http.request(options, function (res) {
   res.on('data', function (data) {
     console.log(data.toString());
   });
