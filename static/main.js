@@ -53,7 +53,9 @@ function refresh(data) {
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
   script_out.innerHTML = data.script_out;
   header.innerHTML = data.header;
-  header_img.src = data.last_payload.sender.avatar_url;
+  if (data.last_payload && data.last_payload.sender && data.last_payload.sender.avatar_url) {
+    header_img.src = data.last_payload.sender.avatar_url;
+  }
   
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status);
