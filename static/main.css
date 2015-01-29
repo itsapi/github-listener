@@ -21,8 +21,16 @@ header {
     background-color: rgb(110, 110, 110);
     margin: 0;
     color: white;
-    padding: 1em;
     border-bottom: 2px solid rgb(50, 50, 50);
+}
+p {
+    margin: 0;
+    padding: 1em;
+    line-height: 1em;
+}
+img {
+    float: left;
+    height: 3em;
 }
 
 #left, #right {

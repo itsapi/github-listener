@@ -6,7 +6,9 @@ html
         link(href='/main.css', rel='stylesheet')
         script(src='/socket.io/socket.io.js')
     body
-        header!= header
+        header
+            img
+            p!= header
         #left
             h2 Last Payload
             pre= last_payload

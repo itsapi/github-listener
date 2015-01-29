@@ -53,6 +53,8 @@ function refresh(data) {
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
   script_out.innerHTML = data.script_out;
   header.innerHTML = data.header;
+  header_img.src = data.last_payload.sender.avatar_url;
+  
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status);
 }
@@ -60,7 +62,8 @@ function refresh(data) {
 
 var last_payload = document.querySelector('#left pre');
 var script_out = document.querySelector('#right pre');
-var header = document.querySelector('header');
+var header = document.querySelector('header p');
+var header_img = document.querySelector('header img');
 var socket = io();
 
 socket.on('refresh', function(data) {
