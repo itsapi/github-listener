@@ -19,7 +19,7 @@ Example:
   "processing": "/home/git/deploy/processing",
   "repo_dir": "/home/git/deploy/repos",
   "getter": ". /home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
-  "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir}",
+  "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir} {repo}",
   "secret": "HelloWorld"
 }
 ```
