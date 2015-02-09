@@ -79,9 +79,10 @@ var Listener = function (config, logs) {
         self.respond(res, 200, 'Waiting for script to finish');
 
         var out = '';
-        self.getter(self.last_payload.repository.full_name, branch, function (getter_out) {
+        var repo = self.last_payload.repository.full_name;
+        self.getter(repo, branch, function (getter_out) {
           out += getter_out;
-          self.post_receive(function (post_receive_out) {
+          self.post_receive(repo, function (post_receive_out) {
             out += post_receive_out;
             self.log('\n' + out);
             self.log('Finished processing files\n');
@@ -110,9 +111,9 @@ var Listener = function (config, logs) {
     });
   };
 
-  this.post_receive = function (cb) {
+  this.post_receive = function (repo, cb) {
     var command = this.config.post_receive.format(
-        {dir: this.config.processing, repo: this.last_payload.repository.full_name});
+        {dir: this.config.processing, repo: repo});
     this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
