@@ -37,12 +37,12 @@ function makeRequest(url, cb) {
 function changeFavicon(src) {
   var link = document.createElement('link'),
       oldLink = document.getElementById('dynamic-favicon');
+
   link.id = 'dynamic-favicon';
   link.rel = 'shortcut icon';
   link.href = src;
-  if (oldLink) {
-    document.head.removeChild(oldLink);
-  }
+
+  if (oldLink) document.head.removeChild(oldLink);
   document.head.appendChild(link);
 }
 
@@ -56,7 +56,7 @@ function refresh(data) {
   if (data.last_payload && data.last_payload.sender && data.last_payload.sender.avatar_url) {
     header_img.src = data.last_payload.sender.avatar_url;
   }
-  
+
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status);
 }
@@ -66,6 +66,7 @@ var last_payload = document.querySelector('#left pre');
 var script_out = document.querySelector('#right pre');
 var header = document.querySelector('header p');
 var header_img = document.querySelector('header img');
+var rebuild_btn = document.querySelector('header button');
 var socket = io();
 
 socket.on('refresh', function(data) {
@@ -74,6 +75,12 @@ socket.on('refresh', function(data) {
 });
 
 makeRequest(window.location.href+'?refresh', refresh);
+
+rebuild_btn.onclick = function () {
+  makeRequest(window.location.href+'?rebuild', function (data) {
+    console.log(data);
+  });
+};
 
 setInterval(function() {
   if (!socket.connected) {
