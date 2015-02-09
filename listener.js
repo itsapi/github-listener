@@ -111,7 +111,8 @@ var Listener = function (config, logs) {
   };
 
   this.post_receive = function (cb) {
-    var command = this.config.post_receive.format({dir: this.config.processing});
+    var command = this.config.post_receive.format(
+        {dir: this.config.processing, repo: this.last_payload.repository.full_name});
     this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
