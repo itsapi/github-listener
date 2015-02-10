@@ -74,28 +74,36 @@ var Listener = function (config, logs) {
           return false;
         }
 
-        // Run script
-        self.status = 'Waiting';
-        self.respond(res, 200, 'Waiting for script to finish');
+        self.build = (function (repo, branch) {
+          return function (res) {
+            // Run script
+            self.status = 'Waiting';
+            self.respond(res, 200, 'Waiting for script to finish');
 
-        var out = '';
-        var repo = self.last_payload.repository.full_name;
-        self.getter(repo, branch, function (getter_out) {
-          out += getter_out;
-          self.post_receive(repo, function (post_receive_out) {
-            out += post_receive_out;
-            self.log('\n' + out);
-            self.log('Finished processing files\n');
+            var out = '';
+            self.getter(repo, branch, function (getter_out) {
+              out += getter_out;
+              self.post_receive(repo, function (post_receive_out) {
+                out += post_receive_out;
+                self.log('\n' + out);
+                self.log('Finished processing files\n');
 
-            self.script_out = out;
-            self.status = 'Done';
-            self.running = false;
-            self.timestamp = new Date();
-            process.emit('refresh');
-          });
-        });
+                self.script_out = out;
+                self.status = 'Done';
+                self.running = false;
+                self.timestamp = new Date();
+                process.emit('refresh');
+              });
+            });
+          };
+        })(self.last_payload.repository.full_name, branch);
+        self.build(res);
       });
     }));
+  };
+
+  this.build = function (res) {
+    this.respond(res, 200, 'Nothing to build');
   };
 
   this.getter = function (repo, branch, cb) {

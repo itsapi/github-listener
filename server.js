@@ -49,16 +49,20 @@ function assemble_data(format) {
 
 function serve(url_parts, res) {
   if (url_parts.pathname == '/') {
-    if (url_parts.query.refresh === undefined) { // Send the HTML
-      var html = template(assemble_data(true));
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.end(html);
-
-    } else { // Send the data
+    if (url_parts.query.refresh !== undefined) { // Send the data
       console.log('Data requested by GET');
       gen_header();
       res.writeHead(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify(assemble_data()));
+
+    } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
+      console.log('Rebuild requested');
+      listener.build(res);
+
+    } else { // Send the HTML
+      var html = template(assemble_data(true));
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(html);
     }
 
   } else if (url_parts.pathname == '/main.js') {
