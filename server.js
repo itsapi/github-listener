@@ -7,17 +7,6 @@ var http = require('http'),
     Listener = require('./listener');
 
 
-var header = '';
-
-function gen_header() {
-  header = listener.timestamp.toString();
-  if (listener.last_payload.repository && listener.last_payload.head_commit) {
-    header += ' | Commit: ' + listener.last_payload.head_commit.message +
-              ' | URL: ' + listener.last_payload.repository.url;
-  }
-}
-
-
 function send_file(res, path, type) {
   fs.readFile(path, function (err, data) {
     if (err) throw err;
@@ -28,20 +17,11 @@ function send_file(res, path, type) {
 }
 
 
-function to_html(string) {
-  // Converts URLs to HTML links
-  return string.replace(
-    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
-    '<a href=\"$1\">$1</a>'
-  );
-}
-
-
 function assemble_data(format) {
   return {
     last_payload: format ? JSON.stringify(listener.last_payload, null, '  ') : listener.last_payload,
-    script_out: to_html(listener.script_out),
-    header: to_html(header),
+    script_out: listener.script_out,
+    timestamp: listener.timestamp.toString(),
     status: listener.status
   };
 }
@@ -51,7 +31,6 @@ function serve(url_parts, res) {
   if (url_parts.pathname == '/') {
     if (url_parts.query.refresh !== undefined) { // Send the data
       console.log('Data requested by GET');
-      gen_header();
       res.writeHead(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify(assemble_data()));
 
@@ -115,7 +94,6 @@ var io = socketio(app);
 io.on('connection', function (socket) {
   process.on('refresh', function () {
     console.log('Data sent by socket');
-    gen_header();
     socket.emit('refresh', JSON.stringify(assemble_data()));
   });
 });

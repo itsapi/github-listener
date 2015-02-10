@@ -3,9 +3,11 @@ var http = require('http'),
     config = require('./config');
 
 var payload = JSON.stringify({
-  repository: { full_name: 'repo' },
-  ref: 'refs/heads/master'
+  repository: { full_name: 'repo', url: 'http://example.com' },
+  ref: 'refs/heads/master',
+  head_commit: { message: 'example commit' }
 });
+
 var options = {
   hostname: 'localhost',
   port: 6003,

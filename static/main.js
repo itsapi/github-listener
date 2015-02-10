@@ -47,12 +47,27 @@ function changeFavicon(src) {
 }
 
 
+function to_html(string) {
+  // Converts URLs to HTML links
+  return string.replace(
+    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
+    '<a href=\"$1\">$1</a>'
+  );
+}
+
+
 function refresh(data) {
   data = JSON.parse(data);
 
+  data.header = data.timestamp;
+  if (data.last_payload.repository && data.last_payload.head_commit) {
+    data.header += ' | Commit: ' + data.last_payload.head_commit.message +
+                   ' | URL: ' + data.last_payload.repository.url;
+  }
+
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
-  script_out.innerHTML = data.script_out;
-  header.innerHTML = data.header;
+  script_out.innerHTML = to_html(data.script_out);
+  header.innerHTML = to_html(data.header);
   if (data.last_payload && data.last_payload.sender && data.last_payload.sender.avatar_url) {
     header_img.src = data.last_payload.sender.avatar_url;
   }
