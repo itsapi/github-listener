@@ -1,9 +1,10 @@
 var url = require('url'),
     exec = require('child_process').exec,
     crypto = require('crypto'),
-    bl = require('bl');
+    bl = require('bl'),
+    format = require('string-format');
 
-require('string-format');
+format.extend(String.prototype)
 
 
 // Verify payload signature
