@@ -75,27 +75,36 @@ var Listener = function (config, logs) {
           return false;
         }
 
-        // Run script
-        self.status = 'Waiting';
-        self.respond(res, 200, 'Waiting for script to finish');
+        self.build = (function (repo, branch) {
+          return function (res) {
+            // Run script
+            self.status = 'Waiting';
+            self.respond(res, 200, 'Waiting for script to finish');
 
-        var out = '';
-        self.getter(self.last_payload.repository.full_name, branch, function (getter_out) {
-          out += getter_out;
-          self.post_receive(function (post_receive_out) {
-            out += post_receive_out;
-            self.log('\n' + out);
-            self.log('Finished processing files\n');
+            var out = '';
+            self.getter(repo, branch, function (getter_out) {
+              out += getter_out;
+              self.post_receive(repo, function (post_receive_out) {
+                out += post_receive_out;
+                self.log('\n' + out);
+                self.log('Finished processing files\n');
 
-            self.script_out = out;
-            self.status = 'Done';
-            self.running = false;
-            self.timestamp = new Date();
-            process.emit('refresh');
-          });
-        });
+                self.script_out = out;
+                self.status = 'Done';
+                self.running = false;
+                self.timestamp = new Date();
+                process.emit('refresh');
+              });
+            });
+          };
+        })(self.last_payload.repository.full_name, branch);
+        self.build(res);
       });
     }));
+  };
+
+  this.build = function (res) {
+    this.respond(res, 200, 'Nothing to build');
   };
 
   this.getter = function (repo, branch, cb) {
@@ -111,9 +120,9 @@ var Listener = function (config, logs) {
     });
   };
 
-  this.post_receive = function (cb) {
+  this.post_receive = function (repo, cb) {
     var command = this.config.post_receive.format(
-        {dir: this.config.processing, name: this.last_payload.repository.full_name});
+        {dir: this.config.processing, name: repo});
     this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);
