@@ -1,9 +1,9 @@
-var url = require('url'),
-    exec = require('child_process').exec,
-    crypto = require('crypto'),
-    bl = require('bl'),
-    format = require('string-format'),
-    qs = require('querystring');
+var url = require('url')
+,   exec = require('child_process').exec
+,   crypto = require('crypto')
+,   bl = require('bl')
+,   format = require('string-format')
+,   qs = require('querystring');
 
 format.extend(String.prototype)
 
@@ -112,11 +112,11 @@ var Listener = function (config, logs) {
   };
 
   this.getter = function (repo, branch, cb) {
-    var command = this.config.getter.format({
-      repo_dir: this.config.repo_dir,
-      output: this.config.processing,
-      repo: repo,
-      branch: branch
+    var command = this.config.getter.format(
+    { repo_dir: this.config.repo_dir
+    , output: this.config.processing
+    , repo: repo
+    , branch: branch
     });
     this.log(command);
     exec(command, function(error, stdout, stderr) {
@@ -125,8 +125,8 @@ var Listener = function (config, logs) {
   };
 
   this.post_receive = function (repo, cb) {
-    var command = this.config.post_receive.format(
-        {dir: this.config.processing, name: repo});
+    var command = this.config.post_receive
+                  .format({dir: this.config.processing, name: repo});
     this.log(command);
     exec(command, function(error, stdout, stderr) {
       cb(stdout + stderr);

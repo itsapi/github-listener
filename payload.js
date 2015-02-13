@@ -4,8 +4,8 @@ var http = require('http')
 
 
 var payload = {};
-var options = {
-  hostname: 'localhost'
+var options =
+{ hostname: 'localhost'
 , port: 6003
 , path: '/'
 , method: 'POST'
@@ -15,27 +15,27 @@ var options = {
 if (process.argv[2] == 'travis') {
   var slug = 'repo';
 
-  payload = JSON.stringify({
-    repository: { url: 'http://example.com' }
+  payload = JSON.stringify(
+  { repository: { url: 'http://example.com' }
   , branch: 'master'
   , message: 'example commit'
   });
 
-  options.headers = {
-    'travis-repo-slug': slug
+  options.headers =
+  { 'travis-repo-slug': slug
   , 'authorization': crypto.createHash('sha256')
                      .update(slug + config.travis_token).digest('hex')
   };
 
 } else {
-  payload = JSON.stringify({
-    repository: { full_name: 'repo', url: 'http://example.com' }
+  payload = JSON.stringify(
+  { repository: { full_name: 'repo', url: 'http://example.com' }
   , ref: 'refs/heads/master'
   , head_commit: { message: 'example commit' }
   });
 
-  options.headers = {
-    'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.secret)
+  options.headers =
+  { 'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.secret)
                                  .update(payload).digest('hex')
   };
 }

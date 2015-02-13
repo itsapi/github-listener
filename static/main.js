@@ -35,8 +35,8 @@ function makeRequest(url, cb) {
 
 
 function changeFavicon(src) {
-  var link = document.createElement('link'),
-      oldLink = document.getElementById('dynamic-favicon');
+  var link = document.createElement('link');
+  var oldLink = document.getElementById('dynamic-favicon');
 
   link.id = 'dynamic-favicon';
   link.rel = 'shortcut icon';

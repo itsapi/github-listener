@@ -1,10 +1,10 @@
-var http = require('http'),
-    socketio = require('socket.io'),
-    url = require('url'),
-    jade = require('jade'),
-    fs = require('fs'),
-    config = require('./config.json'),
-    Listener = require('./listener');
+var http = require('http')
+,   socketio = require('socket.io')
+,   url = require('url')
+,   jade = require('jade')
+,   fs = require('fs')
+,   config = require('./config')
+,   Listener = require('./listener');
 
 
 function send_file(res, path, type) {

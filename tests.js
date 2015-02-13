@@ -1,23 +1,23 @@
-var crypto = require('crypto'),
-    test = require('tape'),
-    through2 = require('through2'),
-    Listener = require('./listener');
+var crypto = require('crypto')
+,   test = require('tape')
+,   through2 = require('through2')
+,   Listener = require('./listener');
 
 
-var config = {
-  processing: "/home/git/deploy/processing",
-  repo_dir: "/home/git/deploy/repos",
-  getter: "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
-  post_receive: "python3 /home/git/deploy/post-receive/main.py {dir}",
-  secret: '1337'
+var config =
+{ processing: "/home/git/deploy/processing"
+, repo_dir: "/home/git/deploy/repos"
+, getter: "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}"
+, post_receive: "python3 /home/git/deploy/post-receive/main.py {dir}"
+, secret: '1337'
 };
 
-var options = {
-  host: 'localhost',
-  path: '/',
-  port: '6003',
-  method: 'POST',
-  headers: {}
+var options =
+{ host: 'localhost'
+, path: '/'
+, port: '6003'
+, method: 'POST'
+, headers: {}
 };
 
 var res = {
@@ -30,8 +30,8 @@ var res = {
 
 // Make request and log response
 function make_req(options, payload, cb) {
-  var listener = new Listener(config),
-      req = through2();
+  var listener = new Listener(config);
+  var req = through2();
 
   res.end = cb;
 
