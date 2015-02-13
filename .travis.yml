@@ -15,8 +15,9 @@ after_script:
 notifications:
   webhooks:
     urls:
-      - http://git.dvbris.com
-      - http://git.geraintwhite.co.uk
-      - http://git.oliverfaircliff.com
+      - http://geraint.ngrok.com
+      # - http://git.dvbris.com
+      # - http://git.geraintwhite.co.uk
+      # - http://git.oliverfaircliff.com
     on_success: always
     on_failure: never

@@ -19,6 +19,7 @@ var Listener = function (config, logs) {
   this.timestamp = new Date();
   this.running = false;
   this.last_payload = {};
+  this.data = {};
   this.script_out = '';
   this.status = 'Ready';
 
@@ -26,6 +27,7 @@ var Listener = function (config, logs) {
     // Get payload
     var self = this;
     req.pipe(bl(function (err, data) {
+      console.log(data.toString())
       if (err) {
         self.status = 'Error';
         self.respond(res, 400, 'Error whilst receiving payload');
@@ -67,6 +69,7 @@ var Listener = function (config, logs) {
         }
 
         // Check branch in payload matches branch in URL
+        var repo = self.last_payload.repository.full_name;
         var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
         if (self.last_payload.ref.replace(/^refs\/heads\//, '') != branch) {
           self.status = 'Ready';
@@ -75,7 +78,7 @@ var Listener = function (config, logs) {
           return false;
         }
 
-        self.build = (function (repo, branch) {
+        (self.build = (function (repo, branch) {
           return function (res) {
             // Run script
             self.status = 'Waiting';
@@ -97,8 +100,7 @@ var Listener = function (config, logs) {
               });
             });
           };
-        })(self.last_payload.repository.full_name, branch);
-        self.build(res);
+        })(repo, branch))(res);
       });
     }));
   };

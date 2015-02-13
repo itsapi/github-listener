@@ -20,6 +20,7 @@ function send_file(res, path, type) {
 function assemble_data(format) {
   return {
     last_payload: format ? JSON.stringify(listener.last_payload, null, '  ') : listener.last_payload,
+    data: listener.data,
     script_out: listener.script_out,
     timestamp: listener.timestamp.toString(),
     status: listener.status
