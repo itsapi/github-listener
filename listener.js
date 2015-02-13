@@ -2,7 +2,8 @@ var url = require('url'),
     exec = require('child_process').exec,
     crypto = require('crypto'),
     bl = require('bl'),
-    format = require('string-format');
+    format = require('string-format'),
+    qs = require('querystring');
 
 format.extend(String.prototype)
 
@@ -27,7 +28,6 @@ var Listener = function (config, logs) {
     // Get payload
     var self = this;
     req.pipe(bl(function (err, data) {
-      console.log(data.toString())
       if (err) {
         self.status = 'Error';
         self.respond(res, 400, 'Error whilst receiving payload');
@@ -40,6 +40,8 @@ var Listener = function (config, logs) {
         try {
           self.last_payload = JSON.parse(data);
         } catch (e) {
+          console.log(qs.parse(data.toString()).payload);
+          console.log(JSON.stringify(req.headers))
           self.status = 'Error';
           self.running = false;
           self.respond(res, 400, 'Error: Invalid payload');
