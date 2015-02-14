@@ -15,7 +15,7 @@ exports.GitHub = (function () {
   gh_parser.prototype = new Parser();
 
   gh_parser.prototype.parse_body = function () {
-    try { return this.payload = JSON.parse(this.body); }
+    try { return (this.payload = JSON.parse(this.body)); }
     catch (e) { return undefined; }
   };
 
@@ -31,13 +31,13 @@ exports.GitHub = (function () {
           this.payload.repository.full_name &&
           this.payload.ref)) return undefined;
 
-    return this.data =
+    return (this.data =
     { slug:   this.payload.repository.full_name
     , branch: this.payload.ref.replace(/^refs\/heads\//, '')
     , url:    this.payload.repository.url
     , commit: this.payload.head_commit ? this.payload.head_commit.message : undefined
     , image:  this.payload.sender ? this.payload.sender.avatar_url : undefined
-    };
+    });
   };
 
   return gh_parser;
@@ -48,7 +48,7 @@ exports.Travis = (function () {
   travis_parser.prototype = new Parser();
 
   travis_parser.prototype.parse_body = function () {
-    try { return this.payload = JSON.parse(qs.parse(this.body.toString()).payload); }
+    try { return (this.payload = JSON.parse(qs.parse(this.body.toString()).payload)); }
     catch (e) { return undefined; }
   };
 
@@ -63,12 +63,12 @@ exports.Travis = (function () {
     if (!(this.headers['travis-repo-slug'] &&
           this.payload.branch)) return undefined;
 
-    return this.data =
+    return (this.data =
     { slug:   this.headers['travis-repo-slug']
     , branch: this.payload.branch
     , commit: this.payload.message
     , url:    this.payload.repository ? this.payload.repository.url : undefined
-    };
+    });
   };
 
   return travis_parser;
