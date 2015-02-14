@@ -1,18 +1,10 @@
 var url = require('url')
 ,   exec = require('child_process').exec
-,   crypto = require('crypto')
 ,   bl = require('bl')
 ,   format = require('string-format')
-,   qs = require('querystring');
+,   parser = require('./parser');
 
 format.extend(String.prototype)
-
-
-// Verify payload signature
-function verify_payload(signature, secret, payload) {
-  var hash = 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
-  return signature === hash;
-}
 
 
 var Listener = function (config, logs) {
@@ -24,60 +16,44 @@ var Listener = function (config, logs) {
   this.script_out = '';
   this.status = 'Ready';
 
+  this.error = function (res, code, message) {
+    this.status = 'Error';
+    this.running = false;
+    this.respond(res, code, message);
+  };
+
   this.hook = function (req, res) {
     // Get payload
     var self = this;
     req.pipe(bl(function (err, data) {
-      if (err) {
-        self.status = 'Error';
-        self.respond(res, 400, 'Error whilst receiving payload');
-        return false;
-      }
+      if (err) return self.error(res, 400, 'Error whilst receiving payload');
 
       self.run_when_ready(function () {
         self.running = true;
 
-        try {
-          self.last_payload = JSON.parse(data);
-        } catch (e) {
-          console.log(qs.parse(data.toString()).payload);
-          console.log(JSON.stringify(req.headers))
-          self.status = 'Error';
-          self.running = false;
-          self.respond(res, 400, 'Error: Invalid payload');
-          return false;
-        }
+        if (req.headers['travis-repo-slug'])
+          self.parser = new parser.Travis(data, req.headers, self.config);
+        else self.parser = new parser.GitHub(data, req.headers, self.config);
+
+        self.last_payload = self.parser.parse_body();
+        if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
 
         self.log(new Date(), req.method, req.url);
         self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
         // Verify payload signature
-        var signature = req.headers['x-hub-signature'];
-        if (!(signature && verify_payload(signature, self.config.secret, data))) {
-          self.status = 'Error';
-          self.running = false;
-          self.respond(res, 403, 'Error: Cannot verify payload signature');
-          return false;
-        }
+        if (!self.parser.verify_signature())
+          return self.error(res, 403, 'Error: Cannot verify payload signature');
 
         // Check we have the information we need
-        if (!(self.last_payload.repository &&
-            self.last_payload.repository.full_name &&
-            self.last_payload.ref)) {
-          self.status = 'Error';
-          self.running = false;
-          self.respond(res, 400, 'Error: Invalid data');
-          return false;
-        }
+        self.data = self.parser.extract();
+        if (!self.data) return self.error(res, 400, 'Error: Invalid data');
 
         // Check branch in payload matches branch in URL
-        var repo = self.last_payload.repository.full_name;
+        var repo = self.data.slug;
         var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-        if (self.last_payload.ref.replace(/^refs\/heads\//, '') != branch) {
-          self.status = 'Ready';
-          self.running = false;
-          self.respond(res, 202, 'Branches do not match', true);
-          return false;
+        if (self.data.branch != branch) {
+          return self.error(res, 202, 'Branches do not match', true);
         }
 
         (self.build = (function (repo, branch) {

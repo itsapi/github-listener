@@ -1,4 +1,5 @@
 var http = require('http')
+,   qs = require('querystring')
 ,   crypto = require('crypto')
 ,   config = require('./config');
 
@@ -12,13 +13,15 @@ var options =
 };
 
 
-if (process.argv[2] == 'travis') {
+if (process.argv[2] === 'travis') {
   var slug = 'repo';
 
-  payload = JSON.stringify(
-  { repository: { url: 'http://example.com' }
-  , branch: 'master'
-  , message: 'example commit'
+  payload = qs.stringify(
+  { payload: JSON.stringify(
+    { repository: { url: 'http://example.com' }
+    , branch: 'master'
+    , message: 'example commit'
+    })
   });
 
   options.headers =
