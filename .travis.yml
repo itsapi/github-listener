@@ -15,7 +15,7 @@ after_script:
 notifications:
   webhooks:
     urls:
-      - http://geraint.ngrok.com
+      - http://geraint.ngrok.com/issue-17
       # - http://git.dvbris.com
       # - http://git.geraintwhite.co.uk
       # - http://git.oliverfaircliff.com
