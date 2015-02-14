@@ -60,17 +60,15 @@ function refresh(data) {
   data = JSON.parse(data);
 
   data.header = data.timestamp;
-  if (data.last_payload.repository && data.last_payload.head_commit) {
-    data.header += ' | Commit: ' + data.last_payload.head_commit.message +
-                   ' | URL: ' + data.last_payload.repository.url;
+  if (data.data.url && data.data.commit) {
+    data.header += ' | Commit: ' + data.data.commit +
+                   ' | URL: ' + data.data.url;
   }
 
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
   script_out.innerHTML = to_html(data.script_out);
   header.innerHTML = to_html(data.header);
-  if (data.last_payload && data.last_payload.sender && data.last_payload.sender.avatar_url) {
-    header_img.src = data.last_payload.sender.avatar_url;
-  }
+  if (data.data.image) header_img.src = data.data.image;
 
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status);
