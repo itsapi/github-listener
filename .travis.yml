@@ -1,16 +1,13 @@
 language: node_js
 
 node_js:
-  - "0.11"
-  - "0.10"
+  - '0.10'
+  - '0.11'
 
-before_script:
-  - "npm install -g istanbul"
-  - "npm install -g codeclimate-test-reporter"
-
-after_script:
-  - "istanbul cover tests.js"
-  - "codeclimate < coverage/lcov.info"
+script:
+  - npm install
+  - npm test
+  - npm run cov
 
 notifications:
   webhooks:

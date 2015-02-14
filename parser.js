@@ -27,15 +27,17 @@ exports.GitHub = (function () {
    };
 
   gh_parser.prototype.extract = function () {
-    try {
-      return this.data =
-      { slug:   this.payload.repository.full_name
-      , branch: this.payload.ref.replace(/^refs\/heads\//, '')
-      , url:    this.payload.repository.url
-      , commit: this.payload.head_commit ? this.payload.head_commit.message : undefined
-      , image:  this.payload.sender ? this.payload.sender.avatar_url : undefined
-      };
-    } catch (e) { return undefined; }
+    if (!(this.payload.repository &&
+          this.payload.repository.full_name &&
+          this.payload.ref)) return undefined;
+
+    return this.data =
+    { slug:   this.payload.repository.full_name
+    , branch: this.payload.ref.replace(/^refs\/heads\//, '')
+    , url:    this.payload.repository.url
+    , commit: this.payload.head_commit ? this.payload.head_commit.message : undefined
+    , image:  this.payload.sender ? this.payload.sender.avatar_url : undefined
+    };
   };
 
   return gh_parser;
@@ -58,14 +60,15 @@ exports.Travis = (function () {
   };
 
   travis_parser.prototype.extract = function () {
-    try {
-      return this.data =
-      { slug:   this.headers['travis-repo-slug']
-      , branch: this.payload.branch
-      , url:    this.payload.repository.url
-      , commit: this.payload.message
-      }
-    } catch (e) { return undefined; }
+    if (!(this.headers['travis-repo-slug'] &&
+          this.payload.branch)) return undefined;
+
+    return this.data =
+    { slug:   this.headers['travis-repo-slug']
+    , branch: this.payload.branch
+    , commit: this.payload.message
+    , url:    this.payload.repository ? this.payload.repository.url : undefined
+    }
   };
 
   return travis_parser;
