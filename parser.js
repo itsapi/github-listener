@@ -68,7 +68,7 @@ exports.Travis = (function () {
     , branch: this.payload.branch
     , commit: this.payload.message
     , url:    this.payload.repository ? this.payload.repository.url : undefined
-    }
+    };
   };
 
   return travis_parser;

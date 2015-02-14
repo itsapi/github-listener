@@ -15,9 +15,7 @@ function gen_sig (secret, slug) {
 }
 
 
-test('BEGIN TRAVIS PAYLOAD TESTS', function (t) {
-  t.end()
-});
+test('BEGIN TRAVIS PAYLOAD TESTS', function (t) { t.end(); });
 
 test('pass string as payload', function (t) {
 

@@ -4,7 +4,7 @@ var url = require('url')
 ,   format = require('string-format')
 ,   parser = require('./parser');
 
-format.extend(String.prototype)
+format.extend(String.prototype);
 
 
 var Listener = function (config, logs) {
@@ -56,7 +56,7 @@ var Listener = function (config, logs) {
           return self.error(res, 202, 'Branches do not match', true);
         }
 
-        (self.build = (function (repo, branch) {
+        self.build = (function (repo, branch) {
           return function (res) {
             // Run script
             self.status = 'Waiting';
@@ -78,7 +78,8 @@ var Listener = function (config, logs) {
               });
             });
           };
-        })(repo, branch))(res);
+        })(repo, branch);
+        self.build(res);
       });
     }));
   };

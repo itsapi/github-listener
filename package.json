@@ -17,5 +17,8 @@
     "istanbul": "~0.3.5",
     "codeclimate-test-reporter": "0.0.4",
     "tap-spec": "~2.2.1"
+  },
+  "jshintConfig": {
+    "laxcomma": true
   }
 }

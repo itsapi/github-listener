@@ -14,9 +14,7 @@ function gen_sig (secret, payload) {
 }
 
 
-test('BEGIN GITHUB PAYLOAD TESTS', function (t) {
-  t.end()
-});
+test('BEGIN GITHUB PAYLOAD TESTS', function (t) { t.end(); });
 
 test('pass string as payload', function (t) {
 

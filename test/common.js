@@ -15,7 +15,7 @@ function data () {
     var listener = new Listener(self.config);
     var req = through2();
 
-    res.end = function (data) { cb(res, data) };
+    res.end = function (data) { cb(res, data); };
 
     req.method = self.options.method;
     req.url = self.options.path;
@@ -43,4 +43,4 @@ function data () {
   };
 }
 
-module.exports = function () { return new data(); }
+module.exports = function () { return new data(); };
