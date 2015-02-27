@@ -17,3 +17,12 @@ notifications:
       - http://git.oliverfaircliff.com
     on_success: always
     on_failure: never
+
+deploy:
+  provider: npm
+  email: mail@dvbris.com
+  api_key:
+    secure: lodX2JVC0BhYW8bs/Slyjsn97KSECpJn/0g8P+bemIGK6P9T8Nk4EsZjeHY3FLUCgkRpxqO2KEp//xRrHGWvMWFrizG30nUCTukCQG1nUoW1QiABQOTudwi63nyvIe1vNI/tHTlcnidc5Ofl2TblTn9sdG2oYHh00aShPzfdWEA=
+  on:
+    tags: true
+    repo: itsapi/github-listener
