@@ -1,5 +1,4 @@
-Github Listener
-===============
+# Github Listener
 
 [![Build Status](https://travis-ci.org/itsapi/github-listener.svg?branch=master)](https://travis-ci.org/itsapi/github-listener)
 [![Code Climate](https://codeclimate.com/github/itsapi/github-listener/badges/gpa.svg)](https://codeclimate.com/github/itsapi/github-listener)
@@ -9,8 +8,7 @@ A Node.js continuous deployment system for Github and [TravisCI](https://travis-
 
 An example setup script that we use to set up the deployment system can be found [here](https://gist.github.com/grit96/49b91a42007d1c977396).
 
-Config
-------
+## Config
 
 A `config.json` file is needed to tell the server what commands are run and the secret used in the Github or Travis hook.
 
@@ -27,8 +25,7 @@ Example:
 }
 ```
 
-Install and run
----------------
+## Install and run
 
 Clone the repository:
 
@@ -42,8 +39,7 @@ Run tests and start server:
 
 `npm test && npm start`
 
-Setting up webhooks
--------------------
+## Setting up webhooks
 
 In order for your listener to receive payloads you need to set up a webhook on Github or Travis:
 
@@ -51,8 +47,7 @@ In order for your listener to receive payloads you need to set up a webhook on G
 - **Travis** - follow the instructions [here](http://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
 
 
-Contributing
-------------
+## Contributing
 
 1. Create an issue with your bug or suggestion
 2. Fork the repository
