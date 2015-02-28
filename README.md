@@ -39,6 +39,10 @@ Run tests and start server:
 
 `npm test && npm start`
 
+Or install from npm for programmatic use:
+
+`npm install github-listener`
+
 ## Setting up webhooks
 
 In order for your listener to receive payloads you need to set up a webhook on Github or Travis:
