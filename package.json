@@ -2,7 +2,7 @@
   "name": "github-listener",
   "repository": "http://github.com/itsapi/github-listener.git",
   "description": "A Node.js continuous deployment system for Github",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "server.js",
   "scripts": {
     "test": "istanbul cover tape test/*.js | tap-spec",
