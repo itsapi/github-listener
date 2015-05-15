@@ -5,8 +5,8 @@
   "version": "1.0.3",
   "main": "server.js",
   "scripts": {
-    "test": "tape test/*.js | tap-spec",
-    "cov": "istanbul cover tape test/*.js && codeclimate < ./coverage/lcov.info"
+    "test": "istanbul cover tape test/*.js | tap-spec",
+    "cov": "codeclimate < ./coverage/lcov.info"
   },
   "dependencies": {
     "bl": "~0.9.3",
