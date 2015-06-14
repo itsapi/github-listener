@@ -1,12 +1,16 @@
 {
   "name": "github-listener",
-  "repository": "http://github.com/itsapi/github-listener.git",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/itsapi/github-listener.git"
+  },
   "description": "A Node.js continuous deployment system for Github",
   "version": "1.0.6",
   "main": "server.js",
   "scripts": {
     "test": "istanbul cover tape test/*.js | tap-spec",
-    "cov": "codeclimate < ./coverage/lcov.info"
+    "cov": "codeclimate < ./coverage/lcov.info",
+    "start": "node server.js"
   },
   "dependencies": {
     "bl": "~0.9.4",
@@ -20,5 +24,17 @@
     "istanbul": "~0.3.14",
     "codeclimate-test-reporter": "~0.0.4",
     "tap-spec": "~4.0.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/itsapi/github-listener/issues"
+  },
+  "homepage": "https://github.com/itsapi/github-listener",
+  "directories": {
+    "test": "test"
+  },
+  "contributors": [
+    "Geraint White <mail@geraintwhite.co.uk>",
+    "Oliver Faircliff <mail@oliverfaircliff.com>"
+  ],
+  "license": "MIT"
 }
