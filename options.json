@@ -3,5 +3,10 @@
     "node": true,
     "ignore": [
         "config.json"
-    ]
+    ],
+    "hosts": {
+        "geraint-vps": {
+            "command": "pm2 restart git"
+        }
+    }
 }
