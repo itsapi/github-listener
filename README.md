@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/itsapi/github-listener.svg?branch=master)](https://travis-ci.org/itsapi/github-listener)
 [![Code Climate](https://codeclimate.com/github/itsapi/github-listener/badges/gpa.svg)](https://codeclimate.com/github/itsapi/github-listener)
 [![Test Coverage](https://codeclimate.com/github/itsapi/github-listener/badges/coverage.svg)](https://codeclimate.com/github/itsapi/github-listener)
+[![Dependency Status](https://david-dm.org/itsapi/github-listener.svg)](https://david-dm.org/itsapi/github-listener)
 
 A Node.js continuous deployment system for Github and [TravisCI](https://travis-ci.org/). It detects a hook from Github when a repo is pushed, or from Travis when tests are complete, and pulls the changes in the server side repo using [github-getter](http://github.com/itsapi/github-getter). Then it runs the script in [post-receive](http://github.com/itsapi/post-receive) to build and push live.
 
