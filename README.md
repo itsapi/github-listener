@@ -10,6 +10,7 @@ A Node.js continuous deployment system for Github and [TravisCI](https://travis-
 
 An example setup script that we use to set up the deployment system can be found [here](https://gist.github.com/grit96/49b91a42007d1c977396).
 
+
 ## Config
 
 A `config.json` file is needed to tell the server what commands are run and the secret used in the Github or Travis hook.
@@ -27,8 +28,10 @@ Example:
 }
 ```
 
+
 ## Install and run
 
+### Git
 Clone the repository:
 
 `git clone https://github.com/itsapi/github-listener && cd github-listener`
@@ -41,9 +44,11 @@ Run tests and start server:
 
 `npm test && npm start`
 
+### NPM
 Or install from npm for programmatic use:
 
 `npm install github-listener`
+
 
 ## Setting up webhooks
 
