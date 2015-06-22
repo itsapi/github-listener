@@ -4,12 +4,5 @@
     "ignore": [
         "config.json"
     ],
-    "hosts": {
-        "geraint-vps": {
-            "command": "pm2 restart git"
-        }, 
-        "k9": {
-            "command": "pm2 restart git"
-        }
-    }
+    "command": "pm2 restart git"
 }
