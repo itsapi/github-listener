@@ -1,6 +1,6 @@
 {
     "copy_to": "/var/node/git",
-    "start_cmd": ["npm update", "pm2 restart git"],
+    "start_cmd": ["npm install", "pm2 restart git"],
     "ignore": [
         "config.json"
     ]
