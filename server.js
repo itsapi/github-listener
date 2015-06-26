@@ -4,7 +4,9 @@ var http = require('http')
 ,   jade = require('jade')
 ,   fs = require('fs')
 ,   config = require('./config')
-,   Listener = require('./listener');
+,   Listener = require('./listener')
+,   ansi = new (require('ansi-to-html'))()
+;
 
 
 function send_file(res, path, type) {
@@ -21,7 +23,7 @@ function assemble_data(format) {
   return {
     last_payload: format ? JSON.stringify(listener.last_payload, null, '  ') : listener.last_payload,
     data: listener.data,
-    script_out: listener.script_out,
+    script_out: ansi.toHtml(listener.script_out),
     timestamp: listener.timestamp.toString(),
     status: listener.status
   };

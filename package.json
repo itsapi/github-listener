@@ -13,6 +13,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "ansi-to-html": "^0.3.0",
     "bl": "~1.0.0",
     "jade": "~1.11.0",
     "socket.io": "~1.3.5",
