@@ -7,6 +7,9 @@
   "description": "A Node.js continuous deployment system for Github",
   "version": "1.0.8",
   "main": "server.js",
+  "bin": {
+    "github-listener": "./bin/github-listener"
+  },
   "scripts": {
     "test": "istanbul cover tape test/*.js | tap-spec",
     "cov": "codeclimate < ./coverage/lcov.info",
