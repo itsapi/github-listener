@@ -1,3 +1,4 @@
 *.sublime-*
 node_modules
-secret.txt
+config.json
+coverage
