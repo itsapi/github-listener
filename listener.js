@@ -2,7 +2,8 @@ var url = require('url')
 ,   exec = require('child_process').exec
 ,   bl = require('bl')
 ,   format = require('string-format')
-,   parser = require('./parser');
+,   parser = require('./parser')
+;
 
 format.extend(String.prototype);
 
