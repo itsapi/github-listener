@@ -1,9 +1,8 @@
-var url = require('url')
-,   exec = require('child_process').exec
-,   bl = require('bl')
-,   format = require('string-format')
-,   parser = require('./parser')
-;
+var url = require('url'),
+    exec = require('child_process').exec,
+    bl = require('bl'),
+    format = require('string-format'),
+    parser = require('./parser');
 
 format.extend(String.prototype);
 
@@ -101,12 +100,13 @@ Listener.prototype.build = function (res) {
 Listener.prototype.getter = function (repo, branch, cb) {
   var self = this;
 
-  var command = self.config.getter.format(
-  { repo_dir: self.config.repo_dir
-  , output: self.config.processing
-  , repo: repo
-  , branch: branch
+  var command = self.config.getter.format({
+    repo_dir: self.config.repo_dir,
+    output: self.config.processing,
+    repo: repo,
+    branch: branch
   });
+
   self.log(command);
   exec(command, function(error, stdout, stderr) {
     cb(stdout + stderr);

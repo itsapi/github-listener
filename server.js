@@ -1,11 +1,10 @@
-var http = require('http')
-,   socketio = require('socket.io')
-,   url = require('url')
-,   jade = require('jade')
-,   fs = require('fs')
-,   Listener = require('./listener')
-,   ansi = new (require('ansi-to-html'))()
-;
+var http = require('http'),
+    socketio = require('socket.io'),
+    url = require('url'),
+    jade = require('jade'),
+    fs = require('fs'),
+    Listener = require('./listener'),
+    ansi = new (require('ansi-to-html'))();
 
 
 function Server (options) {

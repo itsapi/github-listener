@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-var Server = require('../server')
-,   pkg = require('../package')
-,   path = require('path')
-,   argv = require('minimist')(process.argv.slice(2))
-;
+var Server = require('../server'),
+    pkg = require('../package'),
+    path = require('path'),
+    argv = require('minimist')(process.argv.slice(2));
 
 
 if (argv.v || argv.version) {

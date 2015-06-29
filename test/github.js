@@ -1,6 +1,6 @@
-var crypto = require('crypto')
-,   test = require('tape')
-,   common = require('./common')();
+var crypto = require('crypto'),
+    test = require('tape'),
+    common = require('./common')();
 
 
 var options = common.options;
