@@ -86,7 +86,7 @@ Server.prototype.serve = function (url_parts, res) {
 
     } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       self.log('Rebuild requested');
-      listener.build(res);
+      self.listener.build(res);
 
     } else { // Send the HTML
       var html = self.template(self.assemble_data(true));
