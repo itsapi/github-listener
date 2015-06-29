@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+var Server = require('../server')
+,   pkg = require('../package')
+,   path = require('path')
+,   argv = require('minimist')(process.argv.slice(2))
+;
+
+
+if (argv.v || argv.version) {
+
+  console.log(pkg.name + '@' + pkg.version);
+
+} else if (argv.h || argv.help) {
+
+  console.log('Usage: ' + pkg.name + ' [options]\n');
+  console.log('-h|--help      display this help message');
+  console.log('-v|--version   display the version number');
+  console.log('-q|--quiet     suppress logging');
+  console.log('-c|--config    path to JSON config file (default ./config.json)');
+
+} else {
+
+  var options = {};
+  var config_path = argv.c || argv.config || './config.json';
+
+  options.logging = !(argv.q || argv.quiet);
+
+  try {
+    options.config = require(path.resolve(process.cwd(), config_path));
+  } catch (e) {
+    console.error('Config file not found');
+    process.exit(1);
+  }
+
+  var server = new Server(options);
+
+}
