@@ -10,7 +10,7 @@ var Parser = function (data, headers, config) {
   this.payload = {};
 };
 
-exports.GitHub = (function () {
+var GitHub = (function () {
   var gh_parser = function () { Parser.apply(this, arguments); };
   gh_parser.prototype = new Parser();
 
@@ -43,7 +43,7 @@ exports.GitHub = (function () {
   return gh_parser;
 })();
 
-exports.Travis = (function () {
+var Travis = (function () {
   var travis_parser = function () { Parser.apply(this, arguments); };
   travis_parser.prototype = new Parser();
 
@@ -73,3 +73,9 @@ exports.Travis = (function () {
 
   return travis_parser;
 })();
+
+
+module.exports = {
+  GitHub: GitHub,
+  Travis: Travis
+};
