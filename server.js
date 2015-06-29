@@ -7,7 +7,7 @@ var http = require('http'),
     ansi = new (require('ansi-to-html'))();
 
 
-function Server (options) {
+var Server = function (options) {
   var self = this;
 
   self.logging = options.logging;
@@ -46,7 +46,7 @@ function Server (options) {
   app.listen(self.port);
   self.log('Server running on port', self.port);
 
-}
+};
 
 
 Server.prototype.send_file = function (res, path, type) {

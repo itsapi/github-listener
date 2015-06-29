@@ -7,7 +7,7 @@ var url = require('url'),
 format.extend(String.prototype);
 
 
-function Listener (config, logging) {
+var Listener = function (config, logging) {
   var self = this;
 
   self.config = config;
@@ -18,7 +18,7 @@ function Listener (config, logging) {
   self.data = {};
   self.script_out = '';
   self.status = 'Ready';
-}
+};
 
 Listener.prototype.error = function (res, code, message) {
   var self = this;
