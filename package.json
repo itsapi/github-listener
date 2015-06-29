@@ -6,14 +6,14 @@
   },
   "description": "A Node.js continuous deployment system for Github",
   "version": "1.0.8",
-  "main": "server.js",
+  "main": "index.js",
   "bin": {
     "github-listener": "./bin/github-listener"
   },
   "scripts": {
     "test": "istanbul cover tape test/*.js | tap-spec",
     "cov": "codeclimate < ./coverage/lcov.info",
-    "start": "node server.js"
+    "start": "./bin/github-listener"
   },
   "dependencies": {
     "ansi-to-html": "^0.3.0",
