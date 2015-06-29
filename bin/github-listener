@@ -34,4 +34,6 @@ if (argv.v || argv.version) {
 
   var server = new Server(options);
 
+  server.start();
+
 }

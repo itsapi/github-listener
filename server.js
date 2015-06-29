@@ -23,7 +23,7 @@ var Server = function (options) {
   });
 
   // Setup server
-  var app = http.createServer(function (req, res) {
+  self.app = http.createServer(function (req, res) {
     var url_parts = url.parse(req.url, true);
 
     if (req.method == 'GET') {
@@ -32,21 +32,39 @@ var Server = function (options) {
       self.listener.hook(req, res);
     }
   });
+};
+
+
+Server.prototype.start = function () {
+  var self = this;
+
+  // Start the server
+  self.port = 6003;
+  self.app.listen(self.port, function () {
+    self.log('Server running on port', self.port);
+  });
 
   // Set up the socket to send new data to the client.
-  socketio(app).on('connection', function (socket) {
+  socketio(self.app).on('connection', function (socket) {
     process.on('refresh', function () {
       self.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify(self.assemble_data()));
     });
+    process.on('close', function () {
+      socket.disconnect();
+    });
   });
+}
 
-  // Start the server
-  self.port = 6003;
-  app.listen(self.port);
-  self.log('Server running on port', self.port);
 
-};
+Server.prototype.stop = function () {
+  var self = this;
+
+  self.app.close(function () {
+    self.log('Server shutdown');
+  });
+  process.emit('close');
+}
 
 
 Server.prototype.send_file = function (res, path, type) {
