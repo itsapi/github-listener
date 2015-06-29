@@ -113,7 +113,6 @@ Server.prototype.serve = function (url_parts, res) {
   }
 };
 
-
 Server.prototype.log = function () {
   var self = this;
 

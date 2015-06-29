@@ -116,8 +116,11 @@ Listener.prototype.getter = function (repo, branch, cb) {
 Listener.prototype.post_receive = function (repo, cb) {
   var self = this;
 
-  var command = self.config.post_receive
-                .format({dir: self.config.processing, name: repo});
+  var command = self.config.post_receive.format({
+    dir: self.config.processing,
+    name: repo
+  });
+
   self.log(command);
   exec(command, function(error, stdout, stderr) {
     cb(stdout + stderr);
