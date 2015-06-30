@@ -20,10 +20,6 @@ var GitHub = (function () {
   };
 
   gh_parser.prototype.verify_signature = function () {
-    // Backwards compatibility for secret option name
-    this.config.github_secret = this.config.github_secret
-                                || this.config.secret
-                                || undefined;
 
     var signature = 'sha1=' + crypto.createHmac('sha1', this.config.github_secret)
                     .update(this.body)

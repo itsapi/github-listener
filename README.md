@@ -42,7 +42,7 @@ Example:
   "repo_dir": "/home/git/deploy/repos",
   "getter": ". /home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
   "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir} {name}",
-  "secret": "HelloWorld",
+  "github_secret": "HelloWorld",
   "travis_token": "top_secret"
 }
 ```
@@ -52,7 +52,7 @@ Example:
 
 In order for your listener to receive payloads you need to set up a webhook on Github or Travis:
 
-- **Github** - follow the instructions [here](https://developer.github.com/webhooks/creating/) and put the webhook secret in `config.json` as `secret`
+- **Github** - follow the instructions [here](https://developer.github.com/webhooks/creating/) and put the webhook secret in `config.json` as `github_secret`
 - **Travis** - follow the instructions [here](http://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
 
 
