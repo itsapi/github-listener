@@ -30,7 +30,7 @@ function data () {
     repo_dir: "/home/git/deploy/repos",
     getter: "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
     post_receive: "python3 /home/git/deploy/post-receive/main.py {dir}",
-    secret: '1337',
+    github_secret: '1337',
     travis_token: 'topsecret'
   };
 
