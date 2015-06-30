@@ -1,5 +1,5 @@
-var qs = require('querystring')
-,   crypto = require('crypto');
+var qs = require('querystring'),
+    crypto = require('crypto');
 
 
 var Parser = function (data, headers, config) {
@@ -10,7 +10,7 @@ var Parser = function (data, headers, config) {
   this.payload = {};
 };
 
-exports.GitHub = (function () {
+var GitHub = (function () {
   var gh_parser = function () { Parser.apply(this, arguments); };
   gh_parser.prototype = new Parser();
 
@@ -31,19 +31,19 @@ exports.GitHub = (function () {
           this.payload.repository.full_name &&
           this.payload.ref)) return undefined;
 
-    return (this.data =
-    { slug:   this.payload.repository.full_name
-    , branch: this.payload.ref.replace(/^refs\/heads\//, '')
-    , url:    this.payload.repository.url
-    , commit: this.payload.head_commit ? this.payload.head_commit.message : undefined
-    , image:  this.payload.sender ? this.payload.sender.avatar_url : undefined
+    return (this.data = {
+      slug:   this.payload.repository.full_name,
+      branch: this.payload.ref.replace(/^refs\/heads\//, ''),
+      url:    this.payload.repository.url,
+      commit: this.payload.head_commit ? this.payload.head_commit.message : undefined,
+      image:  this.payload.sender ? this.payload.sender.avatar_url : undefined
     });
   };
 
   return gh_parser;
 })();
 
-exports.Travis = (function () {
+var Travis = (function () {
   var travis_parser = function () { Parser.apply(this, arguments); };
   travis_parser.prototype = new Parser();
 
@@ -63,13 +63,19 @@ exports.Travis = (function () {
     if (!(this.headers['travis-repo-slug'] &&
           this.payload.branch)) return undefined;
 
-    return (this.data =
-    { slug:   this.headers['travis-repo-slug']
-    , branch: this.payload.branch
-    , commit: this.payload.message
-    , url:    this.payload.repository ? this.payload.repository.url : undefined
+    return (this.data = {
+      slug:   this.headers['travis-repo-slug'],
+      branch: this.payload.branch,
+      commit: this.payload.message,
+      url:    this.payload.repository ? this.payload.repository.url : undefined
     });
   };
 
   return travis_parser;
 })();
+
+
+module.exports = {
+  GitHub: GitHub,
+  Travis: Travis
+};

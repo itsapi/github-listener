@@ -1,7 +1,7 @@
-var crypto = require('crypto')
-,   test = require('tape')
-,   qs = require('querystring')
-,   common = require('./common')();
+var crypto = require('crypto'),
+    test = require('tape'),
+    qs = require('querystring'),
+    common = require('./common')();
 
 
 var options = common.options;

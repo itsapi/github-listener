@@ -1,5 +1,5 @@
-var through2 = require('through2')
-,   Listener = require('../listener');
+var through2 = require('through2'),
+    Listener = require('../listener');
 
 
 function data () {
@@ -25,21 +25,21 @@ function data () {
     req.end(payload);
   };
 
-  this.config =
-  { processing: "/home/git/deploy/processing"
-  , repo_dir: "/home/git/deploy/repos"
-  , getter: "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}"
-  , post_receive: "python3 /home/git/deploy/post-receive/main.py {dir}"
-  , secret: '1337'
-  , travis_token: 'topsecret'
+  this.config = {
+    processing: "/home/git/deploy/processing",
+    repo_dir: "/home/git/deploy/repos",
+    getter: "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
+    post_receive: "python3 /home/git/deploy/post-receive/main.py {dir}",
+    secret: '1337',
+    travis_token: 'topsecret'
   };
 
-  this.options =
-  { host: 'localhost'
-  , path: '/'
-  , port: '6003'
-  , method: 'POST'
-  , headers: {}
+  this.options = {
+    host: 'localhost',
+    path: '/',
+    port: '6003',
+    method: 'POST',
+    headers: {}
   };
 }
 
