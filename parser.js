@@ -8,6 +8,11 @@ var Parser = function (data, headers, config) {
   this.config = config;
   this.data = {};
   this.payload = {};
+
+  // Backwards compatibility for secret option name
+  if (this.config.secret && !this.config.github_secret) {
+    this.config.github_secret = this.config.secret;
+  }
 };
 
 var GitHub = (function () {
@@ -20,7 +25,7 @@ var GitHub = (function () {
   };
 
   gh_parser.prototype.verify_signature = function () {
-    var signature = 'sha1=' + crypto.createHmac('sha1', this.config.secret)
+    var signature = 'sha1=' + crypto.createHmac('sha1', this.config.github_secret)
                     .update(this.body)
                     .digest('hex');
     return this.headers['x-hub-signature'] === signature;
