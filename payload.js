@@ -38,7 +38,7 @@ if (process.argv[2] === 'travis') {
   });
 
   options.headers = {
-    'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.secret)
+    'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.github_secret || config.secret)
                                  .update(payload).digest('hex')
   };
 }
