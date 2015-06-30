@@ -12,7 +12,8 @@ var Parser = function (data, headers, config) {
 
 var GitHub = (function () {
   var gh_parser = function () { Parser.apply(this, arguments); };
-  gh_parser.prototype = new Parser();
+  gh_parser.prototype = Object.create(Parser.prototype);
+  gh_parser.prototype.constructor = gh_parser;
 
   gh_parser.prototype.parse_body = function () {
     try { return (this.payload = JSON.parse(this.body)); }
@@ -46,7 +47,8 @@ var GitHub = (function () {
 
 var Travis = (function () {
   var travis_parser = function () { Parser.apply(this, arguments); };
-  travis_parser.prototype = new Parser();
+  travis_parser.prototype = Object.create(Parser.prototype);
+  travis_parser.prototype.constructor = travis_parser;
 
   travis_parser.prototype.parse_body = function () {
     try { return (this.payload = JSON.parse(qs.parse(this.body.toString()).payload)); }
