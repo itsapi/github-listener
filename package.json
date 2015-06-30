@@ -11,7 +11,7 @@
     "github-listener": "./bin/github-listener"
   },
   "scripts": {
-    "test": "istanbul cover tape test/*.js | tap-spec",
+    "test": "istanbul cover tape test/*.js",
     "cov": "codeclimate < ./coverage/lcov.info",
     "start": "./bin/github-listener"
   },
@@ -27,8 +27,7 @@
     "tape": "~4.0.0",
     "through2": "~2.0.0",
     "istanbul": "~0.3.15",
-    "codeclimate-test-reporter": "~0.0.4",
-    "tap-spec": "~4.0.0"
+    "codeclimate-test-reporter": "~0.0.4"
   },
   "bugs": {
     "url": "https://github.com/itsapi/github-listener/issues"
