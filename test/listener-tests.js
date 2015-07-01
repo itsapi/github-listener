@@ -25,7 +25,7 @@ function create_res (cb) {
 test('BEGIN LISTENER TESTS', function (t) { t.end(); });
 
 
-test('Listener.constructor', function (t) {
+test('listener.constructor', function (t) {
 
   t.test('no arguments passed in', function (st) {
     var listener = new Listener();
@@ -57,7 +57,7 @@ test('Listener.constructor', function (t) {
 });
 
 
-test('Listener.respond', function (t) {
+test('listener.respond', function (t) {
 
   t.test('no arguments passed in', function (st) {
     var listener = new Listener();
@@ -112,7 +112,7 @@ test('Listener.respond', function (t) {
 });
 
 
-test('Listener.error', function (t) {
+test('listener.error', function (t) {
 
   t.test('no arguments passed in', function (st) {
     var listener = new Listener();
@@ -156,9 +156,9 @@ test('Listener.error', function (t) {
 });
 
 
-test('Listener.build', function (t) {
+test('listener.build', function (t) {
 
-  t.test('Listener.build is defined', function (st) {
+  t.test('listener.build is defined', function (st) {
     var listener = new Listener();
 
     st.ok('build' in listener, 'listener has build property');
