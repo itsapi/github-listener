@@ -1,4 +1,5 @@
 var test = require('tape'),
+    through = require('through2'),
     common = require('./common')(),
     Listener = require('../listener');
 
@@ -192,4 +193,20 @@ test('listener.build', function (t) {
     });
   });
 
+});
+
+
+test('listener.hook bl error', function (t) {
+  var listener = new Listener(config);
+  var req = new through();
+
+  var res = create_res(function (res, data) {
+    t.equal(data, 'Error whilst receiving payload', 'correct server response');
+    t.equal(res.statusCode, 400, 'correct status code');
+    t.equal(listener.status, 'Error', 'correct listener.status');
+    t.end();
+  });
+
+  listener.hook(req, res);
+  req.emit('error', new Error('BOOM!'));
 });
