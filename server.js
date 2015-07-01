@@ -54,7 +54,7 @@ Server.prototype.start = function () {
       socket.disconnect();
     });
   });
-}
+};
 
 
 Server.prototype.stop = function () {
@@ -64,7 +64,7 @@ Server.prototype.stop = function () {
     self.log('Server shutdown');
   });
   process.emit('close');
-}
+};
 
 
 Server.prototype.send_file = function (res, path, type) {
