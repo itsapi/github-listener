@@ -23,6 +23,8 @@ function data () {
 
     listener.hook(req, res);
     req.end(payload);
+
+    return listener;
   };
 
   this.config = {
