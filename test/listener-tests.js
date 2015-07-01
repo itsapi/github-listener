@@ -196,6 +196,43 @@ test('listener.build', function (t) {
 });
 
 
+test('listener.run_when_ready', function (t) {
+
+  t.test('no waiting', function (st) {
+    var listener = new Listener(config);
+    var start = Date.now();
+
+    st.equal(listener.running, false, 'nothing runnning already');
+    listener.run_when_ready(function () {
+      var elapsed = Date.now() - start;
+
+      st.ok(elapsed < 100, 'callback run immediately');
+      st.end();
+    });
+  });
+
+  t.test('wait until ready', function (st) {
+    var listener = new Listener(config);
+    var start = Date.now();
+
+    listener.running = true;
+    st.equal(listener.running, true, 'process already running');
+    listener.run_when_ready(function () {
+      var elapsed = Date.now() - start;
+
+      st.equal(listener.running, false, 'process finished running');
+      st.ok(elapsed > 500 && elapsed < 600, 'callback run after 500ms');
+      st.end();
+    });
+
+    setTimeout(function () {
+      listener.running = false;
+    }, 500);
+  });
+
+});
+
+
 test('listener.hook bl error', function (t) {
   var listener = new Listener(config);
   var req = new through();
