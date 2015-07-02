@@ -35,36 +35,36 @@ Listener.prototype.hook = function (req, res) {
   req.pipe(bl(function (err, data) {
     if (err) return self.error(res, 400, 'Error whilst receiving payload');
 
-    self.run_when_ready(function () {
-      self.running = true;
+    self.build = (function (req) {
+      return function (res) {
+        self.run_when_ready(function () {
+          self.running = true;
 
-      if (req.headers['travis-repo-slug'])
-        self.parser = new parser.Travis(data, req.headers, self.config);
-      else self.parser = new parser.GitHub(data, req.headers, self.config);
+          if (req.headers['travis-repo-slug'])
+            self.parser = new parser.Travis(data, req.headers, self.config);
+          else self.parser = new parser.GitHub(data, req.headers, self.config);
 
-      self.last_payload = self.parser.parse_body();
-      if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
+          self.last_payload = self.parser.parse_body();
+          if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
 
-      self.log(new Date(), req.method, req.url);
-      self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+          self.log(new Date(), req.method, req.url);
+          self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
-      // Verify payload signature
-      if (!self.parser.verify_signature())
-        return self.error(res, 403, 'Error: Cannot verify payload signature');
+          // Verify payload signature
+          if (!self.parser.verify_signature())
+            return self.error(res, 403, 'Error: Cannot verify payload signature');
 
-      // Check we have the information we need
-      self.data = self.parser.extract();
-      if (!self.data) return self.error(res, 400, 'Error: Invalid data');
+          // Check we have the information we need
+          self.data = self.parser.extract();
+          if (!self.data) return self.error(res, 400, 'Error: Invalid data');
 
-      // Check branch in payload matches branch in URL
-      var repo = self.data.slug;
-      var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-      if (self.data.branch != branch) {
-        return self.error(res, 202, 'Branches do not match', true);
-      }
+          // Check branch in payload matches branch in URL
+          var repo = self.data.slug;
+          var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+          if (self.data.branch != branch) {
+            return self.error(res, 202, 'Branches do not match', true);
+          }
 
-      self.build = (function (repo, branch) {
-        return function (res) {
           // Run script
           self.status = 'Waiting';
           self.respond(res, 200, 'Waiting for script to finish');
@@ -84,10 +84,11 @@ Listener.prototype.hook = function (req, res) {
               process.emit('refresh');
             });
           });
-        };
-      })(repo, branch);
-      self.build(res);
-    });
+        });
+      };
+    })(req);
+
+    self.build(res);
   }));
 };
 

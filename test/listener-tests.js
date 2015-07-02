@@ -184,8 +184,8 @@ test('listener.build', function (t) {
       st.equal(res.statusCode, 400, 'correct status code');
 
       res = create_res(function (res, data) {
-        st.equal(data, 'Nothing to build', 'correct server response');
-        st.equal(res.statusCode, 200, 'correct status code');
+        st.equal(data, 'Error: Invalid payload', 'correct server response');
+        st.equal(res.statusCode, 400, 'correct status code');
         st.end();
       });
 
