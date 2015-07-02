@@ -1,4 +1,5 @@
 *.sublime-*
+*.caret
 node_modules
 config.json
 coverage
