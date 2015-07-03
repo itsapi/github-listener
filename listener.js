@@ -40,9 +40,9 @@ Listener.prototype.hook = function (req, res) {
         self.run_when_ready(function () {
           self.running = true;
 
-          self.parser = req.headers['travis-repo-slug']
-            ? new parser.Travis(data, req.headers, self.config);
-            : new parser.GitHub(data, req.headers, self.config);
+          self.parser = req.headers['travis-repo-slug'] ?
+            new parser.Travis(data, req.headers, self.config) :
+            new parser.GitHub(data, req.headers, self.config);
 
           self.last_payload = self.parser.parse_body();
           if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
