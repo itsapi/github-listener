@@ -16,6 +16,9 @@
     "cover": "istanbul cover tape test/*.js",
     "travis": "npm run cover && codeclimate < ./coverage/lcov.info"
   },
+  "post-commit": "git status",
+  "pre-push": "npm test",
+  "post-merge": "npm install",
   "dependencies": {
     "ansi-to-html": "^0.3.0",
     "bl": "~1.0.0",
@@ -27,7 +30,8 @@
   "devDependencies": {
     "codeclimate-test-reporter": "~0.0.4",
     "istanbul": "~0.3.15",
-    "pre-commit": "^1.0.10",
+    "jshint": "^2.4.4",
+    "pre-git": "^0.6.1",
     "tape": "~4.0.0",
     "through2": "~2.0.0"
   },
