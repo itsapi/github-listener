@@ -16,6 +16,7 @@
     "cover": "istanbul cover tape test/*.js",
     "travis": "npm run cover && codeclimate < ./coverage/lcov.info"
   },
+  "pre-commit": "jshint .",
   "post-commit": "git status",
   "pre-push": "npm test",
   "post-merge": "npm install",
