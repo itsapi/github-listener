@@ -35,7 +35,8 @@
     "jshint": "^2.4.4",
     "pre-git": "^0.6.1",
     "tape": "~4.0.0",
-    "through2": "~2.0.0"
+    "through2": "~2.0.0",
+    "tap-spec": "~4.0.2"
   },
   "bugs": {
     "url": "https://github.com/itsapi/github-listener/issues"
