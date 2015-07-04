@@ -32,7 +32,7 @@ test('listener.constructor', function (t) {
     var listener = new Listener();
 
     st.deepEqual(listener.config, undefined, 'correct listener.config');
-    st.equal(listener.logging, undefined, 'correct listener.config');
+    st.equal(listener.logging, undefined, 'correct listener.logging');
     st.equal(listener.status, 'Ready', 'correct listener.status');
     st.end();
   });
@@ -41,16 +41,16 @@ test('listener.constructor', function (t) {
     var listener = new Listener(config);
 
     st.deepEqual(listener.config, config, 'correct listener.config');
-    st.equal(listener.logging, undefined, 'correct listener.config');
+    st.equal(listener.logging, undefined, 'correct listener.logging');
     st.equal(listener.status, 'Ready', 'correct listener.status');
     st.end();
   });
 
   t.test('logging flag passed in', function (st) {
-    var listener = new Listener(config, true);
+    var listener = new Listener(config, false);
 
     st.deepEqual(listener.config, config, 'correct listener.config');
-    st.equal(listener.logging, true, 'correct listener.config');
+    st.equal(listener.logging, false, 'correct listener.logging');
     st.equal(listener.status, 'Ready', 'correct listener.status');
     st.end();
   });
