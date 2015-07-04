@@ -3,6 +3,7 @@ var http = require('http'),
     url = require('url'),
     jade = require('jade'),
     fs = require('fs'),
+    logging = require('logging-tool'),
     Listener = require('./listener'),
     ansi = new (require('ansi-to-html'))();
 
@@ -12,6 +13,8 @@ var Server = function (options) {
 
   self.logging = options.logging;
   self.config = options.config;
+
+  logging.silent = !self.logging;
 
   // Make listener
   self.listener = new Listener(self.config, self.logging);
@@ -41,13 +44,13 @@ Server.prototype.start = function () {
   // Start the server
   self.port = 6003;
   self.app.listen(self.port, function () {
-    self.log('Server running on port', self.port);
+    logging.info('Server running on port', self.port);
   });
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
     process.on('refresh', function () {
-      self.log('Data sent by socket');
+      logging.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify(self.assemble_data()));
     });
     process.on('close', function () {
@@ -61,7 +64,7 @@ Server.prototype.stop = function () {
   var self = this;
 
   self.app.close(function () {
-    self.log('Server shutdown');
+    logging.info('Server shutdown');
   });
   process.emit('close');
 };
@@ -71,7 +74,10 @@ Server.prototype.send_file = function (res, path, type) {
   var self = this;
 
   fs.readFile(path, function (err, data) {
-    if (err) throw err;
+    if (err) {
+      logging.error(err);
+      throw err;
+    }
 
     res.writeHead(200, {'Content-Type': type});
     res.end(data);
@@ -97,12 +103,12 @@ Server.prototype.serve = function (url_parts, res) {
 
   if (url_parts.pathname == '/') {
     if (url_parts.query.refresh !== undefined) { // Send the data
-      self.log('Data requested by GET');
+      logging.log('Data requested by GET');
       res.writeHead(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify(self.assemble_data()));
 
     } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
-      self.log('Rebuild requested');
+      logging.log('Rebuild requested');
       self.listener.build(res);
 
     } else { // Send the HTML
@@ -112,30 +118,23 @@ Server.prototype.serve = function (url_parts, res) {
     }
 
   } else if (url_parts.pathname == '/main.js') {
-    self.log('Sending JS');
+    logging.log('Sending JS');
     self.send_file(res, __dirname + '/static/main.js', 'application/javascript');
 
   } else if (url_parts.pathname == '/main.css') {
-    self.log('Sending CSS');
+    logging.log('Sending CSS');
     self.send_file(res, __dirname + '/static/main.css', 'text/css');
 
   } else if (url_parts.pathname.match(/\/icons\/\w*/)) {
     var name = url_parts.pathname.split('/').slice(-1)[0].toLowerCase();
-    self.log('Sending icon: ' + name);
+    logging.log('Sending icon: ' + name);
     self.send_file(res, __dirname + '/static/icons/' + name + '.png', 'image/png');
 
   } else {
-    self.log('404: ' + url_parts.pathname);
+    logging.log('404: ' + url_parts.pathname);
     res.writeHead(404, {'Content-Type': 'text/plain'});
     res.end('404 - File not found: ' + url_parts.pathname);
   }
-};
-
-
-Server.prototype.log = function () {
-  var self = this;
-
-  if (self.logging) console.log.apply(null, arguments);
 };
 
 

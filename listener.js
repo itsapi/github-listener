@@ -1,17 +1,20 @@
 var url = require('url'),
     exec = require('child_process').exec,
     bl = require('bl'),
+    logging = require('logging-tool'),
     format = require('string-format'),
     parser = require('./parser');
 
 format.extend(String.prototype);
 
 
-var Listener = function (config, logging) {
+var Listener = function (config, logs) {
   var self = this;
 
+  logging.silent = !logs;
+
+  self.logging = logs;
   self.config = config;
-  self.logging = logging;
   self.timestamp = new Date();
   self.running = false;
   self.last_payload = {};
@@ -23,6 +26,7 @@ var Listener = function (config, logging) {
 Listener.prototype.error = function (res, code, message) {
   var self = this;
 
+  logging.warn(message);
   self.status = 'Error';
   self.running = false;
   self.respond(res, code, message);
@@ -47,8 +51,8 @@ Listener.prototype.hook = function (req, res) {
           self.last_payload = self.parser.parse_body();
           if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
 
-          self.log(new Date(), req.method, req.url);
-          self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+          logging.log(new Date(), req.method, req.url);
+          logging.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
           // Verify payload signature
           if (!self.parser.verify_signature())
@@ -74,8 +78,8 @@ Listener.prototype.hook = function (req, res) {
             out += getter_out;
             self.post_receive(repo, function (post_receive_out) {
               out += post_receive_out;
-              self.log('\n' + out);
-              self.log('Finished processing files\n');
+              logging.log('\n' + out);
+              logging.info('Finished processing files\n');
 
               self.script_out = out;
               self.status = 'Done';
@@ -108,7 +112,7 @@ Listener.prototype.getter = function (repo, branch, cb) {
     branch: branch
   });
 
-  self.log(command);
+  logging.log(command);
   exec(command, function(error, stdout, stderr) {
     cb(stdout + stderr);
   });
@@ -122,7 +126,7 @@ Listener.prototype.post_receive = function (repo, cb) {
     name: repo
   });
 
-  self.log(command);
+  logging.log(command);
   exec(command, function(error, stdout, stderr) {
     cb(stdout + stderr);
   });
@@ -132,7 +136,7 @@ Listener.prototype.run_when_ready = function (func) {
   var self = this;
 
   // Avoids running multiple requests at once.
-  if (self.running) self.log('Script already running');
+  if (self.running) logging.info('Script already running');
   function wait() {
     if (self.running) setTimeout(wait, 100);
     else func();
@@ -143,8 +147,6 @@ Listener.prototype.run_when_ready = function (func) {
 Listener.prototype.respond = function (res, http_code, message, not_refresh) {
   var self = this;
 
-  self.log(message);
-
   if (not_refresh === undefined) {
     self.script_out = message;
     process.emit('refresh');
@@ -152,12 +154,6 @@ Listener.prototype.respond = function (res, http_code, message, not_refresh) {
 
   res.writeHead(http_code, {'Content-Type': 'text/plain'});
   res.end(message);
-};
-
-Listener.prototype.log = function () {
-  var self = this;
-
-  if (self.logging) console.log.apply(null, arguments);
 };
 
 
