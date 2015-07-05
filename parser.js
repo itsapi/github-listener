@@ -31,7 +31,9 @@ var GitHub = (function () {
   gh_parser.prototype.extract = function () {
     if (!(this.payload.repository &&
           this.payload.repository.full_name &&
-          this.payload.ref)) return undefined;
+          this.payload.ref)) {
+      return undefined;
+    }
 
     return (this.data = {
       slug:   this.payload.repository.full_name,
@@ -63,8 +65,9 @@ var Travis = (function () {
   };
 
   travis_parser.prototype.extract = function () {
-    if (!(this.headers['travis-repo-slug'] &&
-          this.payload.branch)) return undefined;
+    if (!(this.headers['travis-repo-slug'] && this.payload.branch)) {
+      return undefined;
+    }
 
     return (this.data = {
       slug:   this.headers['travis-repo-slug'],

@@ -21,7 +21,11 @@ var Server = function (options) {
 
   // Load the Jade template
   fs.readFile(__dirname + '/index.jade', function (err, data) {
-    if (err) throw err;
+    if (err) {
+      logging.error(err);
+      throw err;
+    }
+
     self.template = jade.compile(data.toString(), {pretty: true});
   });
 

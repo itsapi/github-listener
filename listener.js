@@ -37,7 +37,9 @@ Listener.prototype.hook = function (req, res) {
 
   // Get payload
   req.pipe(bl(function (err, data) {
-    if (err) return self.error(res, 400, 'Error whilst receiving payload');
+    if (err) {
+      return self.error(res, 400, 'Error whilst receiving payload');
+    }
 
     self.build = (function (req) {
       return function (res) {
@@ -49,18 +51,23 @@ Listener.prototype.hook = function (req, res) {
             new parser.GitHub(data, req.headers, self.config);
 
           self.last_payload = self.parser.parse_body();
-          if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
+          if (!self.last_payload) {
+            return self.error(res, 400, 'Error: Invalid payload');
+          }
 
           logging.log(new Date(), req.method, req.url);
           logging.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
           // Verify payload signature
-          if (!self.parser.verify_signature())
+          if (!self.parser.verify_signature()) {
             return self.error(res, 403, 'Error: Cannot verify payload signature');
+          }
 
           // Check we have the information we need
           self.data = self.parser.extract();
-          if (!self.data) return self.error(res, 400, 'Error: Invalid data');
+          if (!self.data) {
+            return self.error(res, 400, 'Error: Invalid data');
+          }
 
           // Check branch in payload matches branch in URL
           var repo = self.data.slug;
@@ -136,10 +143,12 @@ Listener.prototype.run_when_ready = function (func) {
   var self = this;
 
   // Avoids running multiple requests at once.
-  if (self.running) logging.info('Script already running');
+  if (self.running) {
+    logging.info('Script already running');
+  }
   function wait() {
-    if (self.running) setTimeout(wait, 100);
-    else func();
+    if (self.running) { setTimeout(wait, 100); }
+    else { func(); }
   }
   wait();
 };

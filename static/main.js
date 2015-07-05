@@ -42,7 +42,7 @@ function changeFavicon(src) {
   link.rel = 'shortcut icon';
   link.href = src;
 
-  if (oldLink) document.head.removeChild(oldLink);
+  if (oldLink) { document.head.removeChild(oldLink); }
   document.head.appendChild(link);
 }
 
@@ -68,7 +68,7 @@ function refresh(data) {
   last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
   script_out.innerHTML = to_html(data.script_out);
   header.innerHTML = to_html(data.header);
-  if (data.data.image) header_img.src = data.data.image;
+  if (data.data.image) { header_img.src = data.data.image; }
 
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status);
