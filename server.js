@@ -33,7 +33,7 @@ var Server = function (options) {
   self.app = http.createServer(function (req, res) {
     var url_parts = url.parse(req.url, true);
 
-    if (req.method == 'GET') {
+    if (req.method === 'GET') {
       self.serve(url_parts, res);
     } else {
       self.listener.hook(req, res);
@@ -105,7 +105,7 @@ Server.prototype.assemble_data = function (format) {
 Server.prototype.serve = function (url_parts, res) {
   var self = this;
 
-  if (url_parts.pathname == '/') {
+  if (url_parts.pathname === '/') {
     if (url_parts.query.refresh !== undefined) { // Send the data
       logging.log('Data requested by GET');
       res.writeHead(200, {'Content-Type': 'application/json'});
@@ -121,11 +121,11 @@ Server.prototype.serve = function (url_parts, res) {
       res.end(html);
     }
 
-  } else if (url_parts.pathname == '/main.js') {
+  } else if (url_parts.pathname === '/main.js') {
     logging.log('Sending JS');
     self.send_file(res, __dirname + '/static/main.js', 'application/javascript');
 
-  } else if (url_parts.pathname == '/main.css') {
+  } else if (url_parts.pathname === '/main.css') {
     logging.log('Sending CSS');
     self.send_file(res, __dirname + '/static/main.css', 'text/css');
 

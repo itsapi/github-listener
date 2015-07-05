@@ -72,7 +72,7 @@ Listener.prototype.hook = function (req, res) {
           // Check branch in payload matches branch in URL
           var repo = self.data.slug;
           var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-          if (self.data.branch != branch) {
+          if (self.data.branch !== branch) {
             return self.error(res, 202, 'Branches do not match', true);
           }
 
