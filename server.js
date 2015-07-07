@@ -75,8 +75,6 @@ Server.prototype.stop = function () {
 
 
 Server.prototype.send_file = function (res, path, type) {
-  var self = this;
-
   fs.readFile(path, function (err, data) {
     if (err) {
       logging.error(err);

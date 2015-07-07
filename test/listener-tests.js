@@ -4,7 +4,6 @@ var test = require('tape'),
     Listener = require('../listener');
 
 
-var options = common.options;
 var config = common.config;
 var request = common.request;
 
