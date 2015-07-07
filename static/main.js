@@ -1,3 +1,6 @@
+/* global ActiveXObject: false, io: false */
+
+
 document.head = document.head || document.getElementsByTagName('head')[0];
 
 
