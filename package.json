@@ -29,7 +29,8 @@
     "istanbul": "~0.3.15",
     "pre-commit": "^1.0.10",
     "tape": "~4.0.0",
-    "through2": "~2.0.0"
+    "through2": "~2.0.0",
+    "jshint": "~2.8.0"
   },
   "bugs": {
     "url": "https://github.com/itsapi/github-listener/issues"
