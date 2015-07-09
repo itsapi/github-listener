@@ -1,4 +1,5 @@
 var through2 = require('through2'),
+    crypto = require('crypto'),
     Listener = require('../listener');
 
 
@@ -25,6 +26,14 @@ function data () {
     req.end(payload);
 
     return listener;
+  };
+
+  this.github_sig = function (secret, payload) {
+    return 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
+  };
+
+  this.travis_sig = function (secret, slug) {
+    return crypto.createHash('sha256').update(slug + secret).digest('hex');
   };
 
   this.config = {

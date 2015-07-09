@@ -1,5 +1,4 @@
-var crypto = require('crypto'),
-    test = require('tape'),
+var test = require('tape'),
     qs = require('querystring'),
     common = require('./common')();
 
@@ -7,12 +6,7 @@ var crypto = require('crypto'),
 var options = common.options;
 var config = common.config;
 var request = common.request;
-
-
-// Generate payload signature
-function gen_sig (secret, slug) {
-  return crypto.createHash('sha256').update(slug + secret).digest('hex');
-}
+var gen_sig = common.travis_sig;
 
 
 test('BEGIN TRAVIS PAYLOAD TESTS', function (t) { t.end(); });

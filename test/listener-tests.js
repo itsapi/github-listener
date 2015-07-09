@@ -4,8 +4,10 @@ var test = require('tape'),
     Listener = require('../listener');
 
 
+var options = common.options;
 var config = common.config;
 var request = common.request;
+var gen_sig = common.github_sig;
 
 
 function create_res (cb) {
@@ -184,6 +186,24 @@ test('listener.rerun', function (t) {
 
       res = create_res(function (res, data) {
         st.equal(data, 'Nothing to build', 'correct server response');
+        st.equal(res.statusCode, 200, 'correct status code');
+        st.end();
+      });
+
+      listener.rerun(res);
+    });
+  });
+
+  t.test('run last build (valid payload)', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.headers['x-hub-signature'] = gen_sig(config.github_secret, payload);
+
+    var listener = request(payload, function (res, data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+
+      res = create_res(function (res, data) {
+        st.equal(data, 'Waiting for script to finish', 'correct server response');
         st.equal(res.statusCode, 200, 'correct status code');
         st.end();
       });

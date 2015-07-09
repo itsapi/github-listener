@@ -1,17 +1,11 @@
-var crypto = require('crypto'),
-    test = require('tape'),
+var test = require('tape'),
     common = require('./common')();
 
 
 var options = common.options;
 var config = common.config;
 var request = common.request;
-
-
-// Generate payload signature
-function gen_sig (secret, payload) {
-  return 'sha1=' + crypto.createHmac('sha1', secret).update(payload).digest('hex');
-}
+var gen_sig = common.github_sig;
 
 
 test('BEGIN GITHUB PAYLOAD TESTS', function (t) { t.end(); });
