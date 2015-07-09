@@ -21,15 +21,12 @@ var Listener = function (config, logging) {
   self.status = 'Ready';
 };
 
-Listener.prototype.error = function (res, code, message, next, hide) {
+Listener.prototype.error = function (res, code, message, hide) {
   var self = this;
 
   self.status = 'Error';
   self.respond(res, code, message, hide);
 
-  if (next) {
-    next();
-  }
 };
 
 Listener.prototype.hook = function (req, res) {
@@ -47,28 +44,28 @@ Listener.prototype.hook = function (req, res) {
         else self.parser = new parser.GitHub(data, req.headers, self.config);
 
         self.last_payload = self.parser.parse_body();
-        if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload', next);
+        if (!self.last_payload) return self.error(res, 400, 'Error: Invalid payload');
 
         self.log(new Date(), req.method, req.url);
         self.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
 
         // Verify payload signature
         if (!self.parser.verify_signature())
-          return self.error(res, 403, 'Error: Cannot verify payload signature', next);
+          return self.error(res, 403, 'Error: Cannot verify payload signature');
 
         // Check we have the information we need
         self.data = self.parser.extract();
-        if (!self.data) return self.error(res, 400, 'Error: Invalid data', next);
+        if (!self.data) return self.error(res, 400, 'Error: Invalid data');
 
         // Check branch in payload matches branch in URL
         var repo = self.data.slug;
         var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
         if (self.data.branch != branch) {
-          return self.error(res, 202, 'Branches do not match', next, true);
+          return self.error(res, 202, 'Branches do not match', true);
         }
 
         self.build = (function (repo, branch) {
-          return function (res, next) {
+          return function (res) {
             // Run script
             self.status = 'Waiting';
             self.respond(res, 200, 'Waiting for script to finish');
@@ -86,12 +83,12 @@ Listener.prototype.hook = function (req, res) {
                 self.timestamp = new Date();
                 process.emit('refresh');
 
-                next();
+                self.next_in_queue();
               });
             });
           };
         })(repo, branch); // End build closure
-        self.build(res, next);
+        self.build(res);
 
       };
     })(req, res)); // End queue closure
@@ -104,7 +101,7 @@ Listener.prototype.rerun = function (res) {
 
   if (self.build) {
     self.queue(function (next) {
-      self.build(res, next);
+      self.build(res);
     });
   } else {
     self.respond(res, 200, 'Nothing to build');
@@ -150,8 +147,7 @@ Listener.prototype.queue = function (func) {
     self.waiting.push(func);
   } else {
     self.running = true;
-    console.log('queue: ',self.waiting);
-    func(self.next_in_queue);
+    func();
   }
 };
 
@@ -160,9 +156,9 @@ Listener.prototype.next_in_queue = function () {
 
   self.running = false;
 
-  console.log(self.waiting);
   if (self.waiting.length) {
-    self.waiting.splice(0, 1)[0](self.next_in_queue);
+    // Pop and run next in queue
+    self.waiting.splice(0, 1)[0]();
   }
 };
 

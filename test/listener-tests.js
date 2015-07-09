@@ -208,7 +208,7 @@ test('listener.queue', function (t) {
 
       st.ok(elapsed < 100, 'callback run immediately');
       st.end();
-      next();
+      listener.next_in_queue();
     });
   });
 
@@ -221,14 +221,14 @@ test('listener.queue', function (t) {
 
       setTimeout(function () {
         first_done = true;
-        next();
+        listener.next_in_queue();
       }, 500);
     });
 
-    listener.queue(function (next) {
+    listener.queue(function () {
       st.equal(first_done, true, 'process finished running');
       st.end();
-      next();
+      listener.next_in_queue();
     });
   });
 
