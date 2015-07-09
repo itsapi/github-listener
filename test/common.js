@@ -1,21 +1,21 @@
-var through2 = require('through2'),
-    Listener = require('../listener');
+var through2 = require('through2');
+var Listener = require('../listener');
 
 
-function data () {
+function Data() {
   var self = this;
   var res = {
-    writeHead: function (statusCode, headers) {
+    writeHead: function(statusCode, headers) {
       res.statusCode = statusCode;
       res.headers = headers;
-    }
+    },
   };
 
-  this.request = function (payload, cb) {
+  this.request = function(payload, cb) {
     var listener = new Listener(self.config);
     var req = through2();
 
-    res.end = function (data) { cb(res, data); };
+    res.end = function(data) { cb(res, data); };
 
     req.method = self.options.method;
     req.url = self.options.path;
@@ -33,7 +33,7 @@ function data () {
     getter: '/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}',
     post_receive: 'python3 /home/git/deploy/post-receive/main.py {dir}',
     github_secret: '1337',
-    travis_token: 'topsecret'
+    travis_token: 'topsecret',
   };
 
   this.options = {
@@ -41,8 +41,8 @@ function data () {
     path: '/',
     port: '6003',
     method: 'POST',
-    headers: {}
+    headers: {},
   };
 }
 
-module.exports = function () { return new data(); };
+module.exports = function() { return new Data(); };
