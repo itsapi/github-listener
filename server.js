@@ -5,7 +5,8 @@ var http = require('http'),
     fs = require('fs'),
     logging = require('logging-tool'),
     Listener = require('./listener'),
-    ansi = new (require('ansi-to-html'))();
+    ansi = new (require('ansi-to-html'))(),
+    fileserver = new (require('node-static')).Server('./static');
 
 
 var Server = function (options) {
@@ -31,10 +32,8 @@ var Server = function (options) {
 
   // Setup server
   self.app = http.createServer(function (req, res) {
-    var url_parts = url.parse(req.url, true);
-
     if (req.method === 'GET') {
-      self.serve(url_parts, res);
+      self.serve(req, res);
     } else {
       self.listener.hook(req, res);
     }
@@ -74,19 +73,6 @@ Server.prototype.stop = function () {
 };
 
 
-Server.prototype.send_file = function (res, path, type) {
-  fs.readFile(path, function (err, data) {
-    if (err) {
-      logging.error(err);
-      throw err;
-    }
-
-    res.writeHead(200, {'Content-Type': type});
-    res.end(data);
-  });
-};
-
-
 Server.prototype.assemble_data = function (format) {
   var self = this;
 
@@ -100,8 +86,9 @@ Server.prototype.assemble_data = function (format) {
 };
 
 
-Server.prototype.serve = function (url_parts, res) {
+Server.prototype.serve = function (req, res) {
   var self = this;
+  var url_parts = url.parse(req.url, true);
 
   if (url_parts.pathname === '/') {
     if (url_parts.query.refresh !== undefined) { // Send the data
@@ -119,24 +106,17 @@ Server.prototype.serve = function (url_parts, res) {
       res.end(html);
     }
 
-  } else if (url_parts.pathname === '/main.js') {
-    logging.log('Sending JS');
-    self.send_file(res, __dirname + '/static/main.js', 'application/javascript');
-
-  } else if (url_parts.pathname === '/main.css') {
-    logging.log('Sending CSS');
-    self.send_file(res, __dirname + '/static/main.css', 'text/css');
-
-  } else if (url_parts.pathname.match(/\/icons\/\w*/)) {
-    var name = url_parts.pathname.split('/').slice(-1)[0].toLowerCase();
-    logging.log('Sending icon: ' + name);
-    self.send_file(res, __dirname + '/static/icons/' + name + '.png', 'image/png');
-
-  } else {
-    logging.log('404: ' + url_parts.pathname);
-    res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.end('404 - File not found: ' + url_parts.pathname);
+  } else { // Serve static files
+    logging.log('Serving file: ' + url_parts.pathname);
+    fileserver.serve(req, res, function(e) {
+      if (e && (e.status === 404)) {
+        logging.log('404: ' + url_parts.pathname);
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.end('404 - File not found: ' + url_parts.pathname);
+      }
+    });
   }
+
 };
 
 

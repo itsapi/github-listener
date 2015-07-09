@@ -74,7 +74,7 @@ function refresh(data) {
   if (data.data.image) { header_img.src = data.data.image; }
 
   document.title = data.status + ' - Git';
-  changeFavicon('icons/' + data.status);
+  changeFavicon('icons/' + data.status.toLowerCase() + '.png');
 }
 
 
