@@ -156,12 +156,12 @@ test('listener.error', function (t) {
 });
 
 
-test('listener.build', function (t) {
+test('listener.rerun', function (t) {
 
-  t.test('listener.build is defined', function (st) {
+  t.test('listener.build is not defined', function (st) {
     var listener = new Listener();
 
-    st.ok('build' in listener, 'listener has build property');
+    st.equal(listener.build, undefined, 'listener has no build property');
     st.end();
   });
 
@@ -174,59 +174,61 @@ test('listener.build', function (t) {
       st.end();
     });
 
-    listener.build(res);
+    listener.rerun(res);
   });
 
-  t.test('run last build', function (st) {
+  t.test('run last build (invalid payload)', function (st) {
     var listener = request('asdf', function (res, data) {
       st.equal(data, 'Error: Invalid payload', 'correct server response');
       st.equal(res.statusCode, 400, 'correct status code');
 
       res = create_res(function (res, data) {
-        st.equal(data, 'Error: Invalid payload', 'correct server response');
-        st.equal(res.statusCode, 400, 'correct status code');
+        st.equal(data, 'Nothing to build', 'correct server response');
+        st.equal(res.statusCode, 200, 'correct status code');
         st.end();
       });
 
-      listener.build(res);
+      listener.rerun(res);
     });
   });
 
 });
 
 
-test('listener.run_when_ready', function (t) {
+test('listener.queue', function (t) {
 
   t.test('no waiting', function (st) {
     var listener = new Listener(config);
     var start = Date.now();
 
     st.equal(listener.running, false, 'nothing runnning already');
-    listener.run_when_ready(function () {
+    listener.queue(function () {
       var elapsed = Date.now() - start;
 
       st.ok(elapsed < 100, 'callback run immediately');
       st.end();
+      listener.next_in_queue();
     });
   });
 
-  t.test('wait until ready', function (st) {
+  t.test('wait in queue', function (st) {
     var listener = new Listener(config);
-    var start = Date.now();
+    var first_done = false;
 
-    listener.running = true;
-    st.equal(listener.running, true, 'process already running');
-    listener.run_when_ready(function () {
-      var elapsed = Date.now() - start;
+    listener.queue(function () {
+      st.equal(listener.running, true, 'process running');
 
-      st.equal(listener.running, false, 'process finished running');
-      st.ok(elapsed > 500 && elapsed < 600, 'callback run after 500ms');
-      st.end();
+      setTimeout(function () {
+        first_done = true;
+        listener.next_in_queue();
+      }, 500);
     });
 
-    setTimeout(function () {
-      listener.running = false;
-    }, 500);
+    listener.queue(function () {
+      st.equal(first_done, true, 'process finished running');
+      st.end();
+      listener.next_in_queue();
+    });
   });
 
 });
