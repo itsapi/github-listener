@@ -31,6 +31,7 @@ Listener.prototype.error = function (res, code, message, hide) {
   self.status = 'Error';
   self.respond(res, code, message, hide);
 
+  return true;
 };
 
 Listener.prototype.hook = function (req, res) {
@@ -50,61 +51,80 @@ Listener.prototype.hook = function (req, res) {
           new parser.GitHub(data, req.headers, self.config);
 
         self.last_payload = self.parser.parse_body();
-        if (!self.last_payload) {
-          return self.error(res, 400, 'Error: Invalid payload');
-        }
 
-        logging.log(new Date(), req.method, req.url);
-        logging.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+        var out = self.check_payload(req, res);
+        if (out.err) { return; }
 
-        // Verify payload signature
-        if (!self.parser.verify_signature()) {
-          return self.error(res, 403, 'Error: Cannot verify payload signature');
-        }
-
-        // Check we have the information we need
-        self.data = self.parser.extract();
-        if (!self.data) {
-          return self.error(res, 400, 'Error: Invalid data');
-        }
-
-        // Check branch in payload matches branch in URL
-        var repo = self.data.slug;
-        var branch = url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-        if (self.data.branch !== branch) {
-          return self.error(res, 202, 'Branches do not match', true);
-        }
-
-        self.build = (function (repo, branch) {
-          return function (res) {
-            // Run script
-            self.status = 'Waiting';
-            self.respond(res, 200, 'Waiting for script to finish');
-
-            var out = '';
-            self.getter(repo, branch, function (getter_out) {
-              out += getter_out;
-              self.post_receive(repo, function (post_receive_out) {
-                out += post_receive_out;
-                logging.log('\n' + out);
-                logging.info('Finished processing files\n');
-
-                self.script_out = out;
-                self.status = 'Done';
-                self.timestamp = new Date();
-                process.emit('refresh');
-
-                self.next_in_queue();
-              });
-            });
-          };
-        })(repo, branch); // End build closure
+        self.gen_build(out.repo, out.branch);
         self.build(res);
-
       };
     })(req, res)); // End queue closure
 
   }));
+};
+
+Listener.prototype.check_payload = function (req, res) {
+  var self = this;
+
+  if (!self.last_payload) {
+    return {err: self.error(res, 400, 'Error: Invalid payload')};
+  }
+
+  logging.log(new Date(), req.method, req.url);
+  logging.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+
+  // Verify payload signature
+  if (!self.parser.verify_signature()) {
+    return {err: self.error(res, 403, 'Error: Cannot verify payload signature')};
+  }
+
+  // Check we have the information we need
+  self.data = self.parser.extract();
+  if (!self.data) {
+    return {err: self.error(res, 400, 'Error: Invalid data')};
+  }
+
+  function get_branch (req) {
+    return url.parse(req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+  }
+
+  // Check branch in payload matches branch in URL
+  var repo = self.data.slug;
+  var branch = get_branch(req);
+  if (self.data.branch !== branch) {
+    return {err: self.error(res, 202, 'Branches do not match', true)};
+  }
+
+  return {repo: repo, branch: branch};
+};
+
+Listener.prototype.gen_build = function (repo, branch) {
+  var self = this;
+
+  self.build = (function (repo, branch) {
+    return function (res) {
+      // Run script
+      self.status = 'Waiting';
+      self.respond(res, 200, 'Waiting for script to finish');
+
+      var out = '';
+      self.getter(repo, branch, function (getter_out) {
+        out += getter_out;
+        self.post_receive(repo, function (post_receive_out) {
+          out += post_receive_out;
+          logging.log('\n' + out);
+          logging.info('Finished processing files\n');
+
+          self.script_out = out;
+          self.status = 'Done';
+          self.timestamp = new Date();
+          process.emit('refresh');
+
+          self.next_in_queue();
+        });
+      });
+    };
+  })(repo, branch); // End build closure
 };
 
 Listener.prototype.rerun = function (res) {
