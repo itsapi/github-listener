@@ -10,11 +10,11 @@ function makeRequest(url, cb) {
     httpRequest = new XMLHttpRequest();
   } else if (window.ActiveXObject) { // IE
     try {
-      httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+      httpRequest = new ActiveXObject('Msxml2.XMLHTTP');
     }
     catch (e) {
       try {
-        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        httpRequest = new ActiveXObject('Microsoft.XMLHTTP');
       }
       catch (e) {}
     }
@@ -90,10 +90,10 @@ socket.on('refresh', function(data) {
   refresh(data);
 });
 
-makeRequest(window.location.href+'?refresh', refresh);
+makeRequest(window.location.href + '?refresh', refresh);
 
 rebuild_btn.onclick = function () {
-  makeRequest(window.location.href+'?rebuild', function (data) {
+  makeRequest(window.location.href + '?rebuild', function (data) {
     console.log(data);
   });
 };
@@ -101,6 +101,6 @@ rebuild_btn.onclick = function () {
 setInterval(function() {
   if (!socket.connected) {
     console.log('Polling for refresh');
-    makeRequest(window.location.href+'?refresh', refresh);
+    makeRequest(window.location.href + '?refresh', refresh);
   }
 }, 2000);
