@@ -1,14 +1,14 @@
-var url = require('url'),
-    exec = require('child_process').exec,
-    bl = require('bl'),
-    logging = require('logging-tool'),
-    format = require('string-format'),
-    parser = require('./parser');
+var url = require('url');
+var exec = require('child_process').exec;
+var bl = require('bl');
+var logging = require('logging-tool');
+var format = require('string-format');
+var parser = require('./parser');
 
 format.extend(String.prototype);
 
 
-var Listener = function (config, logs) {
+var Listener = function(config, logs) {
   var self = this;
 
   logging.silent = !logs;
@@ -18,13 +18,13 @@ var Listener = function (config, logs) {
   self.timestamp = new Date();
   self.waiting = [];
   self.running = false;
-  self.last_payload = {};
+  self.lastPayload = {};
   self.data = {};
-  self.script_out = '';
+  self.scriptOut = '';
   self.status = 'Ready';
 };
 
-Listener.prototype.error = function (res, code, message, hide) {
+Listener.prototype.error = function(res, code, message, hide) {
   var self = this;
 
   logging.warn(message);
@@ -33,32 +33,32 @@ Listener.prototype.error = function (res, code, message, hide) {
 
 };
 
-Listener.prototype.hook = function (req, res) {
+Listener.prototype.hook = function(req, res) {
   var self = this;
 
   // Get payload
-  req.pipe(bl(function (err, data) {
+  req.pipe(bl(function(err, data) {
     if (err) {
       return self.error(res, 400, 'Error whilst receiving payload');
     }
 
-    self.queue((function (req, res) {
-      return function () {
+    self.queue((function(req, res) {
+      return function() {
 
         self.parser = req.headers['travis-repo-slug'] ?
           new parser.Travis(data, req.headers, self.config) :
           new parser.GitHub(data, req.headers, self.config);
 
-        self.last_payload = self.parser.parse_body();
-        if (!self.last_payload) {
+        self.lastPayload = self.parser.parseBody();
+        if (!self.lastPayload) {
           return self.error(res, 400, 'Error: Invalid payload');
         }
 
         logging.log(new Date(), req.method, req.url);
-        logging.log(JSON.stringify(self.last_payload, null, '\t') + '\n');
+        logging.log(JSON.stringify(self.lastPayload, null, '\t') + '\n');
 
         // Verify payload signature
-        if (!self.parser.verify_signature()) {
+        if (!self.parser.verifySignature()) {
           return self.error(res, 403, 'Error: Cannot verify payload signature');
         }
 
@@ -75,26 +75,26 @@ Listener.prototype.hook = function (req, res) {
           return self.error(res, 202, 'Branches do not match', true);
         }
 
-        self.build = (function (repo, branch) {
-          return function (res) {
+        self.build = (function(repo, branch) {
+          return function(res) {
             // Run script
             self.status = 'Waiting';
             self.respond(res, 200, 'Waiting for script to finish');
 
             var out = '';
-            self.getter(repo, branch, function (getter_out) {
-              out += getter_out;
-              self.post_receive(repo, function (post_receive_out) {
-                out += post_receive_out;
+            self.getter(repo, branch, function(getterOut) {
+              out += getterOut;
+              self.postReceive(repo, function(postReceiveOut) {
+                out += postReceiveOut;
                 logging.log('\n' + out);
                 logging.info('Finished processing files\n');
 
-                self.script_out = out;
+                self.scriptOut = out;
                 self.status = 'Done';
                 self.timestamp = new Date();
                 process.emit('refresh');
 
-                self.next_in_queue();
+                self.nextInQueue();
               });
             });
           };
@@ -107,11 +107,11 @@ Listener.prototype.hook = function (req, res) {
   }));
 };
 
-Listener.prototype.rerun = function (res) {
+Listener.prototype.rerun = function(res) {
   var self = this;
 
   if (self.build) {
-    self.queue(function () {
+    self.queue(function() {
       self.build(res);
     });
   } else {
@@ -119,14 +119,14 @@ Listener.prototype.rerun = function (res) {
   }
 };
 
-Listener.prototype.getter = function (repo, branch, cb) {
+Listener.prototype.getter = function(repo, branch, cb) {
   var self = this;
 
   var command = self.config.getter.format({
-    repo_dir: self.config.repo_dir,
+    repoDir: self.config.repo_dir,
     output: self.config.processing,
     repo: repo,
-    branch: branch
+    branch: branch,
   });
 
   logging.log(command);
@@ -135,12 +135,12 @@ Listener.prototype.getter = function (repo, branch, cb) {
   });
 };
 
-Listener.prototype.post_receive = function (repo, cb) {
+Listener.prototype.postReceive = function(repo, cb) {
   var self = this;
 
   var command = self.config.post_receive.format({
     dir: self.config.processing,
-    name: repo
+    name: repo,
   });
 
   logging.log(command);
@@ -149,7 +149,7 @@ Listener.prototype.post_receive = function (repo, cb) {
   });
 };
 
-Listener.prototype.queue = function (func) {
+Listener.prototype.queue = function(func) {
   var self = this;
 
   // Avoids running multiple requests at once.
@@ -162,7 +162,7 @@ Listener.prototype.queue = function (func) {
   }
 };
 
-Listener.prototype.next_in_queue = function () {
+Listener.prototype.nextInQueue = function() {
   var self = this;
 
   self.running = false;
@@ -173,15 +173,15 @@ Listener.prototype.next_in_queue = function () {
   }
 };
 
-Listener.prototype.respond = function (res, http_code, message, not_refresh) {
+Listener.prototype.respond = function(res, httpCode, message, notRefresh) {
   var self = this;
 
-  if (not_refresh === undefined) {
-    self.script_out = message;
+  if (notRefresh === undefined) {
+    self.scriptOut = message;
     process.emit('refresh');
   }
 
-  res.writeHead(http_code, {'Content-Type': 'text/plain'});
+  res.writeHead(httpCode, {'Content-Type': 'text/plain'});
   res.end(message);
 };
 

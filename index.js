@@ -1,10 +1,10 @@
-var Listener = require('./listener'),
-    Server = require('./server'),
-    parser = require('./parser');
+var Listener = require('./listener');
+var Server = require('./server');
+var parser = require('./parser');
 
 
 module.exports = {
   Listener: Listener,
   Server: Server,
-  parser: parser
+  parser: parser,
 };

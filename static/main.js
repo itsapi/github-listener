@@ -23,7 +23,7 @@ function makeRequest(url, cb) {
     console.log('Giving up :( Cannot create an XMLHTTP instance');
     return false;
   }
-  httpRequest.onreadystatechange = function () {
+  httpRequest.onreadystatechange = function() {
     if (httpRequest.readyState === 4) {
       if (httpRequest.status === 200) {
         cb(httpRequest.responseText);
@@ -50,7 +50,7 @@ function changeFavicon(src) {
 }
 
 
-function to_html(string) {
+function toHtml(string) {
   // Converts URLs to HTML links
   return string.replace(
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
@@ -68,21 +68,21 @@ function refresh(data) {
                    ' | URL: ' + data.data.url;
   }
 
-  last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
-  script_out.innerHTML = to_html(data.script_out);
-  header.innerHTML = to_html(data.header);
-  if (data.data.image) { header_img.src = data.data.image; }
+  lastPayload.innerHTML = JSON.stringify(data.lastPayload, null, '  ');
+  scriptOut.innerHTML = toHtml(data.scriptOut);
+  header.innerHTML = toHtml(data.header);
+  if (data.data.image) { headerImg.src = data.data.image; }
 
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status.toLowerCase() + '.png');
 }
 
 
-var last_payload = document.querySelector('#left pre');
-var script_out = document.querySelector('#right pre');
+var lastPayload = document.querySelector('#left pre');
+var scriptOut = document.querySelector('#right pre');
 var header = document.querySelector('header p');
-var header_img = document.querySelector('header img');
-var rebuild_btn = document.querySelector('header button');
+var headerImg = document.querySelector('header img');
+var rebuildBtn = document.querySelector('header button');
 var socket = io();
 
 socket.on('refresh', function(data) {
@@ -92,8 +92,8 @@ socket.on('refresh', function(data) {
 
 makeRequest(window.location.href + '?refresh', refresh);
 
-rebuild_btn.onclick = function () {
-  makeRequest(window.location.href + '?rebuild', function (data) {
+rebuildBtn.onclick = function() {
+  makeRequest(window.location.href + '?rebuild', function(data) {
     console.log(data);
   });
 };
