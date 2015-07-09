@@ -1,4 +1,11 @@
 {
   "sub": true,
-  "node": true
+  "node": true,
+  "browser": true,
+  "curly": true,
+  "eqeqeq": true,
+  "undef": true,
+  "unused": true,
+  "maxdepth": 2,
+  "maxcomplexity": 5
 }
