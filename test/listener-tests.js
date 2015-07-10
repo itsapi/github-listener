@@ -1,4 +1,5 @@
 var test = require('tape'),
+    qs = require('querystring'),
     through = require('through2'),
     common = require('./common')(),
     Listener = require('../listener');
@@ -7,7 +8,8 @@ var test = require('tape'),
 var options = common.options;
 var config = common.config;
 var request = common.request;
-var gen_sig = common.github_sig;
+var github_sig = common.github_sig;
+var travis_sig = common.travis_sig;
 
 
 function create_res (cb) {
@@ -196,7 +198,7 @@ test('listener.rerun', function (t) {
 
   t.test('run last build (valid payload)', function (st) {
     var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
-    options.headers['x-hub-signature'] = gen_sig(config.github_secret, payload);
+    options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
     var listener = request(payload, function (res, data) {
       st.equal(data, 'Waiting for script to finish', 'correct server response');
@@ -267,4 +269,99 @@ test('listener.hook bl error', function (t) {
 
   listener.hook(req, res);
   req.emit('error', new Error('BOOM!'));
+});
+
+
+test('listener.data', function (t) {
+
+  t.test('github payload - incomplete payload', function (st) {
+    var payload = JSON.stringify({
+      repository: { full_name: 'repo' },
+      ref: 'refs/heads/master'
+    });
+
+    options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
+
+    var listener = request(payload, function (res, data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.deepEqual(listener.data, {
+        slug:   'repo',
+        branch: 'master',
+        url:    undefined,
+        commit: undefined,
+        image:  undefined
+      });
+      st.end();
+    });
+  });
+
+  t.test('github payload - complete payload', function (st) {
+    var payload = JSON.stringify({
+      repository: { full_name: 'repo', url: 'example.com' },
+      head_commit: { message: 'some commit' },
+      sender: { avatar_url: 'image.png' },
+      ref: 'refs/heads/master'
+    });
+
+    options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
+
+    var listener = request(payload, function (res, data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.deepEqual(listener.data, {
+        slug:   'repo',
+        branch: 'master',
+        url:    'example.com',
+        commit: 'some commit',
+        image:  'image.png'
+      });
+      st.end();
+    });
+  });
+
+  t.test('travis payload - incomplete payload', function (st) {
+    var payload = qs.stringify({ payload: JSON.stringify({
+      branch: 'master'
+    }) });
+
+    options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
+    options.headers['travis-repo-slug'] = 'repo';
+
+    var listener = request(payload, function (res, data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.deepEqual(listener.data, {
+        slug:   'repo',
+        branch: 'master',
+        commit: undefined,
+        url:    undefined
+      });
+      st.end();
+    });
+  });
+
+  t.test('travis payload - complete payload', function (st) {
+    var payload = qs.stringify({ payload: JSON.stringify({
+      branch: 'master',
+      repository: { url: 'example.com' },
+      message: 'some commit'
+    }) });
+
+    options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
+    options.headers['travis-repo-slug'] = 'repo';
+
+    var listener = request(payload, function (res, data) {
+      st.equal(data, 'Waiting for script to finish', 'correct server response');
+      st.equal(res.statusCode, 200, 'correct status code');
+      st.deepEqual(listener.data, {
+        slug:   'repo',
+        branch: 'master',
+        url:    'example.com',
+        commit: 'some commit'
+      });
+      st.end();
+    });
+  });
+
 });
