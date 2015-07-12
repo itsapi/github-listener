@@ -1,7 +1,7 @@
 # Github Listener
 
 [![NPM Version](https://img.shields.io/npm/v/github-listener.svg)](https://www.npmjs.com/package/github-listener)
-[![Build Status](https://img.shields.io/travis/itsapi/github-listener.svg)](https://travis-ci.org/itsapi/github-listener)
+[![Build Status](https://img.shields.io/travis/itsapi/github-listener/master.svg)](https://travis-ci.org/itsapi/github-listener)
 [![Code Climate](https://img.shields.io/codeclimate/github/itsapi/github-listener.svg)](https://codeclimate.com/github/itsapi/github-listener)
 [![Test Coverage](https://img.shields.io/codeclimate/coverage/github/itsapi/github-listener.svg)](https://codeclimate.com/github/itsapi/github-listener)
 [![Dependency Status](https://img.shields.io/david/itsapi/github-listener.svg)](https://david-dm.org/itsapi/github-listener)
