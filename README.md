@@ -56,9 +56,19 @@ In order for your listener to receive payloads you need to set up a webhook on G
 - **Travis** - follow the instructions [here](http://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
 
 
+## Documentation
+
+See the [DOCUMENTATION.md](./DOCUMENTATION.md) file.
+
+
 ## Contributing
 
 1. Create an issue with your bug or suggestion
 2. Fork the repository
 3. Make your changes in your fork
 4. Create a pull request here, referencing the original issue
+
+
+## License
+
+See the [LICENSE](./LICENSE) file.
