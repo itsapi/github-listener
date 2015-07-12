@@ -9,6 +9,16 @@ var http = require('http'),
     fileserver = new (require('node-static')).Server('./static');
 
 
+/**
+ * Creates a new `Server` instance.
+ * @name Server
+ * @function
+ * @param {Object} options An object containing the following fields:
+ *
+ *  - `logging` (Boolean): Output logs if `true`
+ *  - `config` (Object): The GHL `config.json` (see example)
+ */
+
 var Server = function (options) {
   var self = this;
 
@@ -40,6 +50,11 @@ var Server = function (options) {
   });
 };
 
+/**
+ * Start the http server
+ * @name Server.start
+ * @function
+ */
 
 Server.prototype.start = function () {
   var self = this;
@@ -62,6 +77,11 @@ Server.prototype.start = function () {
   });
 };
 
+/**
+ * Stop the http server
+ * @name Server.stop
+ * @function
+ */
 
 Server.prototype.stop = function () {
   var self = this;
@@ -72,6 +92,12 @@ Server.prototype.stop = function () {
   process.emit('close');
 };
 
+/**
+ * Create an object of data to send to the client
+ * @name Server.assemble_data
+ * @function
+ * @param {Boolean} format JSON.stringify() if `true`
+ */
 
 Server.prototype.assemble_data = function (format) {
   var self = this;
@@ -85,6 +111,13 @@ Server.prototype.assemble_data = function (format) {
   };
 };
 
+/**
+ * Handle HTTP get requests
+ * @name Server.serve
+ * @function
+ * @param {Object} req The HTTP request object
+ * @param {Object} res The HTTP response object
+ */
 
 Server.prototype.serve = function (req, res) {
   var self = this;
