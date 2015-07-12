@@ -8,6 +8,14 @@ var url = require('url'),
 format.extend(String.prototype);
 
 
+/**
+ * Creates a new `Listener` instance.
+ * @name Listener
+ * @function
+ * @param {Object} config The GHL `config.json` (see example)
+ * @param {Boolean} logs Output logs if `true`
+ */
+
 var Listener = function (config, logs) {
   var self = this;
 
@@ -24,6 +32,16 @@ var Listener = function (config, logs) {
   self.status = 'Ready';
 };
 
+/**
+ * Handles error responses
+ * @name Listener.error
+ * @function
+ * @param {Object} res The HTTP response object
+ * @param {Number} code The HTTP response code
+ * @param {String} message The error message to be used
+ * @param {Boolean} hide Don't update client side if `true`
+ */
+
 Listener.prototype.error = function (res, code, message, hide) {
   var self = this;
 
@@ -33,6 +51,14 @@ Listener.prototype.error = function (res, code, message, hide) {
 
   return true;
 };
+
+/**
+ * Handle a payload request
+ * @name Listener.hook
+ * @function
+ * @param {Object} req The HTTP request object
+ * @param {Object} res The HTTP response object
+ */
 
 Listener.prototype.hook = function (req, res) {
   var self = this;
@@ -62,6 +88,14 @@ Listener.prototype.hook = function (req, res) {
 
   }));
 };
+
+/**
+ * Ensure payload object is valid
+ * @name Listener.check_payload
+ * @function
+ * @param {Object} req The HTTP request object
+ * @param {Object} res The HTTP response object
+ */
 
 Listener.prototype.check_payload = function (req, res) {
   var self = this;
@@ -98,6 +132,14 @@ Listener.prototype.check_payload = function (req, res) {
   return {repo: repo, branch: branch};
 };
 
+/**
+ * Create `self.build` function that can be rerun
+ * @name Listener.gen_build
+ * @function
+ * @param {String} repo The name of the repo to be passed into `self.getter`
+ * @param {String} branch The name of the branch to be passed into `self.getter`
+ */
+
 Listener.prototype.gen_build = function (repo, branch) {
   var self = this;
 
@@ -127,6 +169,13 @@ Listener.prototype.gen_build = function (repo, branch) {
   })(repo, branch); // End build closure
 };
 
+/**
+ * Run `self.build` if it is defined
+ * @name Listener.rerun
+ * @function
+ * @param {Object} res The HTTP response object
+ */
+
 Listener.prototype.rerun = function (res) {
   var self = this;
 
@@ -138,6 +187,15 @@ Listener.prototype.rerun = function (res) {
     self.respond(res, 200, 'Nothing to build');
   }
 };
+
+/**
+ * Run github-getter to get the repo from GitHub
+ * @name Listener.getter
+ * @function
+ * @param {String} repo The repo to get from GitHub
+ * @param {String} branch The branch to checkout
+ * @param {Function} cb The callback to be run with the command output
+ */
 
 Listener.prototype.getter = function (repo, branch, cb) {
   var self = this;
@@ -155,6 +213,14 @@ Listener.prototype.getter = function (repo, branch, cb) {
   });
 };
 
+/**
+ * Run the build scripts for the repo
+ * @name Listener.post_receive
+ * @function
+ * @param {String} repo The repo name to be passed to post-receive
+ * @param {Function} cb The callback to be run with the command output
+ */
+
 Listener.prototype.post_receive = function (repo, cb) {
   var self = this;
 
@@ -169,6 +235,13 @@ Listener.prototype.post_receive = function (repo, cb) {
   });
 };
 
+/**
+ * Queue a function to be run
+ * @name Listener.queue
+ * @function
+ * @param {Function} func The function to be queued
+ */
+
 Listener.prototype.queue = function (func) {
   var self = this;
 
@@ -182,6 +255,12 @@ Listener.prototype.queue = function (func) {
   }
 };
 
+/**
+ * Run the next function in the queue
+ * @name Listener.next_in_queue
+ * @function
+ */
+
 Listener.prototype.next_in_queue = function () {
   var self = this;
 
@@ -192,6 +271,16 @@ Listener.prototype.next_in_queue = function () {
     self.waiting.splice(0, 1)[0]();
   }
 };
+
+/**
+ * Respond to an HTTP request
+ * @name Listener.respond
+ * @function
+ * @param {Object} res The HTTP response object
+ * @param {Number} http_code The HTTP response code
+ * @param {String} message The message to be sent
+ * @param {Boolean} not_refresh Don't update client side if `true`
+ */
 
 Listener.prototype.respond = function (res, http_code, message, not_refresh) {
   var self = this;
