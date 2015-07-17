@@ -82,7 +82,7 @@ Listener.prototype.hook = function (req, res) {
         var out = self.check_payload(req, res);
         if (out.err) { return; }
 
-        self.gen_build(out.repo, out.branch);
+        self.build = self.gen_build(out.repo, out.branch);
         self.build(res);
       };
     })(req, res)); // End queue closure
@@ -142,7 +142,7 @@ Listener.prototype.check_payload = function (req, res) {
 Listener.prototype.gen_build = function (repo, branch) {
   var self = this;
 
-  self.build = (function (repo, branch) {
+  return (function (repo, branch) {
     return function (res) {
 
       // Run script
