@@ -123,13 +123,11 @@ Listener.prototype.check_payload = function (req, res) {
   }
 
   // Check branch in payload matches branch in URL
-  var repo = self.data.slug;
-  var branch = get_branch(req);
-  if (self.data.branch !== branch) {
+  if (self.data.branch !== get_branch(req)) {
     return {err: self.error(res, 202, 'Branches do not match', true)};
   }
 
-  return {repo: repo, branch: branch};
+  return {repo: self.data.slug, branch: self.data.branch};
 };
 
 /**
