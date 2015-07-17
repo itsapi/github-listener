@@ -22,13 +22,11 @@ var http = require('http'),
 var Server = function (options) {
   var self = this;
 
-  self.logging = options.logging;
   self.config = options.config;
-
-  logging.silent = !self.logging;
+  logging.silent = !options.logging;
 
   // Make listener
-  self.listener = new Listener(self.config, self.logging);
+  self.listener = new Listener(self.config, options.logging);
 
   // Load the Jade template
   fs.readFile(__dirname + '/index.jade', function (err, data) {
