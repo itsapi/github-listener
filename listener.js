@@ -3,7 +3,8 @@ var url = require('url'),
     bl = require('bl'),
     logging = require('logging-tool'),
     format = require('string-format'),
-    parser = require('./parser');
+    parser = require('./parser'),
+    ansi = new (require('ansi-to-html'))();
 
 format.extend(String.prototype);
 
@@ -294,5 +295,23 @@ Listener.prototype.respond = function (res, http_code, message, not_refresh) {
   res.end(message);
 };
 
+/**
+ * Create an object of data to send to the client
+ * @name Server.assemble_data
+ * @function
+ * @param {Boolean} format JSON.stringify() if `true`
+ */
+
+Listener.prototype.assemble_data = function (format) {
+  var self = this;
+
+  return {
+    last_payload: format ? JSON.stringify(self.last_payload, null, '  ') : self.last_payload,
+    data: self.data,
+    script_out: ansi.toHtml(self.script_out),
+    timestamp: self.timestamp.toString(),
+    status: self.status
+  };
+};
 
 module.exports = Listener;

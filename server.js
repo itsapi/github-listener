@@ -5,7 +5,6 @@ var http = require('http'),
     fs = require('fs'),
     logging = require('logging-tool'),
     Listener = require('./listener'),
-    ansi = new (require('ansi-to-html'))(),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -67,7 +66,7 @@ Server.prototype.start = function () {
   socketio(self.app).on('connection', function (socket) {
     process.on('refresh', function () {
       logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify(self.assemble_data()));
+      socket.emit('refresh', JSON.stringify(self.listener.assemble_data()));
     });
     process.on('close', function () {
       socket.disconnect();
@@ -91,25 +90,6 @@ Server.prototype.stop = function () {
 };
 
 /**
- * Create an object of data to send to the client
- * @name Server.assemble_data
- * @function
- * @param {Boolean} format JSON.stringify() if `true`
- */
-
-Server.prototype.assemble_data = function (format) {
-  var self = this;
-
-  return {
-    last_payload: format ? JSON.stringify(self.listener.last_payload, null, '  ') : self.listener.last_payload,
-    data: self.listener.data,
-    script_out: ansi.toHtml(self.listener.script_out),
-    timestamp: self.listener.timestamp.toString(),
-    status: self.listener.status
-  };
-};
-
-/**
  * Handle HTTP get requests
  * @name Server.serve
  * @function
@@ -125,14 +105,14 @@ Server.prototype.serve = function (req, res) {
     if (url_parts.query.refresh !== undefined) { // Send the data
       logging.log('Data requested by GET');
       res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(self.assemble_data()));
+      res.end(JSON.stringify(self.listener.assemble_data()));
 
     } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
       self.listener.rerun(res);
 
     } else { // Send the HTML
-      var html = self.template(self.assemble_data(true));
+      var html = self.template(self.listener.assemble_data(true));
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
