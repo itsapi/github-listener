@@ -143,6 +143,7 @@ Listener.prototype.gen_build = function (repo, branch) {
 
   self.build = (function (repo, branch) {
     return function (res) {
+
       // Run script
       self.status = 'Waiting';
       self.respond(res, 200, 'Waiting for script to finish');
@@ -163,6 +164,7 @@ Listener.prototype.gen_build = function (repo, branch) {
           self.next_in_queue();
         });
       });
+
     };
   })(repo, branch); // End build closure
 };
