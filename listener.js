@@ -86,7 +86,7 @@ Listener.prototype.hook = function (req, res) {
         self.build = self.gen_build(out.repo, out.branch);
         self.build(res);
       };
-    })(req, res)); // End queue closure
+    })(req, res), res); // End queue closure
 
   }));
 };
@@ -184,7 +184,7 @@ Listener.prototype.rerun = function (res) {
   if (self.build) {
     self.queue(function () {
       self.build(res);
-    });
+    }, res);
   } else {
     self.respond(res, 200, 'Nothing to build');
   }
@@ -244,12 +244,12 @@ Listener.prototype.post_receive = function (repo, cb) {
  * @param {Function} func The function to be queued
  */
 
-Listener.prototype.queue = function (func) {
+Listener.prototype.queue = function (func, res) {
   var self = this;
 
   // Avoids running multiple requests at once.
   if (self.waiting.length || self.running) {
-    logging.info('Script already running');
+    if (res) { self.respond(res, 200, 'Script already running'); }
     self.waiting.push(func);
   } else {
     self.running = true;
