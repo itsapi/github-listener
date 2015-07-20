@@ -205,7 +205,7 @@ test('listener.rerun', function (t) {
       st.equal(res.statusCode, 200, 'correct status code');
 
       res = create_res(function (res, data) {
-        st.equal(data, 'Waiting for script to finish', 'correct server response');
+        st.equal(data, 'Script already running', 'correct server response');
         st.equal(res.statusCode, 200, 'correct status code');
         st.end();
       });
