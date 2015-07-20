@@ -49,6 +49,7 @@ Listener.prototype.error = function (res, code, message, hide) {
   logging.warn(message);
   self.status = 'Error';
   self.respond(res, code, message, hide);
+  self.next_in_queue();
 
   return true;
 };
