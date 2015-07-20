@@ -34,7 +34,6 @@
     "codeclimate-test-reporter": "~0.0.4",
     "istanbul": "~0.3.15",
     "jshint": "~2.8.0",
-    "pre-commit": "^1.0.10",
     "pre-git": "^0.6.1",
     "tap-spec": "~4.0.2",
     "tape": "~4.0.0",
