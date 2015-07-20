@@ -4,7 +4,8 @@ var http = require('http'),
     jade = require('jade'),
     fs = require('fs'),
     logging = require('logging-tool'),
-    Listener = require('./listener'),
+    BuildManager = require('./build-manager'),
+    ansi = new (require('ansi-to-html'))(),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -24,8 +25,8 @@ var Server = function (options) {
   self.config = options.config;
   logging.silent = !options.logging;
 
-  // Make listener
-  self.listener = new Listener(self.config, options.logging);
+  // Make build_manager
+  self.build_manager = new BuildManager(self.config, options.logging);
 
   // Load the Jade template
   fs.readFile(__dirname + '/index.jade', function (err, data) {
@@ -42,7 +43,7 @@ var Server = function (options) {
     if (req.method === 'GET') {
       self.serve(req, res);
     } else {
-      self.listener.hook(req, res);
+      self.build_manager.hook(req, res);
     }
   });
 };
@@ -66,7 +67,7 @@ Server.prototype.start = function () {
   socketio(self.app).on('connection', function (socket) {
     process.on('refresh', function () {
       logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify(self.listener.assemble_data()));
+      socket.emit('refresh', JSON.stringify(self.assemble_data()));
     });
     process.on('close', function () {
       socket.disconnect();
@@ -105,14 +106,14 @@ Server.prototype.serve = function (req, res) {
     if (url_parts.query.refresh !== undefined) { // Send the data
       logging.log('Data requested by GET');
       res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(self.listener.assemble_data()));
+      res.end(JSON.stringify(self.assemble_data()));
 
     } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
-      self.listener.rerun(res);
+      self.build_manager.rerun(res);
 
     } else { // Send the HTML
-      var html = self.template(self.listener.assemble_data(true));
+      var html = self.template(self.assemble_data());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
@@ -127,7 +128,33 @@ Server.prototype.serve = function (req, res) {
       }
     });
   }
+};
 
+/**
+ * Create an object of data to send to the client
+ * @name Server.assemble_data
+ * @function
+ */
+
+Server.prototype.assemble_data = function () {
+  var self = this;
+
+  if (self.build_manager.current === undefined) {
+    return {
+      empty: true,
+      status: self.build_manager.STATUS.READY
+    };
+  }
+
+  var ui = self.build_manager.current.ui;
+
+  return {
+    last_payload: JSON.stringify(ui.payload, null, '  '),
+    data: ui.data,
+    script_out: ansi.toHtml(ui.script_out),
+    timestamp: ui.timestamp.toString(),
+    status: ui.status
+  };
 };
 
 

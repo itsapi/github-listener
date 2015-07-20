@@ -2,19 +2,24 @@ doctype html
 html
     head
         title= status + " - Git"
+
         link(href='//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
         link(href='main.css', rel='stylesheet')
         script(src='socket.io/socket.io.js')
     body
-        header
-            img
-            button Rebuild
-            p!= header
-        #left
-            h2 Last Payload
-            pre= last_payload
+            .current
+                header
+                    img
+                    button Rebuild
+                    p!= header
 
-        #right
-            h2 Script Output
-            pre!= script_out
+                #left
+                    h2 Last Payload
+                    pre= last_payload
+
+                #right
+                    h2 Script Output
+                    pre!= script_out
+            .waiting
+            .done
         script(src='main.js')

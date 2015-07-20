@@ -1,14 +1,15 @@
 @import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
 
 *, *:before, *:after {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    font-family: 'Droid Sans', sans-serif;
-    background-color: rgb(20, 20, 20);
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgb(20, 20, 20);
+  font-family: 'Droid Sans', sans-serif;
 }
 
 ::selection {
@@ -16,55 +17,56 @@ html {
 }
 
 header {
-    width: 100%;
-    text-align: center;
-    background-color: rgb(110, 110, 110);
-    margin: 0;
-    color: white;
-    border-bottom: 2px solid rgb(50, 50, 50);
+  color: white;
+  background-color: rgb(110, 110, 110);
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  border-bottom: 2px solid rgb(50, 50, 50);
 }
-p {
+  p {
     margin: 0;
     padding: 1em;
     line-height: 1em;
-}
-img {
+  }
+  img {
     float: left;
     height: 3em;
-}
-
-button {
+  }
+  button {
     float: right;
     height: 3em;
     color: black;
     border: none;
     background-color: rgba(255, 255, 255, 0.8);
-}
-
-button:hover {
+  }
+  button:hover {
     background-color: rgba(255, 255, 255, 0.6);
-}
+  }
 
-#left, #right {
-    color: rgba(255, 255, 255, 0.8);
+
+.current, .next, .done {
+
+}
+  #left, #right {
     margin: 0;
     width: 50%;
     padding: 10px;
-}
-#left {
-    float: left;
-    border-right: 2px solid rgb(50, 50, 50);
-}
-#right {
-    float: right;
-}
+  }
+    #left {
+      float: left;
+      border-right: 2px solid rgb(50, 50, 50);
+    }
 
-pre {
+    #right {
+      float: right;
+    }
+
+  pre {
     word-wrap: break-word;
     font-family: 'Droid Sans Mono', monospace;
     font-size: 0.8em;
-}
-
-a {
-    color: rgba(255, 255, 255, 0.4)
-}
+  }
+  a {
+    color: rgba(255, 255, 255, 0.4);
+  }

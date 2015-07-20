@@ -52,7 +52,7 @@ function changeFavicon(src) {
 
 function to_html(string) {
   // Converts URLs to HTML links
-  return string.replace(
+  return (string || '').replace(
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
     '<a href=\"$1\">$1</a>'
   );
@@ -63,15 +63,15 @@ function refresh(data) {
   data = JSON.parse(data);
 
   data.header = data.timestamp;
-  if (data.data.url && data.data.commit) {
+  if (data.data && data.data.url && data.data.commit) {
     data.header += ' | Commit: ' + data.data.commit +
                    ' | URL: ' + data.data.url;
   }
 
-  last_payload.innerHTML = JSON.stringify(data.last_payload, null, '  ');
+  last_payload.innerHTML = data.last_payload;
   script_out.innerHTML = to_html(data.script_out);
   header.innerHTML = to_html(data.header);
-  if (data.data.image) { header_img.src = data.data.image; }
+  if (data.data && data.data.image) { header_img.src = data.data.image; }
 
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status.toLowerCase() + '.png');
