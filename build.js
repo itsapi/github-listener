@@ -5,7 +5,7 @@ var url = require('url'),
 
 /**
  * Create `self.build` function that can be rerun
- * @name build_manager.gen_build
+ * @name build.gen_build
  * @function
  * @param {String} repo The name of the repo to be passed into `self.getter`
  * @param {String} branch The name of the branch to be passed into `self.getter`
@@ -40,7 +40,7 @@ var Build = function (req, res, payload, build_manager) {
 
 /**
  * Ensure payload object is valid
- * @name build_manager.check_payload
+ * @name build.check_payload
  * @function
  * @param {Object} req The HTTP request object
  * @param {Object} res The HTTP response object
@@ -82,8 +82,16 @@ Build.prototype.check_payload = function () {
   return self.build_manager.respond(self.res, 202, 'Build queued');
 };
 
+/**
+ * Run the stored self.build
+ * @name build.run
+ * @function
+ */
+
 Build.prototype.run = function () {
   var self = this;
+
+  self.build_manager.respond(self.res, 200, 'Build started');
 
   // Run script
   var out = '';
