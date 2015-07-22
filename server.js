@@ -40,7 +40,8 @@ var Server = function (options, ready) {
   });
 
   // Load the Jade templates
-  async.forEach(['index'], function (name, next) {
+  self.templates = {};
+  async.forEach(['index', 'build'], function (name, next) {
     fs.readFile(__dirname + '/' + name + '.jade', function (err, data) {
       if (err) {
         logging.error(err);
@@ -78,7 +79,7 @@ Server.prototype.start = function () {
   socketio(self.app).on('connection', function (socket) {
     process.on('refresh', function () {
       logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify(self.assemble_data()));
+      socket.emit('refresh', JSON.stringify(self.get_current_build()));
     });
     process.on('close', function () {
       socket.disconnect();
@@ -117,14 +118,14 @@ Server.prototype.serve = function (req, res) {
     if (url_parts.query.refresh !== undefined) { // Send the data
       logging.log('Data requested by GET');
       res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(self.assemble_data()));
+      res.end(JSON.stringify(self.get_current_build()));
 
     } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
       self.build_manager.rerun(res);
 
     } else { // Send the HTML
-      var html = self.templates['index'](self.assemble_data());
+      var html = self.templates.index(self.get_current_build());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
@@ -141,13 +142,20 @@ Server.prototype.serve = function (req, res) {
   }
 };
 
+// NOTE: Not yet in use
+Server.prototype.render_build = function (build) {
+  var self = this;
+
+  return self.templates.build(assemble_data(build));
+};
+
 /**
  * Create an object of data to send to the client
- * @name Server.assemble_data
+ * @name Server.get_current_build
  * @function
  */
 
-Server.prototype.assemble_data = function () {
+Server.prototype.get_current_build = function () {
   var self = this;
 
   if (self.build_manager.current === undefined) {
@@ -155,18 +163,21 @@ Server.prototype.assemble_data = function () {
       empty: true,
       status: self.build_manager.STATUS.READY
     };
+  } else {
+    return assemble_data(self.build_manager.current);
   }
-
-  var ui = self.build_manager.current.ui;
-
-  return {
-    last_payload: JSON.stringify(ui.payload, null, '  '),
-    data: ui.data,
-    script_out: ansi.toHtml(ui.script_out),
-    timestamp: ui.timestamp.toString(),
-    status: ui.status
-  };
 };
+
+
+function assemble_data (build) {
+  return {
+    last_payload: JSON.stringify(build.ui.payload, null, '  '),
+    data: build.ui.data,
+    script_out: ansi.toHtml(build.ui.script_out),
+    timestamp: build.ui.timestamp.toString(),
+    status: build.ui.status
+  };
+}
 
 
 module.exports = Server;
