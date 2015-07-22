@@ -40,14 +40,13 @@ var BuildManager = function (config, logs) {
  * @param {Object} res The HTTP response object
  * @param {Number} code The HTTP response code
  * @param {String} message The error message to be used
- * @param {Boolean} hide Don't update client side if `true`
  */
 
-BuildManager.prototype.error = function (res, code, message, hide) {
+BuildManager.prototype.error = function (res, code, message) {
   var self = this;
 
   self.logging.warn(message);
-  self.respond(res, code, message, hide);
+  self.respond(res, code, message);
 
   return true;
 };
@@ -148,16 +147,13 @@ BuildManager.prototype.next_in_queue = function () {
  * @param {Object} res The HTTP response object
  * @param {Number} http_code The HTTP response code
  * @param {String} message The message to be sent
- * @param {Boolean} not_refresh Don't update client side if `true`
  */
 
-BuildManager.prototype.respond = function (res, http_code, message, not_refresh) {
+BuildManager.prototype.respond = function (res, http_code, message) {
   var self = this;
 
-  if (not_refresh === undefined) {
-    self.script_out = message;
-    process.emit('refresh');
-  }
+  self.script_out = message;
+  process.emit('refresh');
 
   res.writeHead(http_code, {'Content-Type': 'text/plain'});
   res.end(message);
