@@ -1,10 +1,10 @@
-var Listener = require('./listener'),
+var BuildManager = require('./build-manager.js'),
     Server = require('./server'),
     parser = require('./parser');
 
 
 module.exports = {
-  Listener: Listener,
+  BuildManager: BuildManager,
   Server: Server,
   parser: parser
 };
