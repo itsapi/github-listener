@@ -74,8 +74,9 @@ Build.prototype.check_payload = function () {
   }
 
   // Check branch in payload matches branch in URL
-  if (self.ui.data.branch !== (url.parse(self.req.url).pathname.replace(/^\/|\/$/g, '') || 'master')) {
-   return error(400, 'Branches do not match');
+  var branch = url.parse(self.req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
+  if (self.ui.data.branch !== branch) {
+    return error(400, 'Branches do not match');
   }
 
   return self.build_manager.respond(self.res, 202, 'Build queued');
