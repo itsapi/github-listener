@@ -51,7 +51,7 @@ var Server = function (options, ready) {
 
   // Load the Jade templates
   async.forEach(['index.jade'], function (filename, next) {
-    fs.readFile(__dirname + '/index.jade', function (err, data) {
+    fs.readFile(__dirname + '/' + filename, function (err, data) {
       if (err) {
         logging.error(err);
         throw err;
