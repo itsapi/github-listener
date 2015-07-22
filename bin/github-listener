@@ -32,8 +32,8 @@ if (argv.v || argv.version) {
     process.exit(1);
   }
 
-  var server = new Server(options);
-
-  server.start();
+  new Server(options, function (server) {
+    server.start();
+  });
 
 }

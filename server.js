@@ -6,6 +6,7 @@ var http = require('http'),
     logging = require('logging-tool'),
     BuildManager = require('./build-manager'),
     ansi = new (require('ansi-to-html'))(),
+    async = require('async-tools'),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -19,7 +20,7 @@ var http = require('http'),
  *  - `config` (Object): The GHL `config.json` (see example)
  */
 
-var Server = function (options) {
+var Server = function (options, ready) {
   var self = this;
 
   self.config = options.config;
@@ -27,6 +28,7 @@ var Server = function (options) {
 
   // Make build_manager
   self.build_manager = new BuildManager(self.config, options.logging);
+  self.ready = ready;
 
   // Load the Jade template
   fs.readFile(__dirname + '/index.jade', function (err, data) {
@@ -45,6 +47,25 @@ var Server = function (options) {
     } else {
       self.build_manager.hook(req, res);
     }
+  });
+
+  // Load the Jade templates
+  async.forEach(['index.jade'], function (filename, next) {
+    fs.readFile(__dirname + '/index.jade', function (err, data) {
+      if (err) {
+        logging.error(err);
+        throw err;
+      }
+
+      self.template = jade.compile(data.toString(), {pretty: true});
+    });
+    next();
+
+  }, function () {
+
+    // Server ready!
+    self.ready(self);
+
   });
 };
 
