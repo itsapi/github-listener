@@ -52,7 +52,7 @@ Build.prototype.check_payload = function () {
   function error (code, message) {
     self.err = true;
     self.ui.status = self.build_manager.STATUS.ERROR;
-    return self.build_manager.error(self.res, code, message);
+    self.build_manager.error(self.res, code, message);
   }
 
   if (!self.ui.payload) {
@@ -79,7 +79,7 @@ Build.prototype.check_payload = function () {
     return error(400, 'Branches do not match');
   }
 
-  return self.build_manager.respond(self.res, 202, 'Build queued');
+  self.build_manager.respond(self.res, 202, 'Build queued');
 };
 
 /**

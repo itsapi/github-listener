@@ -47,8 +47,6 @@ BuildManager.prototype.error = function (res, code, message) {
 
   self.logging.warn(message);
   self.respond(res, code, message);
-
-  return true;
 };
 
 /**
@@ -105,8 +103,7 @@ BuildManager.prototype.queue = function (build) {
   var self = this;
 
   if (build.err) {
-    self.done.push(build);
-    return;
+    return self.done.push(build);
   }
 
   // Avoids running multiple requests at once.
