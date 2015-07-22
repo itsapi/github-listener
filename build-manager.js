@@ -150,11 +150,7 @@ BuildManager.prototype.next_in_queue = function () {
  */
 
 BuildManager.prototype.respond = function (res, http_code, message) {
-  var self = this;
-
-  self.script_out = message;
   process.emit('refresh');
-
   res.writeHead(http_code, {'Content-Type': 'text/plain'});
   res.end(message);
 };
