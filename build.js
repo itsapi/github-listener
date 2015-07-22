@@ -19,14 +19,12 @@ var Build = function (req, res, payload, build_manager) {
   self.build_manager = build_manager;
 
   self.ui = {
-    payload: undefined,
-    script_out: undefined,
+    payload: '',
+    script_out: '',
     data: {},
-    timestamp: undefined,
+    timestamp: new Date(),
     status: self.build_manager.STATUS.WAITING
   };
-
-  self.ui.timestamp = new Date();
 
   // Load and check payload
   self.parser = req.headers['travis-repo-slug'] ?
