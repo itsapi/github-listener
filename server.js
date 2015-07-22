@@ -50,14 +50,14 @@ var Server = function (options, ready) {
   });
 
   // Load the Jade templates
-  async.forEach(['index.jade'], function (filename, next) {
-    fs.readFile(__dirname + '/' + filename, function (err, data) {
+  async.forEach(['index'], function (name, next) {
+    fs.readFile(__dirname + '/' + name + '.jade', function (err, data) {
       if (err) {
         logging.error(err);
         throw err;
       }
 
-      self.template = jade.compile(data.toString(), {pretty: true});
+      self.templates[name] = jade.compile(data.toString(), {pretty: true});
     });
     next();
 
@@ -134,7 +134,7 @@ Server.prototype.serve = function (req, res) {
       self.build_manager.rerun(res);
 
     } else { // Send the HTML
-      var html = self.template(self.assemble_data());
+      var html = self.templates['index'](self.assemble_data());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
