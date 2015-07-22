@@ -22,6 +22,7 @@
   "post-merge": "npm install",
   "dependencies": {
     "ansi-to-html": "^0.3.0",
+    "async-tools": "^1.0.2",
     "bl": "~1.0.0",
     "jade": "~1.11.0",
     "logging-tool": "~1.2.2",

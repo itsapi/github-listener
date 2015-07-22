@@ -5,6 +5,7 @@ var http = require('http'),
     fs = require('fs'),
     logging = require('logging-tool'),
     Listener = require('./listener'),
+    async = require('async-tools'),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -18,7 +19,7 @@ var http = require('http'),
  *  - `config` (Object): The GHL `config.json` (see example)
  */
 
-var Server = function (options) {
+var Server = function (options, ready) {
   var self = this;
 
   self.config = options.config;
@@ -26,16 +27,7 @@ var Server = function (options) {
 
   // Make listener
   self.listener = new Listener(self.config, options.logging);
-
-  // Load the Jade template
-  fs.readFile(__dirname + '/index.jade', function (err, data) {
-    if (err) {
-      logging.error(err);
-      throw err;
-    }
-
-    self.template = jade.compile(data.toString(), {pretty: true});
-  });
+  self.ready = ready;
 
   // Setup server
   self.app = http.createServer(function (req, res) {
@@ -44,6 +36,25 @@ var Server = function (options) {
     } else {
       self.listener.hook(req, res);
     }
+  });
+
+  // Load the Jade templates
+  async.forEach(['index.jade'], function (filename, next) {
+    fs.readFile(__dirname + '/index.jade', function (err, data) {
+      if (err) {
+        logging.error(err);
+        throw err;
+      }
+
+      self.template = jade.compile(data.toString(), {pretty: true});
+    });
+    next();
+
+  }, function () {
+
+    // Server ready!
+    self.ready(self);
+
   });
 };
 
