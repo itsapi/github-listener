@@ -2,6 +2,7 @@
   "sub": true,
   "node": true,
   "browser": true,
+  "globals": {"io": true, "ActiveXObject": true},
   "curly": true,
   "eqeqeq": true,
   "undef": true,
