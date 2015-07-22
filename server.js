@@ -30,16 +30,6 @@ var Server = function (options, ready) {
   self.build_manager = new BuildManager(self.config, options.logging);
   self.ready = ready;
 
-  // Load the Jade template
-  fs.readFile(__dirname + '/index.jade', function (err, data) {
-    if (err) {
-      logging.error(err);
-      throw err;
-    }
-
-    self.template = jade.compile(data.toString(), {pretty: true});
-  });
-
   // Setup server
   self.app = http.createServer(function (req, res) {
     if (req.method === 'GET') {
