@@ -22,7 +22,6 @@ var http = require('http'),
 var Server = function (options, ready) {
   var self = this;
 
-  self.templates = [];
   self.config = options.config;
   logging.silent = !options.logging;
 
@@ -40,6 +39,7 @@ var Server = function (options, ready) {
   });
 
   // Load the Jade templates
+  self.templates = {};
   async.forEach(['index'], function (name, next) {
     fs.readFile(__dirname + '/' + name + '.jade', function (err, data) {
       if (err) {
