@@ -87,13 +87,13 @@ test('listener.respond', function (t) {
     listener.respond(res, 200, 'Hello World');
   });
 
-  t.test('listener.script_out set', function (st) {
+  t.test('listener.log set', function (st) {
     var listener = new Listener();
 
     var res = create_res(function (res, data) {
       st.equal(data, 'Hello World', 'correct server response');
       st.equal(res.statusCode, 200, 'correct status code');
-      st.equal(listener.script_out, 'Hello World', 'correct listener.script_out');
+      st.equal(listener.log, 'Hello World', 'correct listener.log');
       st.end();
     });
 
@@ -106,7 +106,7 @@ test('listener.respond', function (t) {
     var res = create_res(function (res, data) {
       st.equal(data, 'Hello World', 'correct server response');
       st.equal(res.statusCode, 200, 'correct status code');
-      st.equal(listener.script_out, '', 'correct listener.script_out');
+      st.equal(listener.log, '', 'correct listener.log');
       st.end();
     });
 
@@ -150,7 +150,7 @@ test('listener.error', function (t) {
       st.equal(res.statusCode, 500, 'correct status code');
       st.equal(listener.status, 'Error', 'correct listener.status');
       st.equal(listener.running, false, 'correct listener.running');
-      st.equal(listener.script_out, 'Error', 'correct listener.script_out');
+      st.equal(listener.log, 'Error', 'correct listener.log');
       st.end();
     });
 

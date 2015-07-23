@@ -2,6 +2,7 @@ var url = require('url'),
     exec = require('child_process').exec,
     parser = require('./parser');
 
+var ids = 0;
 
 /**
  * Create `self.build` function that can be rerun
@@ -17,10 +18,11 @@ var Build = function (req, res, payload, build_manager) {
   self.req = req;
   self.res = res;
   self.build_manager = build_manager;
+  self.id = ids++;
 
   self.ui = {
     payload: '',
-    script_out: '',
+    log: '',
     data: {},
     timestamp: new Date(),
     status: self.build_manager.STATUS.WAITING
@@ -50,7 +52,9 @@ Build.prototype.check_payload = function () {
   function error (code, message) {
     self.err = true;
     self.ui.status = self.build_manager.STATUS.ERROR;
+    self.ui.log += message;
     self.build_manager.error(self.res, code, message);
+    process.emit('refresh', self.id);
   }
 
   if (!self.ui.payload) {
@@ -78,6 +82,8 @@ Build.prototype.check_payload = function () {
   }
 
   self.build_manager.respond(self.res, 202, 'Build queued');
+  self.ui.log += 'Build queued\n';
+  process.emit('refresh', self.id);
 };
 
 /**
@@ -89,7 +95,8 @@ Build.prototype.check_payload = function () {
 Build.prototype.run = function () {
   var self = this;
 
-  self.build_manager.respond(self.res, 200, 'Build started');
+  self.ui.log += 'Build started\n';
+  process.emit('refresh', self.id);
 
   // Run script
   var out = '';
@@ -100,10 +107,10 @@ Build.prototype.run = function () {
       self.build_manager.logging.log('\n' + out);
       self.build_manager.logging.info('Finished processing files\n');
 
-      self.ui.script_out = out;
-      self.ui.status = self.build_manager.STATUS.DONE;
       self.ui.timestamp = new Date();
-      process.emit('refresh');
+      self.ui.status = self.build_manager.STATUS.DONE;
+      self.ui.log += out + '\nBuild Finished';
+      process.emit('refresh', self.id);
 
       self.build_manager.next_in_queue();
     });

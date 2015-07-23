@@ -22,7 +22,7 @@ var BuildManager = function (config, logs) {
 
   self.config = config;
   self.waiting = [];
-  self.done = [];
+  self.builds = {};
   self.running = false;
 
   self.STATUS = {
@@ -67,7 +67,8 @@ BuildManager.prototype.hook = function (req, res) {
     }
 
     var build = new Build(req, res, data, self);
-    self.queue(build);
+    self.builds[build.id] = build;
+    self.queue(build.id);
 
   }));
 };
@@ -77,16 +78,15 @@ BuildManager.prototype.hook = function (req, res) {
  * @name BuildManager.rerun
  * @function
  * @param {Object} res The HTTP response object
+ * @param {Number} id The build ID to rebuild
  */
 
-// TODO: Redo this
-BuildManager.prototype.rerun = function (res) {
+BuildManager.prototype.rerun = function (res, id) {
   var self = this;
+  var build = self.builds[id];
 
-  if (self.build) {
-    self.queue(function () {
-      self.build(res);
-    });
+  if (build) {
+    self.queue(build);
   } else {
     self.respond(res, 200, 'Nothing to build');
   }
@@ -99,11 +99,13 @@ BuildManager.prototype.rerun = function (res) {
  * @param {Object} build The build to be queued
  */
 
-BuildManager.prototype.queue = function (build) {
+BuildManager.prototype.queue = function (id) {
   var self = this;
+  var build = self.builds[id];
+  build.log = '';
 
   if (build.err) {
-    return self.done.push(build);
+    return;
   }
 
   // Avoids running multiple requests at once.
@@ -114,7 +116,6 @@ BuildManager.prototype.queue = function (build) {
     self.running = true;
     self.current = build;
     build.run();
-    self.done.push(build);
   }
 };
 
@@ -133,7 +134,6 @@ BuildManager.prototype.next_in_queue = function () {
     // Pop and run next in queue
     self.current = self.waiting.shift();
     self.current.run();
-    self.done.push(self.current);
   }
 };
 
@@ -147,7 +147,6 @@ BuildManager.prototype.next_in_queue = function () {
  */
 
 BuildManager.prototype.respond = function (res, http_code, message) {
-  process.emit('refresh');
   res.writeHead(http_code, {'Content-Type': 'text/plain'});
   res.end(message);
 };

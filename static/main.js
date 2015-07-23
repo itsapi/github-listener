@@ -66,7 +66,7 @@ function refresh(data) {
   }
 
   last_payload.innerHTML = data.last_payload;
-  script_out.innerHTML = to_html(data.script_out);
+  log.innerHTML = to_html(data.log);
   header.innerHTML = to_html(data.header);
   if (data.data && data.data.image) { header_img.src = data.data.image; }
 
@@ -76,7 +76,7 @@ function refresh(data) {
 
 
 var last_payload = document.querySelector('#left pre');
-var script_out = document.querySelector('#right pre');
+var log = document.querySelector('#right pre');
 var header = document.querySelector('header p');
 var header_img = document.querySelector('header img');
 var rebuild_btn = document.querySelector('header button');
@@ -87,17 +87,8 @@ socket.on('refresh', function(data) {
   refresh(data);
 });
 
-makeRequest(window.location.href + '?refresh', refresh);
-
 rebuild_btn.onclick = function () {
   makeRequest(window.location.href + '?rebuild', function (data) {
     console.log(data);
   });
 };
-
-setInterval(function() {
-  if (!socket.connected) {
-    console.log('Polling for refresh');
-    makeRequest(window.location.href + '?refresh', refresh);
-  }
-}, 2000);

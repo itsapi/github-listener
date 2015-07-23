@@ -3,10 +3,10 @@ var http = require('http'),
     url = require('url'),
     jade = require('jade'),
     fs = require('fs'),
+    async = require('async-tools'),
     logging = require('logging-tool'),
     BuildManager = require('./build-manager'),
     ansi = new (require('ansi-to-html'))(),
-    async = require('async-tools'),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -77,9 +77,9 @@ Server.prototype.start = function () {
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
-    process.on('refresh', function () {
+    process.on('refresh', function (build_id) {
       logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify(self.get_current_build()));
+      socket.emit('refresh', JSON.stringify(self.get_build(build_id)));
     });
     process.on('close', function () {
       socket.disconnect();
@@ -115,17 +115,12 @@ Server.prototype.serve = function (req, res) {
   var url_parts = url.parse(req.url, true);
 
   if (url_parts.pathname === '/') {
-    if (url_parts.query.refresh !== undefined) { // Send the data
-      logging.log('Data requested by GET');
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(self.get_current_build()));
-
-    } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
+    if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
-      self.build_manager.rerun(res);
+      self.build_manager.rerun(res, url_parts.query.rebuild);
 
     } else { // Send the HTML
-      var html = self.templates.index(self.get_current_build());
+      var html = self.templates.index(self.get_build());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
@@ -151,20 +146,21 @@ Server.prototype.render_build = function (build) {
 
 /**
  * Create an object of data to send to the client
- * @name Server.get_current_build
+ * @name Server.get_build
  * @function
+ * @param {Number} id The ID of the build to be generated
  */
 
-Server.prototype.get_current_build = function () {
+Server.prototype.get_build = function (id) {
   var self = this;
 
-  if (self.build_manager.current === undefined) {
+  if (self.build_manager.builds[id] === undefined) {
     return {
       empty: true,
       status: self.build_manager.STATUS.READY
     };
   } else {
-    return assemble_data(self.build_manager.current);
+    return assemble_data(self.build_manager.builds[id]);
   }
 };
 
@@ -173,7 +169,7 @@ function assemble_data (build) {
   return {
     last_payload: JSON.stringify(build.ui.payload, null, '  '),
     data: build.ui.data,
-    script_out: ansi.toHtml(build.ui.script_out),
+    log: ansi.toHtml(build.ui.log),
     timestamp: build.ui.timestamp.toString(),
     status: build.ui.status
   };
