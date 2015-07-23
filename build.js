@@ -2,8 +2,6 @@ var url = require('url'),
     exec = require('child_process').exec,
     parser = require('./parser');
 
-var ids = 0;
-
 /**
  * Create `self.build` function that can be rerun
  * @name build.gen_build
@@ -12,13 +10,13 @@ var ids = 0;
  * @param {String} branch The name of the branch to be passed into `self.getter`
  */
 
-var Build = function (req, res, payload, build_manager) {
+var Build = function (req, res, payload, build_manager, id) {
   var self = this;
 
   self.req = req;
   self.res = res;
   self.build_manager = build_manager;
-  self.id = ids++;
+  self.id = id;
 
   self.ui = {
     payload: '',
@@ -34,8 +32,6 @@ var Build = function (req, res, payload, build_manager) {
     new parser.GitHub(payload, req.headers, self.build_manager.config);
 
   self.ui.payload = self.parser.parse_body();
-
-  self.check_payload();
 };
 
 /**

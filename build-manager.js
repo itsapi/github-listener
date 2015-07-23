@@ -5,6 +5,7 @@ var bl = require('bl'),
 
 format.extend(String.prototype);
 
+var ids = 0;
 
 /**
  * Creates a new `BuildManager` instance.
@@ -66,10 +67,11 @@ BuildManager.prototype.hook = function (req, res) {
       return self.error(res, 400, 'Error whilst receiving payload');
     }
 
-    var build = new Build(req, res, data, self);
-    self.builds[build.id] = build;
-    self.queue(build.id);
+    var id = ids++;
 
+    self.builds[id] = new Build(req, res, data, self, id);
+    self.builds[id].check_payload();
+    self.queue(id);
   }));
 };
 
@@ -83,12 +85,11 @@ BuildManager.prototype.hook = function (req, res) {
 
 BuildManager.prototype.rerun = function (res, id) {
   var self = this;
-  var build = self.builds[id];
 
-  if (build) {
-    self.queue(build);
+  if (self.builds[id]) {
+    self.queue(id);
   } else {
-    self.respond(res, 200, 'Nothing to build');
+    self.respond(res, 200, 'Nothing to build'); // TODO: Error code?
   }
 };
 
@@ -111,10 +112,10 @@ BuildManager.prototype.queue = function (id) {
   // Avoids running multiple requests at once.
   if (self.waiting.length || self.running) {
     logging.info('Script already running');
-    self.waiting.push(build);
+    self.waiting.push(id);
   } else {
     self.running = true;
-    self.current = build;
+    self.current = id;
     build.run();
   }
 };
@@ -133,7 +134,7 @@ BuildManager.prototype.next_in_queue = function () {
   if (self.waiting.length) {
     // Pop and run next in queue
     self.current = self.waiting.shift();
-    self.current.run();
+    self.builds[self.current].run();
   }
 };
 

@@ -41,7 +41,7 @@ var Server = function (options, ready) {
 
   // Load the Jade templates
   self.templates = {};
-  async.forEach(['index', 'build'], function (name, next) {
+  async.forEach(['index'], function (name, next) {
     fs.readFile(__dirname + '/' + name + '.jade', function (err, data) {
       if (err) {
         logging.error(err);
@@ -117,10 +117,10 @@ Server.prototype.serve = function (req, res) {
   if (url_parts.pathname === '/') {
     if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
-      self.build_manager.rerun(res, url_parts.query.rebuild);
+      self.build_manager.rerun(res, parseInt(url_parts.query.rebuild));
 
     } else { // Send the HTML
-      var html = self.templates.index(self.get_build());
+      var html = self.render();
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
@@ -137,11 +137,25 @@ Server.prototype.serve = function (req, res) {
   }
 };
 
-// NOTE: Not yet in use
-Server.prototype.render_build = function (build) {
+/**
+ * Generate DOM to send to UI of builds dashboard
+ * @name Server.render
+ * @function
+ */
+
+Server.prototype.render = function () {
   var self = this;
 
-  return self.templates.build(assemble_data(build));
+  var builds = [];
+  for (var id in self.build_manager.builds) {
+    builds.push(self.get_build(id));
+  }
+
+  return self.templates.index({
+    builds: builds,
+    current: self.build_manager.current ?
+             self.get_build(self.build_manager.current) : {}
+  });
 };
 
 /**
@@ -153,19 +167,8 @@ Server.prototype.render_build = function (build) {
 
 Server.prototype.get_build = function (id) {
   var self = this;
+  var build = self.build_manager.builds[id];
 
-  if (self.build_manager.builds[id] === undefined) {
-    return {
-      empty: true,
-      status: self.build_manager.STATUS.READY
-    };
-  } else {
-    return assemble_data(self.build_manager.builds[id]);
-  }
-};
-
-
-function assemble_data (build) {
   return {
     last_payload: JSON.stringify(build.ui.payload, null, '  '),
     data: build.ui.data,
@@ -173,7 +176,7 @@ function assemble_data (build) {
     timestamp: build.ui.timestamp.toString(),
     status: build.ui.status
   };
-}
+};
 
 
 module.exports = Server;

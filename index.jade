@@ -1,25 +1,18 @@
 doctype html
 html
-    head
-        title= status + " - Git"
+  head
+    title= (current.status || 'Ready') + ' - Git'
 
-        link(href='//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
-        link(href='main.css', rel='stylesheet')
-        script(src='socket.io/socket.io.js')
-    body
-            .current
-                header
-                    img
-                    button Rebuild
-                    p!= header
+    link(href='//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
+    link(href='main.css', rel='stylesheet')
+    script(src='socket.io/socket.io.js')
+    script(src='main.js')
+  body
+    ul.list
+      each build in builds
+        li(id=build.id)
+          span.slug= build.data.slug
+          span.commit= build.data.commit
+          span.branch= build.data.branch
 
-                #left
-                    h2 Last Payload
-                    pre= last_payload
-
-                #right
-                    h2 Script Output
-                    pre!= log
-            .waiting
-            .done
-        script(src='main.js')
+    pre.log!= current.log
