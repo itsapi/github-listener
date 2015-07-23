@@ -22,6 +22,7 @@ var http = require('http'),
 var Server = function (options, ready) {
   var self = this;
 
+  self.templates = [];
   self.config = options.config;
   logging.silent = !options.logging;
 
