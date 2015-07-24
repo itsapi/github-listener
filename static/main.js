@@ -1,6 +1,8 @@
-var Build = function(e) {
-  this.elem = e;
-  this.id = e.id;
+var Build = function(elem) {
+  this.elem = elem;
+  this.id = elem.id;
+
+  socket.emit('refresh', this.id);
 };
 
 Build.prototype.refresh = function(data) {
@@ -8,48 +10,61 @@ Build.prototype.refresh = function(data) {
 };
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  var builds = {};
-  var elems = document.querySelectorAll('.list li');
+var BuildManager = function(elem) {
+  var self = this;
+
+  self.elem = elem;
+  self.builds = {};
+
+  var elems = self.elem.querySelectorAll('.build');
 
   for (var i = 0; i < elems.length; i++) {
-    builds[elems[i].id] = new Build(elems[i]);
+    self.builds[elems[i].id] = new Build(elems[i]);
   }
 
-  console.log(builds);
-
-  var socket = io();
-
   socket.on('refresh', function(data) {
-    var build = JSON.parse(data);
+    data = JSON.parse(data);
 
     console.log('Received a refresh');
-    console.log(build);
+    console.log(data);
 
-    function span(param) {
-      var elem = document.createElement('span');
-      elem.className = param;
-      elem.innerHTML = build.data[param];
-      return elem;
+    if (!self.builds[data.id]) {
+      self.addBuild(data);
     }
 
-    if (!builds[build.id]) {
-
-      var elem = document.createElement('li');
-
-      elem.id = build.id;
-
-      elem.appendChild(span('slug'));
-      elem.appendChild(span('commit'));
-      elem.appendChild(span('branch'));
-
-      document.querySelector('.list').appendChild(elem);
-
-      builds[build.id] = new Build(elem);
-    }
-
-    builds[build.id].refresh(build);
+    self.builds[data.id].refresh(data);
   });
+};
+
+BuildManager.prototype.addBuild = function(build) {
+  var self = this;
+
+  function span(param) {
+    var elem = document.createElement('span');
+    elem.className = param;
+    elem.innerHTML = build.data[param];
+    return elem;
+  }
+
+  var elem = document.createElement('li');
+
+  elem.id = build.id;
+
+  elem.appendChild(span('slug'));
+  elem.appendChild(span('commit'));
+  elem.appendChild(span('branch'));
+
+  self.elem.appendChild(elem);
+
+  self.builds[build.id] = new Build(build);
+};
+
+
+var socket = io();
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  new BuildManager(document.querySelector('.list'));
 
   // rebuild_btn.onclick = function () {
   //   makeRequest(window.location.href + '?rebuild', function (data) {
