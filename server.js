@@ -77,6 +77,9 @@ Server.prototype.start = function () {
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
+    socket.on('refresh', function (build_id) {
+      process.emit('refresh', build_id);
+    });
     process.on('refresh', function (build_id) {
       logging.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify(self.get_build(build_id)));
