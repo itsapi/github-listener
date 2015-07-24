@@ -1,8 +1,14 @@
-var Build = function(elem) {
-  this.elem = elem;
-  this.id = elem.id;
+var Build = function(elem, onChange) {
+  var self = this;
 
-  socket.emit('refresh', this.id);
+  self.elem = elem;
+  self.id = parseInt(elem.id);
+
+  self.elem.addEventListener('click', function() {
+    onChange(self.id);
+  });
+
+  socket.emit('refresh', self.id);
 };
 
 Build.prototype.refresh = function(data) {
@@ -14,12 +20,14 @@ var BuildManager = function(elem) {
   var self = this;
 
   self.elem = elem;
+  self.selected = document.body.dataset.current;
   self.builds = {};
+  self.log = document.querySelector('.log');
 
   var elems = self.elem.querySelectorAll('.build');
 
   for (var i = 0; i < elems.length; i++) {
-    self.builds[elems[i].id] = new Build(elems[i]);
+    self.builds[elems[i].id] = new Build(elems[i], self.onChange.bind(self));
   }
 
   socket.on('refresh', function(data) {
@@ -28,11 +36,15 @@ var BuildManager = function(elem) {
     console.log('Received a refresh');
     console.log(data);
 
-    if (!self.builds[data.id]) {
+    if (self.builds[data.id] === undefined) {
       self.addBuild(data);
     }
 
-    self.builds[data.id].refresh(data);
+    if (self.selected === undefined) {
+      self.selected = data.id;
+    }
+
+    self.refresh(data);
   });
 };
 
@@ -56,7 +68,24 @@ BuildManager.prototype.addBuild = function(build) {
 
   self.elem.appendChild(elem);
 
-  self.builds[build.id] = new Build(build);
+  self.builds[build.id] = new Build(elem, self.onChange.bind(self));
+};
+
+BuildManager.prototype.refresh = function(build) {
+  var self = this;
+
+  if (self.selected === build.id) {
+    self.log.innerHTML = toHtml(build.log);
+  }
+
+  self.builds[build.id].refresh(build);
+};
+
+BuildManager.prototype.onChange = function(build_id) {
+  var self = this;
+
+  self.selected = build_id;
+  self.refresh(self.builds[build_id].ui);
 };
 
 
@@ -73,6 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // };
 
 });
+
+
+function toHtml(string) {
+  // Converts URLs to HTML links
+  return (string || '').replace(
+    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
+    '<a href=\"$1\">$1</a>'
+  );
+}
 
 
 /*
@@ -119,15 +157,6 @@ function changeFavicon(src) {
 
   if (oldLink) { document.head.removeChild(oldLink); }
   document.head.appendChild(link);
-}
-
-
-function toHtml(string) {
-  // Converts URLs to HTML links
-  return (string || '').replace(
-    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
-    '<a href=\"$1\">$1</a>'
-  );
 }
 
 

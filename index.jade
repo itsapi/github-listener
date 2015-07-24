@@ -7,10 +7,11 @@ html
     link(href='main.css', rel='stylesheet')
     script(src='socket.io/socket.io.js')
     script(src='main.js')
-  body
+
+  body(data-current=current.id)
     ul.list
       each build in builds
-        li(id=build.id)
+        li.build(id=build.id)
           span.slug= build.data.slug
           span.commit= build.data.commit
           span.branch= build.data.branch
