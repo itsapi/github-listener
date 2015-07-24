@@ -52,6 +52,7 @@ header {
 .list {
   list-style: none;
   padding: 0;
+  margin: 0;
   width: 25%;
   float: right;
 }
@@ -87,4 +88,6 @@ pre.log {
   word-wrap: break-word;
   font-family: 'Droid Sans Mono', monospace;
   font-size: 0.8em;
+  margin: 0;
+  padding: 1em .5em;
 }
