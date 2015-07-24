@@ -77,10 +77,6 @@ BuildManager.prototype.refresh = function(build) {
 
   if (self.selected === build.id) {
     self.log.innerHTML = toHtml(build.log);
-    self.log.classList.add('updating');
-    window.setTimeout(function () {
-      self.log.classList.remove('updating');
-    }, 100);
   }
 
   self.builds[build.id].refresh(build);
