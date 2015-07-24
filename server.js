@@ -173,7 +173,8 @@ Server.prototype.get_build = function (id) {
   var build = self.build_manager.builds[id];
 
   return {
-    last_payload: JSON.stringify(build.ui.payload, null, '  '),
+    id: build.id,
+    payload: JSON.stringify(build.ui.payload, null, '  '),
     data: build.ui.data,
     log: ansi.toHtml(build.ui.log),
     timestamp: build.ui.timestamp.toString(),
