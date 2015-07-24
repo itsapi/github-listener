@@ -20,7 +20,6 @@ var BuildManager = function(elem) {
   var self = this;
 
   self.elem = elem;
-  self.selected = document.body.dataset.current;
   self.builds = {};
   self.log = document.querySelector('.log');
 
@@ -29,6 +28,8 @@ var BuildManager = function(elem) {
   for (var i = 0; i < elems.length; i++) {
     self.builds[elems[i].id] = new Build(elems[i], self.onChange.bind(self));
   }
+
+  self.updateSelected(document.body.dataset.current);
 
   socket.on('refresh', function(data) {
     data = JSON.parse(data);
@@ -41,7 +42,7 @@ var BuildManager = function(elem) {
     }
 
     if (self.selected === undefined) {
-      self.selected = data.id;
+      self.updateSelected(data.id);
     }
 
     self.refresh(data);
@@ -88,8 +89,20 @@ BuildManager.prototype.refresh = function(build) {
 BuildManager.prototype.onChange = function(build_id) {
   var self = this;
 
-  self.selected = build_id;
+  self.updateSelected(build_id);
+
   self.refresh(self.builds[build_id].ui);
+};
+
+BuildManager.prototype.updateSelected = function (build_id) {
+  var self = this;
+
+  if (self.selected !== undefined) {
+    self.builds[self.selected].elem.classList.remove('selected');
+  }
+
+  self.selected = build_id;
+  self.builds[self.selected].elem.classList.add('selected');
 };
 
 

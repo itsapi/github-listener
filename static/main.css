@@ -56,14 +56,17 @@ header {
   width: 25%;
   float: right;
 }
-  .list li {
+  .list .build {
     background-color: rgba(255, 255, 255, 0.2);
     border: 3px solid transparent;
     padding: .7em;
     padding-top: .4em;
     cursor: pointer;
   }
-    .list li:hover {
+    .list .build.selected {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+    .list .build:hover {
       background-color: rgba(255, 255, 255, 0.3);
       border: 3px solid rgba(255, 255, 255, 0.1);
     }
