@@ -59,11 +59,28 @@ header {
     background-color: rgba(255, 255, 255, 0.2);
     border: 3px solid transparent;
     padding: .7em;
+    padding-top: .4em;
     cursor: pointer;
   }
     .list li:hover {
       background-color: rgba(255, 255, 255, 0.3);
       border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+    .list .slug,
+    .list .branch {
+      font-size: .7em;
+      margin-bottom: .3em;
+      color: rgba(255, 255, 255, .5);
+    }
+    .list .slug {
+      float: left;
+    }
+    .list .branch {
+      float: right;
+    }
+    .list .commit {
+      display: block;
+      clear: both;
     }
 
 pre.log {

@@ -13,7 +13,7 @@ html
       each build in builds
         li.build(id=build.id)
           span.slug= build.data.slug
-          span.commit= build.data.commit
           span.branch= build.data.branch
+          span.commit= build.data.commit
 
     pre.log!= current.log

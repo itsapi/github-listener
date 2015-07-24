@@ -63,8 +63,8 @@ BuildManager.prototype.addBuild = function(build) {
   elem.id = build.id;
 
   elem.appendChild(span('slug'));
-  elem.appendChild(span('commit'));
   elem.appendChild(span('branch'));
+  elem.appendChild(span('commit'));
 
   self.elem.appendChild(elem);
 
