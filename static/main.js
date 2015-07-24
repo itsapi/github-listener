@@ -1,6 +1,66 @@
-document.head = document.head || document.getElementsByTagName('head')[0];
+var Build = function(e) {
+  this.elem = e;
+  this.id = e.id;
+};
+
+Build.prototype.refresh = function(data) {
+  this.ui = data;
+};
 
 
+document.addEventListener('DOMContentLoaded', function() {
+  var builds = {};
+  var elems = document.querySelectorAll('.list li');
+
+  for (var i = 0; i < elems.length; i++) {
+    builds[elems[i].id] = new Build(elems[i]);
+  }
+
+  console.log(builds);
+
+  var socket = io();
+
+  socket.on('refresh', function(data) {
+    var build = JSON.parse(data);
+
+    console.log('Received a refresh');
+    console.log(build);
+
+    function span(param) {
+      var elem = document.createElement('span');
+      elem.className = param;
+      elem.innerHTML = build.data[param];
+      return elem;
+    }
+
+    if (!builds[build.id]) {
+
+      var elem = document.createElement('li');
+
+      elem.id = build.id;
+
+      elem.appendChild(span('slug'));
+      elem.appendChild(span('commit'));
+      elem.appendChild(span('branch'));
+
+      document.querySelector('.list').appendChild(elem);
+
+      builds[build.id] = new Build(elem);
+    }
+
+    builds[build.id].refresh(build);
+  });
+
+  // rebuild_btn.onclick = function () {
+  //   makeRequest(window.location.href + '?rebuild', function (data) {
+  //     console.log(data);
+  //   });
+  // };
+
+});
+
+
+/*
 function makeRequest(url, cb) {
   var httpRequest;
   if (window.XMLHttpRequest) { // Mozilla, Safari, ...
@@ -47,7 +107,7 @@ function changeFavicon(src) {
 }
 
 
-function to_html(string) {
+function toHtml(string) {
   // Converts URLs to HTML links
   return (string || '').replace(
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
@@ -65,30 +125,12 @@ function refresh(data) {
                    ' | URL: ' + data.data.url;
   }
 
-  last_payload.innerHTML = data.last_payload;
-  log.innerHTML = to_html(data.log);
-  header.innerHTML = to_html(data.header);
+  payload.innerHTML = data.payload;
+  log.innerHTML = toHtml(data.log);
+  header.innerHTML = toHtml(data.header);
   if (data.data && data.data.image) { header_img.src = data.data.image; }
 
   document.title = data.status + ' - Git';
   changeFavicon('icons/' + data.status.toLowerCase() + '.png');
 }
-
-
-var last_payload = document.querySelector('#left pre');
-var log = document.querySelector('#right pre');
-var header = document.querySelector('header p');
-var header_img = document.querySelector('header img');
-var rebuild_btn = document.querySelector('header button');
-var socket = io();
-
-socket.on('refresh', function(data) {
-  console.log('Received a refresh');
-  refresh(data);
-});
-
-rebuild_btn.onclick = function () {
-  makeRequest(window.location.href + '?rebuild', function (data) {
-    console.log(data);
-  });
-};
+*/
