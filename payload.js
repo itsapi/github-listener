@@ -32,8 +32,8 @@ if (process.argv[2] === 'travis') {
 
 } else {
   payload = JSON.stringify({
-    repository: { full_name: 'user/repo', url: 'http://example.com' },
-    ref: 'refs/heads/master',
+    repository: { full_name: 'user/repo', url: 'http://example.com/testing' },
+    ref: 'refs/heads/testing',
     head_commit: { message: 'example commit' }
   });
 
