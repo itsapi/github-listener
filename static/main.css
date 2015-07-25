@@ -53,8 +53,12 @@ header {
   list-style: none;
   padding: 0;
   margin: 0;
+
   width: 25%;
-  float: right;
+  position: fixed;
+  right: 0;
+  max-height: 100%;
+  overflow-y: scroll;
 }
   .list .build {
     background-color: rgba(255, 255, 255, 0.2);
@@ -91,6 +95,12 @@ header {
   word-wrap: break-word;
   font-family: 'Droid Sans Mono', monospace;
   font-size: 0.8em;
-  margin: 0;
   padding: 1em .5em;
+  margin: 0;
+
+  width: 75%;
+  position: fixed;
+  left: 0;
+  max-height: 100%;
+  overflow-y: scroll;
 }
