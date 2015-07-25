@@ -73,6 +73,7 @@ BuildManager.prototype.addBuild = function(build) {
   self.elem.insertBefore(elem, self.elem.firstChild);
 
   self.builds[build.id] = new Build(elem, self.onChange.bind(self));
+  self.updateSelected(build.id);
 };
 
 BuildManager.prototype.refresh = function(build) {
