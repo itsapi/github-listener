@@ -29,7 +29,9 @@ var BuildManager = function(elem) {
     self.builds[elems[i].id] = new Build(elems[i], self.onChange.bind(self));
   }
 
-  self.updateSelected(document.body.dataset.current);
+  if (document.body.dataset.current) {
+    self.updateSelected(document.body.dataset.current);
+  }
 
   socket.on('refresh', function(data) {
     data = JSON.parse(data);
