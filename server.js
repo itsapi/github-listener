@@ -154,6 +154,10 @@ Server.prototype.render = function () {
     builds.push(self.get_build(id));
   }
 
+  builds.sort(function (b1, b2) {
+    return new Date(b2.timestamp) - new Date(b1.timestamp);
+  });
+
   return self.templates.index({
     builds: builds,
     current: self.build_manager.current ?

@@ -70,7 +70,7 @@ BuildManager.prototype.addBuild = function(build) {
   elem.appendChild(span('branch'));
   elem.appendChild(span('commit'));
 
-  self.elem.appendChild(elem);
+  self.elem.insertBefore(elem, self.elem.firstChild);
 
   self.builds[build.id] = new Build(elem, self.onChange.bind(self));
 };
