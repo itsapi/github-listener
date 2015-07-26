@@ -16,6 +16,7 @@ if (argv.v || argv.version) {
   console.log('-h|--help      display this help message');
   console.log('-v|--version   display the version number');
   console.log('-q|--quiet     suppress logging');
+  console.log('-p|--port      port to run Github Listener on');
   console.log('-c|--config    path to JSON config file (default ./config.json)');
 
 } else {
@@ -24,6 +25,7 @@ if (argv.v || argv.version) {
   var config_path = argv.c || argv.config || './config.json';
 
   options.logging = !(argv.q || argv.quiet);
+  options.port = argv.p || argv.port;
 
   try {
     options.config = require(path.resolve(process.cwd(), config_path));

@@ -22,6 +22,7 @@ var http = require('http'),
 var Server = function (options, ready) {
   var self = this;
 
+  self.port = options.port || 6003;
   self.config = options.config;
   logging.silent = !options.logging;
 
@@ -69,7 +70,6 @@ Server.prototype.start = function () {
   var self = this;
 
   // Start the server
-  self.port = 6003;
   self.app.listen(self.port, function () {
     logging.info('Server running on port', self.port);
   });
