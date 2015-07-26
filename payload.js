@@ -12,7 +12,7 @@ function selectRnd() {
 var payload = {};
 var options = {
   hostname: 'localhost',
-  port: 6003,
+  port: parseInt(process.argv[2]) || 6003,
   path: '/',
   method: 'POST'
 };
