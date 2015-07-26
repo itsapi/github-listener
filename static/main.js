@@ -42,10 +42,6 @@ var BuildManager = function(elem) {
       self.addBuild(data);
     }
 
-    if (self.selected === undefined) {
-      self.updateSelected(data.id);
-    }
-
     self.refresh(data);
   });
 };
