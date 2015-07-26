@@ -103,7 +103,6 @@ Build.prototype.run = function () {
       self.build_manager.logging.log('\n' + out);
       self.build_manager.logging.info('Finished processing files\n');
 
-      self.ui.timestamp = new Date();
       self.ui.status = self.build_manager.STATUS.DONE;
       self.ui.log += out + '\nBuild Finished';
       process.emit('refresh', self.id);
