@@ -63,7 +63,7 @@ BuildManager.prototype.addBuild = function(build) {
   }
 
   var elem = document.createElement('li');
-  elem.classList.add('build');
+  elem.className = 'build';
 
   elem.id = build.id;
 
