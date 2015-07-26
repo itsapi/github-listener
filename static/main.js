@@ -7,8 +7,6 @@ var Build = function(elem, onChange) {
   self.elem.addEventListener('click', function() {
     onChange(self.id);
   });
-
-  socket.emit('refresh', self.id);
 };
 
 Build.prototype.refresh = function(data) {
@@ -34,6 +32,7 @@ var BuildManager = function(elem) {
 
   for (var i = 0; i < elems.length; i++) {
     self.builds[elems[i].id] = new Build(elems[i], self.onChange.bind(self));
+    socket.emit('refresh', elems[i].id);
   }
 
   if (document.body.dataset.current) {
@@ -48,10 +47,6 @@ var BuildManager = function(elem) {
 
     if (self.builds[data.id] === undefined) {
       self.addBuild(data);
-    }
-
-    if (self.selected === undefined) {
-      self.updateSelected(data.id);
     }
 
     self.refresh(data);
