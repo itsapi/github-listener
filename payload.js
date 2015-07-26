@@ -23,12 +23,14 @@ if (process.argv[2] === 'travis') {
   var url = 'http' + (Math.random() < 0.1 ? 's' : '') + '://' + selectRnd('example.com', 'google.com', 'test.co.uk');
   var branch = selectRnd('master', 'testing', 'stable', 'cats');
   var message = 'did some ' + selectRnd('cool', 'fun', 'weird', 'evil', 'ungodly', 'nightmare inducing') + ' stuff.';
+  var sender = Math.random() < 0.25 ? { avatar_url: 'http://lorempixel.com/50/50/' } : undefined;
 
   payload = qs.stringify({
     payload: JSON.stringify({
       repository: { url: url },
       branch: branch,
-      message: message
+      message: message,
+      sender: sender
     })
   });
 
