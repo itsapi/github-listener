@@ -37,7 +37,8 @@ if (process.argv[2] === 'travis') {
   options.headers = {
     'travis-repo-slug': slug,
     'authorization': crypto.createHash('sha256')
-                     .update(slug + config.travis_token).digest('hex')
+                     .update(slug + config.travis_token).digest('hex') +
+                     (Math.random() < 0.05 ? 'BLOOP' : '')
   };
 
 } else {
@@ -49,13 +50,14 @@ if (process.argv[2] === 'travis') {
 
   payload = JSON.stringify({
     repository: { full_name: slug, url: url },
-    ref: 'refs/heads/' + branch,
+    ref: 'refs/heads/' + branch + (Math.random() < 0.05 ? 'BEEP' : ''),
     head_commit: { message: message }
   });
 
   options.headers = {
     'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.github_secret)
-                                 .update(payload).digest('hex')
+                                 .update(payload).digest('hex') +
+                                 (Math.random() < 0.05 ? 'PLOP' : '')
   };
 }
 
