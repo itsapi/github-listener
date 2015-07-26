@@ -161,7 +161,7 @@ Server.prototype.render = function () {
   return self.templates.index({
     builds: builds,
     current: self.build_manager.current ?
-             self.get_build(self.build_manager.current) : {}
+             self.get_build(self.build_manager.current) : {data:{}}
   });
 };
 
