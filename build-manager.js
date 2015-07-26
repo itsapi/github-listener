@@ -87,6 +87,7 @@ BuildManager.prototype.rerun = function (res, id) {
   var self = this;
 
   if (self.builds[id]) {
+    self.respond(res, 202, 'Build queued');
     self.queue(id);
   } else {
     self.respond(res, 200, 'Nothing to build'); // TODO: Error code?
@@ -103,11 +104,12 @@ BuildManager.prototype.rerun = function (res, id) {
 BuildManager.prototype.queue = function (id) {
   var self = this;
   var build = self.builds[id];
-  build.log = '';
 
-  if (build.err) {
+  if (build === undefined || build.err) {
     return;
   }
+
+  build.log = '';
 
   // Avoids running multiple requests at once.
   if (self.waiting.length || self.running) {

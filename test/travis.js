@@ -98,7 +98,7 @@ test('pass valid payload and valid signature', function (t) {
 
     request(payload, function (res, data) {
       st.equal(data, 'Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 202, 'correct status code');
+      st.equal(res.statusCode, 400, 'correct status code');
       st.end();
     });
   });
@@ -109,8 +109,8 @@ test('pass valid payload and valid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
@@ -127,7 +127,7 @@ test('pass custom branch name', function (t) {
 
     request(payload, function (res, data) {
       st.equal(data, 'Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 202, 'correct status code');
+      st.equal(res.statusCode, 400, 'correct status code');
       st.end();
     });
   });
@@ -139,8 +139,8 @@ test('pass custom branch name', function (t) {
     options.path = '/dev';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
@@ -152,8 +152,8 @@ test('pass custom branch name', function (t) {
     options.path = '/dev/';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });

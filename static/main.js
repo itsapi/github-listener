@@ -20,6 +20,7 @@ var BuildManager = function(elem) {
   self.elem = elem;
   self.builds = {};
   self.log = document.querySelector('.log');
+  self.header = document.querySelector('.header');
 
   var elems = self.elem.querySelectorAll('.build');
 
@@ -57,7 +58,7 @@ BuildManager.prototype.addBuild = function(build) {
   }
 
   var elem = document.createElement('li');
-  elem.classList.add('build');
+  elem.className = 'build';
 
   elem.id = build.id;
 

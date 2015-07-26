@@ -17,4 +17,10 @@ html
           span.branch= build.data.branch
           span.commit= build.data.commit
 
-    pre.log!= current.log
+    .info
+      .header
+        img.image(src=current.data.image)
+        span.timestamp= current.timestamp
+        span.commit= current.data.commit
+        span.url= current.data.url
+      pre.log!= current.log
