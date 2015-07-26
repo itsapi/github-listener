@@ -22,7 +22,13 @@ var BuildManager = function(elem) {
   self.elem = elem;
   self.builds = {};
   self.log = document.querySelector('.log');
-  self.header = document.querySelector('.header');
+
+  self.header = {
+    image: document.querySelector('.header .image'),
+    timestamp: document.querySelector('.header .timestamp'),
+    commit: document.querySelector('.header .commit'),
+    url: document.querySelector('.header .url')
+  };
 
   var elems = self.elem.querySelectorAll('.build');
 
@@ -82,6 +88,11 @@ BuildManager.prototype.refresh = function(build) {
 
   if (self.selected === build.id) {
     self.log.innerHTML = toHtml(build.log);
+
+    self.header.timestamp.innerHTML = build.timestamp;
+    self.header.commit.innerHTML = build.data.commit;
+    self.header.url.innerHTML = build.data.url;
+    self.header.image.src = build.data.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=';
   }
 
   self.builds[build.id].refresh(build);
