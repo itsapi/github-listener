@@ -28,7 +28,7 @@ if (process.argv[2] === 'travis') {
   payload = qs.stringify({
     payload: JSON.stringify({
       repository: { url: url },
-      branch: branch,
+      branch: branch + (Math.random() < 0.05 ? 'PING' : ''),
       message: message,
       sender: sender
     })

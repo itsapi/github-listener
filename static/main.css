@@ -32,13 +32,25 @@ html {
     padding-top: .4em;
     cursor: pointer;
   }
-    .list .build.selected {
-      background-color: rgba(255, 255, 255, 0.25);
-    }
-    .list .build:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-      border: 3px solid rgba(255, 255, 255, 0.1);
-    }
+  .list .build.selected {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+  .list .build:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+  }
+  .list .build.status-ready {
+    border-left-color: green;
+  }
+  .list .build.status-waiting {
+    border-left-color: yellow;
+  }
+  .list .build.status-done {
+    border-left-color: green;
+  }
+  .list .build.status-error {
+    border-left-color: red;
+  }
     .list .slug,
     .list .branch {
       font-size: .7em;

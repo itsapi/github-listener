@@ -12,7 +12,8 @@ html
   body(data-current=current.id)
     ul.list
       each build in builds
-        li.build(id=build.id)
+        - var status = 'status-' + build.status.toLowerCase();
+        li.build(id=build.id, class=status)
           span.slug= build.data.slug
           span.branch= build.data.branch
           span.commit= build.data.commit
