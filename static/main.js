@@ -22,6 +22,7 @@ var BuildManager = function(elem) {
   self.elem = elem;
   self.builds = {};
   self.log = document.querySelector('.log');
+  self.header = document.querySelector('.header');
 
   var elems = self.elem.querySelectorAll('.build');
 

@@ -56,16 +56,19 @@ html {
       clear: both;
     }
 
-.log {
-  word-wrap: break-word;
-  font-family: 'Droid Sans Mono', monospace;
-  font-size: 0.8em;
-  padding: 1em .5em;
-  margin: 0;
-
-  width: 75%;
-  position: fixed;
-  left: 0;
-  max-height: 100%;
-  overflow-y: auto;
+.info {
+    width: 75%;
+    left: 0;
+    max-height: 100%;
+    overflow-y: auto;
 }
+  .info .header {
+
+  }
+  .info .log {
+    word-wrap: break-word;
+    font-family: 'Droid Sans Mono', monospace;
+    font-size: 0.8em;
+    padding: 1em .5em;
+    margin: 0;
+  }
