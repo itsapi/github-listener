@@ -2,7 +2,7 @@ var test = require('tape'),
     qs = require('querystring'),
     through = require('through2'),
     common = require('./common')(),
-    Listener = require('../listener');
+    BuildManager = require('../build-manager');
 
 
 var options = common.options;
@@ -26,45 +26,13 @@ function create_res (cb) {
 }
 
 
-test('BEGIN LISTENER TESTS', function (t) { t.end(); });
+test('BEGIN BUILD MANAGER TESTS', function (t) { t.end(); });
 
 
-test('listener.constructor', function (t) {
-
-  t.test('no arguments passed in', function (st) {
-    var listener = new Listener();
-
-    st.deepEqual(listener.config, undefined, 'correct listener.config');
-    st.equal(listener.logging, undefined, 'correct listener.logging');
-    st.equal(listener.status, 'Ready', 'correct listener.status');
-    st.end();
-  });
-
-  t.test('config passed in', function (st) {
-    var listener = new Listener(config);
-
-    st.deepEqual(listener.config, config, 'correct listener.config');
-    st.equal(listener.logging, undefined, 'correct listener.logging');
-    st.equal(listener.status, 'Ready', 'correct listener.status');
-    st.end();
-  });
-
-  t.test('logging flag passed in', function (st) {
-    var listener = new Listener(config, false);
-
-    st.deepEqual(listener.config, config, 'correct listener.config');
-    st.equal(listener.logging, false, 'correct listener.logging');
-    st.equal(listener.status, 'Ready', 'correct listener.status');
-    st.end();
-  });
-
-});
-
-
-test('listener.respond', function (t) {
+test('build_manager.respond', function (t) {
 
   t.test('no arguments passed in', function (st) {
-    var listener = new Listener();
+    var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
       st.equal(data, undefined, 'correct server response');
@@ -72,11 +40,11 @@ test('listener.respond', function (t) {
       st.end();
     });
 
-    listener.respond(res);
+    build_manager.respond(res);
   });
 
   t.test('status code and message passed in', function (st) {
-    var listener = new Listener();
+    var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
       st.equal(data, 'Hello World', 'correct server response');
@@ -84,42 +52,16 @@ test('listener.respond', function (t) {
       st.end();
     });
 
-    listener.respond(res, 200, 'Hello World');
-  });
-
-  t.test('listener.log set', function (st) {
-    var listener = new Listener();
-
-    var res = create_res(function (res, data) {
-      st.equal(data, 'Hello World', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.equal(listener.log, 'Hello World', 'correct listener.log');
-      st.end();
-    });
-
-    listener.respond(res, 200, 'Hello World');
-  });
-
-  t.test('not_refresh passed in', function (st) {
-    var listener = new Listener();
-
-    var res = create_res(function (res, data) {
-      st.equal(data, 'Hello World', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.equal(listener.log, '', 'correct listener.log');
-      st.end();
-    });
-
-    listener.respond(res, 200, 'Hello World', true);
+    build_manager.respond(res, 200, 'Hello World');
   });
 
 });
 
 
-test('listener.error', function (t) {
+test('build_manager.error', function (t) {
 
   t.test('no arguments passed in', function (st) {
-    var listener = new Listener();
+    var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
       st.equal(data, undefined, 'correct server response');
@@ -127,11 +69,11 @@ test('listener.error', function (t) {
       st.end();
     });
 
-    listener.error(res);
+    build_manager.error(res);
   });
 
   t.test('status code and message passed in', function (st) {
-    var listener = new Listener();
+    var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
       st.equal(data, 'Error', 'correct server response');
@@ -139,38 +81,24 @@ test('listener.error', function (t) {
       st.end();
     });
 
-    listener.error(res, 500, 'Error');
-  });
-
-  t.test('listener.status set', function (st) {
-    var listener = new Listener();
-
-    var res = create_res(function (res, data) {
-      st.equal(data, 'Error', 'correct server response');
-      st.equal(res.statusCode, 500, 'correct status code');
-      st.equal(listener.status, 'Error', 'correct listener.status');
-      st.equal(listener.running, false, 'correct listener.running');
-      st.equal(listener.log, 'Error', 'correct listener.log');
-      st.end();
-    });
-
-    listener.error(res, 500, 'Error');
+    build_manager.error(res, 500, 'Error');
   });
 
 });
 
 
-test('listener.rerun', function (t) {
+// TODO: build_manager.rerun takes a build ID param
+test('build_manager.rerun', function (t) {
 
-  t.test('listener.build is not defined', function (st) {
-    var listener = new Listener();
+  t.test('build_manager.build is not defined', function (st) {
+    var build_manager = new BuildManager();
 
-    st.equal(listener.build, undefined, 'listener has no build property');
+    st.equal(build_manager.build, undefined, 'build_manager has no build property');
     st.end();
   });
 
   t.test('nothing to build', function (st) {
-    var listener = new Listener();
+    var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
       st.equal(data, 'Nothing to build', 'correct server response');
@@ -178,11 +106,11 @@ test('listener.rerun', function (t) {
       st.end();
     });
 
-    listener.rerun(res);
+    build_manager.rerun(res);
   });
 
   t.test('run last build (invalid payload)', function (st) {
-    var listener = request('asdf', function (res, data) {
+    var build_manager = request('asdf', function (res, data) {
       st.equal(data, 'Error: Invalid payload', 'correct server response');
       st.equal(res.statusCode, 400, 'correct status code');
 
@@ -192,7 +120,7 @@ test('listener.rerun', function (t) {
         st.end();
       });
 
-      listener.rerun(res);
+      build_manager.rerun(res);
     });
   });
 
@@ -200,79 +128,80 @@ test('listener.rerun', function (t) {
     var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
-    var listener = request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+    var build_manager = request(payload, function (res, data) {
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
 
       res = create_res(function (res, data) {
-        st.equal(data, 'Waiting for script to finish', 'correct server response');
-        st.equal(res.statusCode, 200, 'correct status code');
+        st.equal(data, 'Build queued', 'correct server response');
+        st.equal(res.statusCode, 202, 'correct status code');
         st.end();
       });
 
-      listener.rerun(res);
+      build_manager.rerun(res);
     });
   });
 
 });
 
 
-test('listener.queue', function (t) {
+// TODO: build_manager.queue takes a build ID param
+test('build_manager.queue', function (t) {
 
   t.test('no waiting', function (st) {
-    var listener = new Listener(config);
+    var build_manager = new BuildManager(config);
     var start = Date.now();
 
-    st.equal(listener.running, false, 'nothing runnning already');
-    listener.queue(function () {
+    st.equal(build_manager.running, false, 'nothing runnning already');
+    build_manager.queue(function () {
       var elapsed = Date.now() - start;
 
       st.ok(elapsed < 100, 'callback run immediately');
       st.end();
-      listener.next_in_queue();
+      build_manager.next_in_queue();
     });
   });
 
   t.test('wait in queue', function (st) {
-    var listener = new Listener(config);
+    var build_manager = new BuildManager(config);
     var first_done = false;
 
-    listener.queue(function () {
-      st.equal(listener.running, true, 'process running');
+    build_manager.queue(function () {
+      st.equal(build_manager.running, true, 'process running');
 
       setTimeout(function () {
         first_done = true;
-        listener.next_in_queue();
+        build_manager.next_in_queue();
       }, 500);
     });
 
-    listener.queue(function () {
+    build_manager.queue(function () {
       st.equal(first_done, true, 'process finished running');
       st.end();
-      listener.next_in_queue();
+      build_manager.next_in_queue();
     });
   });
 
 });
 
 
-test('listener.hook bl error', function (t) {
-  var listener = new Listener(config);
+test('build_manager.hook bl error', function (t) {
+  var build_manager = new BuildManager(config);
   var req = new through();
 
   var res = create_res(function (res, data) {
     t.equal(data, 'Error whilst receiving payload', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
-    t.equal(listener.status, 'Error', 'correct listener.status');
+    t.equal(build_manager.status, 'Error', 'correct build_manager.status');
     t.end();
   });
 
-  listener.hook(req, res);
+  build_manager.hook(req, res);
   req.emit('error', new Error('BOOM!'));
 });
 
 
-test('listener.data', function (t) {
+test('build_manager.data', function (t) {
 
   t.test('github payload - incomplete payload', function (st) {
     var payload = JSON.stringify({
@@ -282,10 +211,10 @@ test('listener.data', function (t) {
 
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
-    var listener = request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.deepEqual(listener.data, {
+    var build_manager = request(payload, function (res, data) {
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.deepEqual(build_manager.data, {
         slug:   'repo',
         branch: 'master',
         url:    undefined,
@@ -306,10 +235,10 @@ test('listener.data', function (t) {
 
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
-    var listener = request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.deepEqual(listener.data, {
+    var build_manager = request(payload, function (res, data) {
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.deepEqual(build_manager.data, {
         slug:   'repo',
         branch: 'master',
         url:    'example.com',
@@ -328,10 +257,10 @@ test('listener.data', function (t) {
     options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
     options.headers['travis-repo-slug'] = 'repo';
 
-    var listener = request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.deepEqual(listener.data, {
+    var build_manager = request(payload, function (res, data) {
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.deepEqual(build_manager.data, {
         slug:   'repo',
         branch: 'master',
         commit: undefined,
@@ -351,10 +280,10 @@ test('listener.data', function (t) {
     options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
     options.headers['travis-repo-slug'] = 'repo';
 
-    var listener = request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.deepEqual(listener.data, {
+    var build_manager = request(payload, function (res, data) {
+      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.deepEqual(build_manager.data, {
         slug:   'repo',
         branch: 'master',
         url:    'example.com',
