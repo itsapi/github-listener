@@ -69,7 +69,7 @@ BuildManager.prototype.addBuild = function(build) {
 
   var elem = document.createElement('li');
   elem.classList.add('build');
-  setStatusClass(elem, build.status.toLowerCase());
+  setStatusClass(elem, build.status);
 
   elem.id = build.id;
 
@@ -147,9 +147,11 @@ function toHtml(string) {
 
 function setStatusClass(elem, status) {
   // Remove old status class
-  elem.className = elem.className.split(' ').filter(function (c) {
-    return c.lastIndexOf('status-', 0) !== 0;
-  }).join(' ') + ' status-' + status.toLowerCase();
+  if (status !== undefined) {
+    elem.className = elem.className.split(' ').filter(function (c) {
+      return c.lastIndexOf('status-', 0) !== 0;
+    }).join(' ') + ' status-' + status.toLowerCase();
+  }
 }
 
 function setStatusTitle(status) {

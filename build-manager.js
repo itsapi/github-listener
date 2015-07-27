@@ -28,6 +28,7 @@ var BuildManager = function (config, logs) {
 
   self.STATUS = {
     READY: 'Ready',
+    WAITING: 'Waiting',
     RUNNING: 'Running',
     DONE: 'Done',
     ERROR: 'Error'
@@ -110,6 +111,8 @@ BuildManager.prototype.queue = function (id) {
   }
 
   build.log = '';
+  build.ui.status = self.STATUS.WAITING;
+  process.emit('refresh', id);
 
   // Avoids running multiple requests at once.
   if (self.waiting.length || self.running) {
