@@ -93,6 +93,7 @@ BuildManager.prototype.refresh = function(build) {
 
   if (self.selected === build.id) {
     self.log.innerHTML = toHtml(build.log);
+    window.scrollTo(0, self.log.scrollHeight);
 
     self.header.timestamp.innerHTML = build.timestamp;
     self.header.commit.innerHTML = build.data.commit;
