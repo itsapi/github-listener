@@ -22,8 +22,7 @@ var Build = function (req, res, payload, build_manager, id) {
     payload: '',
     log: '',
     data: {},
-    timestamp: new Date(),
-    status: self.build_manager.STATUS.RUNNING
+    timestamp: new Date()
   };
 
   // Load and check payload
@@ -91,6 +90,7 @@ Build.prototype.check_payload = function () {
 Build.prototype.run = function () {
   var self = this;
 
+  self.ui.status = self.build_manager.STATUS.RUNNING;
   self.ui.log += 'Build started\n';
   process.emit('refresh', self.id);
 

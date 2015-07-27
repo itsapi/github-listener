@@ -42,6 +42,11 @@ var BuildManager = function(elem) {
     self.updateSelected(document.body.dataset.current);
   }
 
+  self.header.elem.querySelector('.rebuild').addEventListener('click', function() {
+    console.log('click');
+    socket.emit('rerun', self.selected);
+  });
+
   socket.on('refresh', function(data) {
     data = JSON.parse(data);
 
@@ -69,7 +74,7 @@ BuildManager.prototype.addBuild = function(build) {
 
   var elem = document.createElement('li');
   elem.classList.add('build');
-  setStatusClass(elem, build.status.toLowerCase());
+  setStatusClass(elem, build.status);
 
   elem.id = build.id;
 
@@ -88,6 +93,7 @@ BuildManager.prototype.refresh = function(build) {
 
   if (self.selected === build.id) {
     self.log.innerHTML = toHtml(build.log);
+    window.scrollTo(0, self.log.scrollHeight);
 
     self.header.timestamp.innerHTML = build.timestamp;
     self.header.commit.innerHTML = toHtml(build.data.commit);
@@ -123,13 +129,6 @@ var socket = io();
 
 document.addEventListener('DOMContentLoaded', function() {
   new BuildManager(document.querySelector('.list'));
-
-  // rebuild_btn.onclick = function () {
-  //   makeRequest(window.location.href + '?rebuild', function (data) {
-  //     console.log(data);
-  //   });
-  // };
-
 });
 
 
@@ -143,9 +142,11 @@ function toHtml(string) {
 
 function setStatusClass(elem, status) {
   // Remove old status class
-  elem.className = elem.className.split(' ').filter(function (c) {
-    return c.lastIndexOf('status-', 0) !== 0;
-  }).join(' ') + ' status-' + status.toLowerCase();
+  if (status !== undefined) {
+    elem.className = elem.className.split(' ').filter(function (c) {
+      return c.lastIndexOf('status-', 0) !== 0;
+    }).join(' ') + ' status-' + status.toLowerCase();
+  }
 }
 
 function setStatusTitle(status) {
@@ -162,37 +163,3 @@ function setStatusTitle(status) {
   if (oldLink) { document.head.removeChild(oldLink); }
   document.head.appendChild(link);
 }
-
-/*
-function makeRequest(url, cb) {
-  var httpRequest;
-  if (window.XMLHttpRequest) { // Mozilla, Safari, ...
-    httpRequest = new XMLHttpRequest();
-  } else if (window.ActiveXObject) { // IE
-    try {
-      httpRequest = new ActiveXObject('Msxml2.XMLHTTP');
-    }
-    catch (e) {
-      try {
-        httpRequest = new ActiveXObject('Microsoft.XMLHTTP');
-      }
-      catch (e) {}
-    }
-  }
-  if (!httpRequest) {
-    console.log('Giving up :( Cannot create an XMLHTTP instance');
-    return false;
-  }
-  httpRequest.onreadystatechange = function () {
-    if (httpRequest.readyState === 4) {
-      if (httpRequest.status === 200) {
-        cb(httpRequest.responseText);
-      } else {
-        console.log('There was a problem with the request.');
-      }
-    }
-  };
-  httpRequest.open('GET', url);
-  httpRequest.send();
-}
-*/
