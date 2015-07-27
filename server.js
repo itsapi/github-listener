@@ -83,7 +83,7 @@ Server.prototype.start = function () {
     process.on('refresh', function (build_id) {
       logging.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify({
-        status: self.build_manager.waiting.length || self.build_manager.running ?
+        status: self.build_manager.running ?
                 self.build_manager.STATUS.RUNNING : self.build_manager.STATUS.READY,
         build: self.get_build(build_id)
       }));
@@ -163,7 +163,7 @@ Server.prototype.render = function () {
   });
 
   return self.templates.index({
-    status: self.build_manager.waiting.length || self.build_manager.running ?
+    status: self.build_manager.running ?
             self.build_manager.STATUS.RUNNING : self.build_manager.STATUS.READY,
     builds: builds,
     current: self.build_manager.current !== undefined ?

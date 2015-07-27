@@ -135,6 +135,7 @@ BuildManager.prototype.next_in_queue = function () {
 
   if (self.waiting.length) {
     // Pop and run next in queue
+    self.running = true;
     self.current = self.waiting.shift();
     self.builds[self.current].run();
   }
