@@ -63,7 +63,7 @@ BuildManager.prototype.addBuild = function(build) {
   function span(param) {
     var elem = document.createElement('span');
     elem.className = param;
-    elem.innerHTML = build.data[param];
+    elem.innerHTML = build.data[param] || '';
     return elem;
   }
 
