@@ -28,7 +28,7 @@ var BuildManager = function (config, logs) {
 
   self.STATUS = {
     READY: 'Ready',
-    WAITING: 'Waiting',
+    RUNNING: 'Running',
     DONE: 'Done',
     ERROR: 'Error'
   };

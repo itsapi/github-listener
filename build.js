@@ -23,7 +23,7 @@ var Build = function (req, res, payload, build_manager, id) {
     log: '',
     data: {},
     timestamp: new Date(),
-    status: self.build_manager.STATUS.WAITING
+    status: self.build_manager.STATUS.RUNNING
   };
 
   // Load and check payload

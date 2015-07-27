@@ -46,7 +46,7 @@ a {
   .list .build.status-ready {
     border-left-color: green;
   }
-  .list .build.status-waiting {
+  .list .build.status-running {
     border-left-color: yellow;
   }
   .list .build.status-done {
