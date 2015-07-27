@@ -90,7 +90,7 @@ BuildManager.prototype.refresh = function(build) {
     self.log.innerHTML = toHtml(build.log);
 
     self.header.timestamp.innerHTML = build.timestamp;
-    self.header.commit.innerHTML = build.data.commit;
+    self.header.commit.innerHTML = toHtml(build.data.commit);
     self.header.url.innerHTML = toHtml(build.data.url);
     self.header.elem.style.backgroundImage = build.data.image ? 'url('+build.data.image+')' : '';
   }
