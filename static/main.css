@@ -80,22 +80,27 @@ a {
 }
   .info .header {
     width: 100%;
-    padding: 10px;
+    min-height: 3em;
     color: white;
     background-color: rgb(110, 110, 110);
     border-bottom: 2px solid rgb(50, 50, 50);
 
     display: flex;
-    justify-content: center;
     align-items: center;
+
+    background-repeat: no-repeat;
+    background-size: 3em;
+    background-position: center left;
+    padding-left: 3em;
   }
-  .header span {
-    padding: 0px 10px;
-    border-left: 1px solid white;
-  }
-  .header span:first-of-type {
-    border: none;
-  }
+    .header span {
+      padding: 1em;
+      line-height: 1em;
+      border-left: 1px solid white;
+    }
+    .header span:first-of-type {
+      border: none;
+    }
   .info .log {
     word-wrap: break-word;
     font-family: 'Droid Sans Mono', monospace;

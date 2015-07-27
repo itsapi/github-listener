@@ -19,8 +19,11 @@ html
           span.commit= build.data.commit
 
     .info
-      .header
-        img.image(src=current.data.image)
+      if current.data.image
+        - var image = 'url('+current.data.image+')';
+      else
+        - var image = '';
+      .header(style={'background-image': image})
         span.timestamp= current.timestamp
         span.commit= current.data.commit
         span.url= current.data.url

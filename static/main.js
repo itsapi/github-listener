@@ -25,7 +25,7 @@ var BuildManager = function(elem) {
   self.log = document.querySelector('.log');
 
   self.header = {
-    image: document.querySelector('.header .image'),
+    elem: document.querySelector('.header'),
     timestamp: document.querySelector('.header .timestamp'),
     commit: document.querySelector('.header .commit'),
     url: document.querySelector('.header .url')
@@ -91,7 +91,11 @@ BuildManager.prototype.refresh = function(build) {
     self.header.timestamp.innerHTML = build.timestamp;
     self.header.commit.innerHTML = build.data.commit;
     self.header.url.innerHTML = toHtml(build.data.url);
-    self.header.image.src = build.data.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=';
+    if (build.data.image) {
+      self.header.elem.style.backgroundImage = 'url('+build.data.image+')';
+    } else {
+      self.header.elem.style.backgroundImage = '';
+    }
   }
 
   self.builds[build.id].refresh(build);
