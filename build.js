@@ -23,7 +23,7 @@ var Build = function (req, res, payload, build_manager, id) {
     log: '',
     data: {},
     timestamp: new Date(),
-    status: self.build_manager.STATUS.WAITING
+    status: self.build_manager.STATUS.RUNNING
   };
 
   // Load and check payload
@@ -105,9 +105,9 @@ Build.prototype.run = function () {
 
       self.ui.status = self.build_manager.STATUS.DONE;
       self.ui.log += out + '\nBuild Finished';
-      process.emit('refresh', self.id);
 
       self.build_manager.next_in_queue();
+      process.emit('refresh', self.id);
     });
   });
 };

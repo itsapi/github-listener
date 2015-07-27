@@ -1,11 +1,12 @@
 doctype html
 html
   head
-    title= (current.status || 'Ready') + ' - Git'
+    title= status + ' - Git'
 
     link(href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
     link(href='http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono', rel='stylesheet')
     link(href='main.css', rel='stylesheet')
+    link(href='icons/' + status.toLowerCase() + '.png', rel='shortcut icon', id='dynamic-favicon')
     script(src='socket.io/socket.io.js')
     script(src='main.js')
 

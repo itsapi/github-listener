@@ -48,11 +48,12 @@ var BuildManager = function(elem) {
     console.log('Received a refresh');
     console.log(data);
 
-    if (self.builds[data.id] === undefined) {
-      self.addBuild(data);
+    if (self.builds[data.build.id] === undefined) {
+      self.addBuild(data.build);
     }
 
-    self.refresh(data);
+    setStatusTitle(data.status);
+    self.refresh(data.build);
   });
 };
 
@@ -151,6 +152,20 @@ function setStatusClass(elem, status) {
   }).join(' ') + ' status-' + status.toLowerCase();
 }
 
+function setStatusTitle(status) {
+  document.title = status + ' - Git';
+
+  var src = 'icons/' + status.toLowerCase() + '.png';
+  var link = document.createElement('link');
+  var oldLink = document.getElementById('dynamic-favicon');
+
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+  link.href = src;
+
+  if (oldLink) { document.head.removeChild(oldLink); }
+  document.head.appendChild(link);
+}
 
 /*
 function makeRequest(url, cb) {
@@ -183,37 +198,5 @@ function makeRequest(url, cb) {
   };
   httpRequest.open('GET', url);
   httpRequest.send();
-}
-
-
-function changeFavicon(src) {
-  var link = document.createElement('link');
-  var oldLink = document.getElementById('dynamic-favicon');
-
-  link.id = 'dynamic-favicon';
-  link.rel = 'shortcut icon';
-  link.href = src;
-
-  if (oldLink) { document.head.removeChild(oldLink); }
-  document.head.appendChild(link);
-}
-
-
-function refresh(data) {
-  data = JSON.parse(data);
-
-  data.header = data.timestamp;
-  if (data.data && data.data.url && data.data.commit) {
-    data.header += ' | Commit: ' + data.data.commit +
-                   ' | URL: ' + data.data.url;
-  }
-
-  payload.innerHTML = data.payload;
-  log.innerHTML = toHtml(data.log);
-  header.innerHTML = toHtml(data.header);
-  if (data.data && data.data.image) { header_img.src = data.data.image; }
-
-  document.title = data.status + ' - Git';
-  changeFavicon('icons/' + data.status.toLowerCase() + '.png');
 }
 */
