@@ -31,6 +31,11 @@ var Server = function (options, ready) {
   self.build_manager = new BuildManager(self.config, options.logging);
   self.ready = ready;
 
+  self.STATUS = {
+    READY: 'Ready',
+    RUNNING: 'Running'
+  };
+
   // Setup server
   self.app = http.createServer(function (req, res) {
     if (req.method === 'GET') {
@@ -87,7 +92,7 @@ Server.prototype.start = function () {
       logging.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify({
         status: self.build_manager.running ?
-                self.build_manager.STATUS.RUNNING : self.build_manager.STATUS.READY,
+                self.STATUS.RUNNING : self.STATUS.READY,
         build: self.get_build(build_id)
       }));
     });
@@ -167,7 +172,7 @@ Server.prototype.render = function () {
 
   return self.templates.index({
     status: self.build_manager.running ?
-            self.build_manager.STATUS.RUNNING : self.build_manager.STATUS.READY,
+            self.STATUS.RUNNING : self.STATUS.READY,
     builds: builds,
     current: self.build_manager.current !== undefined ?
              self.get_build(self.build_manager.current) : {data:{}}

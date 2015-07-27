@@ -27,7 +27,6 @@ var BuildManager = function (config, logs) {
   self.running = false;
 
   self.STATUS = {
-    READY: 'Ready',
     WAITING: 'Waiting',
     RUNNING: 'Running',
     DONE: 'Done',
