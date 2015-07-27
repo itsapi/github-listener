@@ -96,13 +96,9 @@ BuildManager.prototype.refresh = function(build) {
     window.scrollTo(0, self.log.scrollHeight);
 
     self.header.timestamp.innerHTML = build.timestamp;
-    self.header.commit.innerHTML = build.data.commit;
+    self.header.commit.innerHTML = toHtml(build.data.commit);
     self.header.url.innerHTML = toHtml(build.data.url);
-    if (build.data.image) {
-      self.header.elem.style.backgroundImage = 'url('+build.data.image+')';
-    } else {
-      self.header.elem.style.backgroundImage = '';
-    }
+    self.header.elem.style.backgroundImage = build.data.image ? 'url('+build.data.image+')' : '';
   }
 
   self.builds[build.id].refresh(build);
