@@ -80,18 +80,14 @@ BuildManager.prototype.hook = function (req, res) {
  * Run `self.build` if it is defined
  * @name BuildManager.rerun
  * @function
- * @param {Object} res The HTTP response object
  * @param {Number} id The build ID to rebuild
  */
 
-BuildManager.prototype.rerun = function (res, id) {
+BuildManager.prototype.rerun = function (id) {
   var self = this;
 
   if (self.builds[id]) {
-    self.respond(res, 202, 'Build queued');
     self.queue(id);
-  } else {
-    self.respond(res, 200, 'Nothing to build'); // TODO: Error code?
   }
 };
 

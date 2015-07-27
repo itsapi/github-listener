@@ -42,6 +42,11 @@ var BuildManager = function(elem) {
     self.updateSelected(document.body.dataset.current);
   }
 
+  self.header.elem.querySelector('.rebuild').addEventListener('click', function() {
+    console.log('click');
+    socket.emit('rerun', self.selected);
+  });
+
   socket.on('refresh', function(data) {
     data = JSON.parse(data);
 
@@ -127,13 +132,6 @@ var socket = io();
 
 document.addEventListener('DOMContentLoaded', function() {
   new BuildManager(document.querySelector('.list'));
-
-  // rebuild_btn.onclick = function () {
-  //   makeRequest(window.location.href + '?rebuild', function (data) {
-  //     console.log(data);
-  //   });
-  // };
-
 });
 
 

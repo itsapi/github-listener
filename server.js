@@ -77,6 +77,9 @@ Server.prototype.start = function () {
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
+    socket.on('rerun', function (build_id) {
+      self.build_manager.rerun(build_id);
+    });
     socket.on('refresh', function (build_id) {
       process.emit('refresh', build_id);
     });
