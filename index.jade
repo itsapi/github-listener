@@ -20,10 +20,7 @@ html
           span.commit= build.data.commit
 
     .info
-      if current.data.image
-        - var image = 'url('+current.data.image+')';
-      else
-        - var image = '';
+      - var image = current.data.image ? 'url('+current.data.image+')' : '';
       .header(style={'background-image': image})
         span.timestamp= current.timestamp
         span.commit= current.data.commit
