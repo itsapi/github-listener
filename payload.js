@@ -49,7 +49,7 @@ if (process.argv[2] === 'travis') {
   payload = JSON.stringify({
     repository: { full_name: slug, url: url },
     ref: 'refs/heads/' + branch + (Math.random() < 0.05 ? 'BEEP' : ''),
-    head_commit: { message: message }
+    head_commit: { message: message },
     sender: sender
   });
 
