@@ -92,12 +92,17 @@ a {
     background-repeat: no-repeat;
     background-size: 3em;
     background-position: center left;
+  }
+  .info .header.image {
     padding-left: 3em;
   }
     .header span {
       padding: 1em;
       line-height: 1em;
-      border-left: 1px solid white;
+      border-left: 1px dashed rgba(255, 255, 255, .3);
+    }
+    .header span.empty {
+      display: none;
     }
     .header span:first-of-type {
       border: none;

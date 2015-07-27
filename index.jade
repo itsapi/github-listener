@@ -21,9 +21,9 @@ html
 
     .info
       - var image = current.data.image ? 'url('+current.data.image+')' : '';
-      .header(style={'background-image': image})
-        span.timestamp= current.timestamp
-        span.commit= current.data.commit
-        span.url= current.data.url
+      .header(style={'background-image': image}, class=(image ? 'image' : ''))
         button.rebuild Rebuild
+        span.timestamp(class=(current.timestamp === undefined ? 'empty' : ''))= current.timestamp
+        span.commit(class=(current.data.commit === undefined ? 'empty' : ''))= current.data.commit
+        span.url(class=(current.data.url === undefined ? 'empty' : ''))= current.data.url
       pre.log!= current.log

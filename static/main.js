@@ -91,14 +91,29 @@ BuildManager.prototype.addBuild = function(build) {
 BuildManager.prototype.refresh = function(build) {
   var self = this;
 
+  function setInner(elem, html) {
+    if (html === '') {
+      elem.classList.add('empty');
+    } else {
+      elem.innerHTML = html;
+      elem.classList.remove('empty');
+    }
+  }
+
   if (self.selected === build.id) {
     self.log.innerHTML = toHtml(build.log);
     window.scrollTo(0, self.log.scrollHeight);
 
-    self.header.timestamp.innerHTML = build.timestamp;
-    self.header.commit.innerHTML = toHtml(build.data.commit);
-    self.header.url.innerHTML = toHtml(build.data.url);
-    self.header.elem.style.backgroundImage = build.data.image ? 'url('+build.data.image+')' : '';
+    setInner(self.header.timestamp, build.timestamp);
+    setInner(self.header.commit, toHtml(build.data.commit));
+    setInner(self.header.url, toHtml(build.data.url));
+    if (build.data.image) {
+      self.header.elem.style.backgroundImage = 'url('+build.data.image+')';
+      self.header.elem.classList.add('image');
+    } else {
+      self.header.elem.style.backgroundImage = '';
+      self.header.elem.classList.remove('image');
+    }
   }
 
   self.builds[build.id].refresh(build);
