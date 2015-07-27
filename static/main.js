@@ -38,7 +38,7 @@ var BuildManager = function(elem) {
     socket.emit('refresh', elems[i].id);
   }
 
-  if (document.body.dataset.current) {
+  if (document.body.dataset.current !== undefined) {
     self.updateSelected(document.body.dataset.current);
   }
 
@@ -90,7 +90,7 @@ BuildManager.prototype.refresh = function(build) {
 
     self.header.timestamp.innerHTML = build.timestamp;
     self.header.commit.innerHTML = build.data.commit;
-    self.header.url.innerHTML = build.data.url;
+    self.header.url.innerHTML = toHtml(build.data.url);
     self.header.image.src = build.data.image || 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=';
   }
 
@@ -112,7 +112,7 @@ BuildManager.prototype.updateSelected = function (build_id) {
     self.builds[self.selected].elem.classList.remove('selected');
   }
 
-  self.selected = build_id;
+  self.selected = parseInt(build_id);
   self.builds[self.selected].elem.classList.add('selected');
 };
 
