@@ -65,7 +65,6 @@ test('build_manager.error', function (t) {
 
 // TODO: build_manager.rerun takes a build ID param
 test.skip('build_manager.rerun', function (t) {
-  t.skip();
   t.test('build_manager.build is not defined', function (st) {
     var build_manager = new BuildManager();
 
