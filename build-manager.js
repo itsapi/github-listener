@@ -47,7 +47,7 @@ BuildManager.prototype.error = function (res, code, message) {
   var self = this;
 
   self.logging.warn(message);
-  self.respond(res, code, message);
+  self.respond(res, code, {err: message});
 };
 
 /**
@@ -145,12 +145,12 @@ BuildManager.prototype.next_in_queue = function () {
  * @function
  * @param {Object} res The HTTP response object
  * @param {Number} http_code The HTTP response code
- * @param {String} message The message to be sent
+ * @param {Object} data The data object to be sent
  */
 
-BuildManager.prototype.respond = function (res, http_code, message) {
-  res.writeHead(http_code, {'Content-Type': 'text/plain'});
-  res.end(message);
+BuildManager.prototype.respond = function (res, http_code, data) {
+  res.writeHead(http_code, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify(data));
 };
 
 module.exports = BuildManager;

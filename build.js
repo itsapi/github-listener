@@ -76,7 +76,7 @@ Build.prototype.check_payload = function () {
     return error(400, 'Branches do not match');
   }
 
-  self.build_manager.respond(self.res, 202, 'Build queued');
+  self.build_manager.respond(self.res, 202, {msg: 'Build queued', id: self.id});
   self.ui.log += 'Build queued\n';
   process.emit('refresh', self.id);
 };

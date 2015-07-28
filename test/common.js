@@ -16,7 +16,7 @@ function data () {
     var build_manager = new BuildManager(self.config);
     var req = through2();
 
-    res.end = function (data) { cb(res, data); };
+    res.end = function (data) { cb(res, JSON.parse(data)); };
 
     req.method = self.options.method;
     req.url = self.options.path;

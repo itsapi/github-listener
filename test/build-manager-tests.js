@@ -19,7 +19,7 @@ function create_res (cb) {
       res.headers = headers;
     },
     end: function (data) {
-      cb(res, data);
+      cb(res, JSON.parse(data));
     }
   };
   return res;
@@ -30,18 +30,6 @@ test('BEGIN BUILD MANAGER TESTS', function (t) { t.end(); });
 
 
 test('build_manager.respond', function (t) {
-
-  t.test('no arguments passed in', function (st) {
-    var build_manager = new BuildManager();
-
-    var res = create_res(function (res, data) {
-      st.equal(data, undefined, 'correct server response');
-      st.equal(res.statusCode, undefined, 'correct status code');
-      st.end();
-    });
-
-    build_manager.respond(res);
-  });
 
   t.test('status code and message passed in', function (st) {
     var build_manager = new BuildManager();
@@ -60,23 +48,11 @@ test('build_manager.respond', function (t) {
 
 test('build_manager.error', function (t) {
 
-  t.test('no arguments passed in', function (st) {
-    var build_manager = new BuildManager();
-
-    var res = create_res(function (res, data) {
-      st.equal(data, undefined, 'correct server response');
-      st.equal(res.statusCode, undefined, 'correct status code');
-      st.end();
-    });
-
-    build_manager.error(res);
-  });
-
   t.test('status code and message passed in', function (st) {
     var build_manager = new BuildManager();
 
     var res = create_res(function (res, data) {
-      st.equal(data, 'Error', 'correct server response');
+      st.equal(data.err, 'Error', 'correct server response');
       st.equal(res.statusCode, 500, 'correct status code');
       st.end();
     });
@@ -88,8 +64,8 @@ test('build_manager.error', function (t) {
 
 
 // TODO: build_manager.rerun takes a build ID param
-test('build_manager.rerun', function (t) {
-
+test.skip('build_manager.rerun', function (t) {
+  t.skip();
   t.test('build_manager.build is not defined', function (st) {
     var build_manager = new BuildManager();
 
@@ -146,8 +122,7 @@ test('build_manager.rerun', function (t) {
 
 
 // TODO: build_manager.queue takes a build ID param
-test('build_manager.queue', function (t) {
-
+test.skip('build_manager.queue', function (t) {
   t.test('no waiting', function (st) {
     var build_manager = new BuildManager(config);
     var start = Date.now();
@@ -190,9 +165,8 @@ test('build_manager.hook bl error', function (t) {
   var req = new through();
 
   var res = create_res(function (res, data) {
-    t.equal(data, 'Error whilst receiving payload', 'correct server response');
+    t.equal(data.err, 'Error whilst receiving payload', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
-    t.equal(build_manager.status, 'Error', 'correct build_manager.status');
     t.end();
   });
 
@@ -212,9 +186,10 @@ test('build_manager.data', function (t) {
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
     var build_manager = request(payload, function (res, data) {
-      st.equal(data, 'Build queued', 'correct server response');
+      var build = build_manager.builds[data.id];
+      st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
-      st.deepEqual(build_manager.data, {
+      st.deepEqual(build.ui.data, {
         slug:   'repo',
         branch: 'master',
         url:    undefined,
@@ -236,9 +211,10 @@ test('build_manager.data', function (t) {
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
     var build_manager = request(payload, function (res, data) {
-      st.equal(data, 'Build queued', 'correct server response');
+      var build = build_manager.builds[data.id];
+      st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
-      st.deepEqual(build_manager.data, {
+      st.deepEqual(build.ui.data, {
         slug:   'repo',
         branch: 'master',
         url:    'example.com',
@@ -258,9 +234,10 @@ test('build_manager.data', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     var build_manager = request(payload, function (res, data) {
-      st.equal(data, 'Build queued', 'correct server response');
+      var build = build_manager.builds[data.id];
+      st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
-      st.deepEqual(build_manager.data, {
+      st.deepEqual(build.ui.data, {
         slug:   'repo',
         branch: 'master',
         commit: undefined,
@@ -281,9 +258,10 @@ test('build_manager.data', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     var build_manager = request(payload, function (res, data) {
-      st.equal(data, 'Build queued', 'correct server response');
+      var build = build_manager.builds[data.id];
+      st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
-      st.deepEqual(build_manager.data, {
+      st.deepEqual(build.ui.data, {
         slug:   'repo',
         branch: 'master',
         url:    'example.com',
