@@ -82,12 +82,23 @@ Server.prototype.start = function () {
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
+
     socket.on('rerun', function (build_id) {
       self.build_manager.rerun(build_id);
     });
+
     socket.on('refresh', function (build_id) {
       process.emit('refresh', build_id);
     });
+
+    socket.on('get_all', function () {
+      var statuses = {};
+      for (var id in self.build_manager.builds) {
+        statuses[id] = self.build_manager.builds[id].ui.status;
+      }
+      socket.emit('all', JSON.stringify(statuses));
+    });
+
     process.on('refresh', function (build_id) {
       logging.log('Data sent by socket');
       socket.emit('refresh', JSON.stringify({
@@ -96,6 +107,7 @@ Server.prototype.start = function () {
         build: self.get_build(build_id)
       }));
     });
+
     process.on('close', function () {
       socket.disconnect();
     });

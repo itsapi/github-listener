@@ -1,19 +1,53 @@
-var Build = function(elem, onChange) {
+var Build = function(elem, buildManager) {
   var self = this;
 
   self.elem = elem;
   self.id = parseInt(elem.id);
+  self.loaded_ui = false;
 
   self.elem.addEventListener('click', function() {
-    onChange(self.id);
+    buildManager.updateSelected(self.id);
+    if (!self.loaded_ui) {
+      socket.emit('refresh', self.id);
+    } else {
+      buildManager.update_info(self.id);
+    }
   });
 };
 
-Build.prototype.refresh = function(data) {
+// Initalises the element
+Build.prototype.init = function(ui) {
   var self = this;
 
-  self.ui = data;
-  setStatusClass(self.elem, self.ui.status);
+  self.update_ui(ui);
+
+  function span(param) {
+    var elem = document.createElement('span');
+    elem.className = param;
+    elem.innerHTML = ui.data[param] || '';
+    return elem;
+  }
+
+  self.elem.id = ui.id;
+  self.id = ui.id;
+  self.elem.classList.add('build');
+
+  self.elem.appendChild(span('slug'));
+  self.elem.appendChild(span('branch'));
+  self.elem.appendChild(span('commit'));
+};
+
+Build.prototype.update_ui = function(ui) {
+  var self = this;
+
+  self.ui = ui;
+
+  // Update status class
+  if (self.ui.status !== undefined) {
+    self.elem.className = self.elem.className.split(' ').filter(function (c) {
+      return c.lastIndexOf('status-', 0) !== 0;
+    }).join(' ') + ' status-' + self.ui.status.toLowerCase();
+  }
 };
 
 
@@ -34,62 +68,72 @@ var BuildManager = function(elem) {
   var elems = self.elem.querySelectorAll('.build');
 
   for (var i = 0; i < elems.length; i++) {
-    self.builds[elems[i].id] = new Build(elems[i], self.onChange.bind(self));
-    socket.emit('refresh', elems[i].id);
+    self.builds[elems[i].id] = new Build(elems[i], self);
   }
+
+  // Get latest updates
+  socket.emit('get_all');
+  socket.on('all', function(data) {
+    data = JSON.parse(data);
+    console.log('Updates:', data);
+
+    for (var id in data) {
+      if (self.builds[id] === undefined) {
+        socket.emit('refresh', id);
+      } else {
+        self.builds[id].update_ui({status: data[id]});
+      }
+    }
+  });
 
   if (document.body.dataset.current !== undefined) {
     self.updateSelected(document.body.dataset.current);
   }
 
   self.header.elem.querySelector('.rebuild').addEventListener('click', function() {
-    console.log('click');
     socket.emit('rerun', self.selected);
   });
 
   socket.on('refresh', function(data) {
     data = JSON.parse(data);
 
-    console.log('Received a refresh');
-    console.log(data);
-
     if (self.builds[data.build.id] === undefined) {
+      console.log('New:', data.build.id);
+
       self.addBuild(data.build);
+      self.updateSelected(data.build.id);
+
+    } else {
+      console.log(data.build.status, data.build.id);
     }
 
+    self.builds[data.build.id].update_ui(data.build);
+    self.builds[data.build.id].loaded_ui = true;
+
     setStatusTitle(data.status);
-    self.refresh(data.build);
+
+    if (self.selected === data.build.id) {
+      self.update_info(data.build.id);
+    }
   });
 };
 
-BuildManager.prototype.addBuild = function(build) {
+BuildManager.prototype.addBuild = function(ui) {
   var self = this;
-
-  function span(param) {
-    var elem = document.createElement('span');
-    elem.className = param;
-    elem.innerHTML = build.data[param] || '';
-    return elem;
-  }
 
   var elem = document.createElement('li');
-  elem.classList.add('build');
-  setStatusClass(elem, build.status);
 
-  elem.id = build.id;
-
-  elem.appendChild(span('slug'));
-  elem.appendChild(span('branch'));
-  elem.appendChild(span('commit'));
-
+  self.builds[ui.id] = new Build(elem, self);
+  self.builds[ui.id].init(ui);
   self.elem.insertBefore(elem, self.elem.firstChild);
 
-  self.builds[build.id] = new Build(elem, self.onChange.bind(self));
-  self.updateSelected(build.id);
+  self.updateSelected(ui.id);
 };
 
-BuildManager.prototype.refresh = function(build) {
+BuildManager.prototype.update_info = function(id) {
   var self = this;
+
+  var ui = self.builds[id].ui;
 
   function setInner(elem, html) {
     if (html === '') {
@@ -100,41 +144,29 @@ BuildManager.prototype.refresh = function(build) {
     }
   }
 
-  if (self.selected === build.id) {
-    self.log.innerHTML = toHtml(build.log);
-    window.scrollTo(0, self.log.scrollHeight);
+  self.log.innerHTML = toHtml(ui.log);
+  window.scrollTo(0, self.log.scrollHeight);
 
-    setInner(self.header.timestamp, build.timestamp);
-    setInner(self.header.commit, toHtml(build.data.commit));
-    setInner(self.header.url, toHtml(build.data.url));
-    if (build.data.image) {
-      self.header.elem.style.backgroundImage = 'url('+build.data.image+')';
-      self.header.elem.classList.add('image');
-    } else {
-      self.header.elem.style.backgroundImage = '';
-      self.header.elem.classList.remove('image');
-    }
+  setInner(self.header.timestamp, ui.timestamp);
+  setInner(self.header.commit, toHtml(ui.data.commit));
+  setInner(self.header.url, toHtml(ui.data.url));
+  if (ui.data.image) {
+    self.header.elem.style.backgroundImage = 'url('+ui.data.image+')';
+    self.header.elem.classList.add('image');
+  } else {
+    self.header.elem.style.backgroundImage = '';
+    self.header.elem.classList.remove('image');
   }
-
-  self.builds[build.id].refresh(build);
 };
 
-BuildManager.prototype.onChange = function(build_id) {
-  var self = this;
-
-  self.updateSelected(build_id);
-
-  self.refresh(self.builds[build_id].ui);
-};
-
-BuildManager.prototype.updateSelected = function (build_id) {
+BuildManager.prototype.updateSelected = function (id) {
   var self = this;
 
   if (self.selected !== undefined) {
     self.builds[self.selected].elem.classList.remove('selected');
   }
 
-  self.selected = parseInt(build_id);
+  self.selected = parseInt(id);
   self.builds[self.selected].elem.classList.add('selected');
 };
 
@@ -153,15 +185,6 @@ function toHtml(string) {
     /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
     '<a href=\"$1\">$1</a>'
   );
-}
-
-function setStatusClass(elem, status) {
-  // Remove old status class
-  if (status !== undefined) {
-    elem.className = elem.className.split(' ').filter(function (c) {
-      return c.lastIndexOf('status-', 0) !== 0;
-    }).join(' ') + ' status-' + status.toLowerCase();
-  }
 }
 
 function setStatusTitle(status) {
