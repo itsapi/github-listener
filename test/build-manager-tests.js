@@ -110,40 +110,64 @@ test('build_manager.rerun', function (t) {
 });
 
 
-// TODO: build_manager.queue takes a build ID param
-test.skip('build_manager.queue', function (t) {
+test('build_manager.queue', function (t) {
+  t.test('build undefined', function (st) {
+    var build_manager = new BuildManager();
+    build_manager.queue();
+
+    st.equal(build_manager.running, false, 'no build running');
+    st.end();
+  });
+
   t.test('no waiting', function (st) {
-    var build_manager = new BuildManager(config);
-    var start = Date.now();
+    var build_manager = new BuildManager();
+    var build = {
+      id: 0,
+      ui: {},
+      run: function() {
+        this.ui.status = build_manager.STATUS.RUNNING;
+      }
+    };
 
-    st.equal(build_manager.running, false, 'nothing runnning already');
-    build_manager.queue(function () {
-      var elapsed = Date.now() - start;
+    st.equal(build_manager.running, false, 'no build running');
 
-      st.ok(elapsed < 100, 'callback run immediately');
-      st.end();
-      build_manager.next_in_queue();
-    });
+    build_manager.builds[build.id] = build;
+    build_manager.queue(build.id);
+
+    st.equal(build_manager.running, true, 'build now running');
+    st.equal(build_manager.current, build.id, 'current build set');
+    st.equal(build.ui.status, build_manager.STATUS.RUNNING, 'build status is set');
+
+    build_manager.next_in_queue();
+    st.equal(build_manager.running, false, 'build no longer running');
+
+    st.end();
   });
 
   t.test('wait in queue', function (st) {
-    var build_manager = new BuildManager(config);
-    var first_done = false;
+    var build_manager = new BuildManager();
+    var build = {
+      id: 0,
+      ui: {},
+      run: function() {
+        this.ui.status = build_manager.STATUS.RUNNING;
+      }
+    };
 
-    build_manager.queue(function () {
-      st.equal(build_manager.running, true, 'process running');
+    build_manager.running = true;
 
-      setTimeout(function () {
-        first_done = true;
-        build_manager.next_in_queue();
-      }, 500);
-    });
+    build_manager.builds[build.id] = build;
+    build_manager.queue(build.id);
 
-    build_manager.queue(function () {
-      st.equal(first_done, true, 'process finished running');
-      st.end();
-      build_manager.next_in_queue();
-    });
+    st.equal(build.ui.status, build_manager.STATUS.WAITING, 'build status is set');
+    st.equal(build_manager.waiting.length, 1, 'build in waiting list');
+
+    build_manager.next_in_queue();
+    st.equal(build_manager.running, true, 'build now running');
+    st.equal(build_manager.current, build.id, 'current build set');
+    st.equal(build.ui.status, build_manager.STATUS.RUNNING, 'build status is set');
+
+    st.end();
   });
 
 });
