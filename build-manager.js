@@ -40,14 +40,14 @@ var BuildManager = function (config, logs) {
  * @function
  * @param {Object} res The HTTP response object
  * @param {Number} code The HTTP response code
- * @param {String} message The error message to be used
+ * @param {Object} error The error object to be used (error message in err property)
  */
 
-BuildManager.prototype.error = function (res, code, message) {
+BuildManager.prototype.error = function (res, code, error) {
   var self = this;
 
-  self.logging.warn(message);
-  self.respond(res, code, {err: message});
+  self.logging.warn(error.err);
+  self.respond(res, code, error);
 };
 
 /**
@@ -64,7 +64,7 @@ BuildManager.prototype.hook = function (req, res) {
   // Get payload
   req.pipe(bl(function (err, data) {
     if (err) {
-      return self.error(res, 400, 'Error whilst receiving payload');
+      return self.error(res, 400, {err: 'Error whilst receiving payload'});
     }
 
     var id = ids++;
@@ -87,6 +87,8 @@ BuildManager.prototype.rerun = function (id) {
 
   if (self.builds[id]) {
     self.queue(id);
+  } else {
+    return 'Build does not exist';
   }
 };
 

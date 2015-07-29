@@ -48,7 +48,7 @@ Build.prototype.check_payload = function () {
     self.err = true;
     self.ui.status = self.build_manager.STATUS.ERROR;
     self.ui.log += message;
-    self.build_manager.error(self.res, code, message);
+    self.build_manager.error(self.res, code, {err: message, id: self.id});
     process.emit('refresh', self.id);
   }
 
