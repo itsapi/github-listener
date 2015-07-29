@@ -1,17 +1,17 @@
 
 
-<!-- Start listener.js -->
+<!-- Start build-manager.js -->
 
-## Listener(config, logs)
+## BuildManager(config, logs)
 
-Creates a new `Listener` instance.
+Creates a new `BuildManager` instance.
 
 ### Params:
 
 * **Object** *config* The GHL `config.json` (see example)
 * **Boolean** *logs* Output logs if `true`
 
-## Listener.error(res, code, message, hide)
+## BuildManager.error(res, code, error)
 
 Handles error responses
 
@@ -19,10 +19,9 @@ Handles error responses
 
 * **Object** *res* The HTTP response object
 * **Number** *code* The HTTP response code
-* **String** *message* The error message to be used
-* **Boolean** *hide* Don't update client side if `true`
+* **Object** *error* The error object to be used (error message in err property)
 
-## Listener.hook(req, res)
+## BuildManager.hook(req, res)
 
 Handle a payload request
 
@@ -31,16 +30,41 @@ Handle a payload request
 * **Object** *req* The HTTP request object
 * **Object** *res* The HTTP response object
 
-## Listener.check_payload(req, res)
+## BuildManager.rerun(id)
 
-Ensure payload object is valid
+Run `self.build` if it is defined
 
 ### Params:
 
-* **Object** *req* The HTTP request object
-* **Object** *res* The HTTP response object
+* **Number** *id* The build ID to rebuild
 
-## Listener.gen_build(repo, branch)
+## BuildManager.queue(build)
+
+Queue a build to be run
+
+### Params:
+
+* **Object** *build* The build to be queued
+
+## BuildManager.next_in_queue()
+
+Run the next function in the queue
+
+## BuildManager.respond(res, http_code, data)
+
+Respond to an HTTP request
+
+### Params:
+
+* **Object** *res* The HTTP response object
+* **Number** *http_code* The HTTP response code
+* **Object** *data* The data object to be sent
+
+<!-- End build-manager.js -->
+
+<!-- Start build.js -->
+
+## Build.gen_build(repo, branch)
 
 Create `self.build` function that can be rerun
 
@@ -49,15 +73,20 @@ Create `self.build` function that can be rerun
 * **String** *repo* The name of the repo to be passed into `self.getter`
 * **String** *branch* The name of the branch to be passed into `self.getter`
 
-## Listener.rerun(res)
+## Build.check_payload(req, res)
 
-Run `self.build` if it is defined
+Ensure payload object is valid
 
 ### Params:
 
+* **Object** *req* The HTTP request object
 * **Object** *res* The HTTP response object
 
-## Listener.getter(repo, branch, cb)
+## Build.run()
+
+Run the stored self.build
+
+## Build.getter(repo, branch, cb)
 
 Run github-getter to get the repo from GitHub
 
@@ -67,7 +96,7 @@ Run github-getter to get the repo from GitHub
 * **String** *branch* The branch to checkout
 * **Function** *cb* The callback to be run with the command output
 
-## Listener.post_receive(repo, cb)
+## Build.post_receive(repo, cb)
 
 Run the build scripts for the repo
 
@@ -76,30 +105,7 @@ Run the build scripts for the repo
 * **String** *repo* The repo name to be passed to post-receive
 * **Function** *cb* The callback to be run with the command output
 
-## Listener.queue(func)
-
-Queue a function to be run
-
-### Params:
-
-* **Function** *func* The function to be queued
-
-## Listener.next_in_queue()
-
-Run the next function in the queue
-
-## Listener.respond(res, http_code, message, not_refresh)
-
-Respond to an HTTP request
-
-### Params:
-
-* **Object** *res* The HTTP response object
-* **Number** *http_code* The HTTP response code
-* **String** *message* The message to be sent
-* **Boolean** *not_refresh* Don't update client side if `true`
-
-<!-- End listener.js -->
+<!-- End build.js -->
 
 <!-- Start server.js -->
 
@@ -121,14 +127,6 @@ Start the http server
 
 Stop the http server
 
-## Server.assemble_data(format)
-
-Create an object of data to send to the client
-
-### Params:
-
-* **Boolean** *format* JSON.stringify() if `true`
-
 ## Server.serve(req, res)
 
 Handle HTTP get requests
@@ -137,6 +135,18 @@ Handle HTTP get requests
 
 * **Object** *req* The HTTP request object
 * **Object** *res* The HTTP response object
+
+## Server.render()
+
+Generate DOM to send to UI of builds dashboard
+
+## Server.get_build(id)
+
+Create an object of data to send to the client
+
+### Params:
+
+* **Number** *id* The ID of the build to be generated
 
 <!-- End server.js -->
 

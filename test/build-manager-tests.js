@@ -57,103 +57,117 @@ test('build_manager.error', function (t) {
       st.end();
     });
 
-    build_manager.error(res, 500, 'Error');
+    build_manager.error(res, 500, {err: 'Error'});
   });
 
 });
 
 
-// TODO: build_manager.rerun takes a build ID param
-test.skip('build_manager.rerun', function (t) {
-  t.test('build_manager.build is not defined', function (st) {
+test('build_manager.rerun', function (t) {
+  t.test('build_manager.current is not defined', function (st) {
     var build_manager = new BuildManager();
 
-    st.equal(build_manager.build, undefined, 'build_manager has no build property');
+    st.equal(build_manager.current, undefined, 'build_manager has no current property');
     st.end();
   });
 
-  t.test('nothing to build', function (st) {
+  t.test('rerun invalid build ID', function (st) {
     var build_manager = new BuildManager();
 
-    var res = create_res(function (res, data) {
-      st.equal(data, 'Nothing to build', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
-      st.end();
-    });
-
-    build_manager.rerun(res);
+    st.equal(build_manager.rerun(), 'Build does not exist', 'correct error message');
+    st.end();
   });
 
-  t.test('run last build (invalid payload)', function (st) {
+  t.test('rerun failed build (invalid payload)', function (st) {
     var build_manager = request('asdf', function (res, data) {
-      st.equal(data, 'Error: Invalid payload', 'correct server response');
+      st.equal(data.err, 'Error: Invalid payload', 'correct server response');
       st.equal(res.statusCode, 400, 'correct status code');
 
-      res = create_res(function (res, data) {
-        st.equal(data, 'Nothing to build', 'correct server response');
-        st.equal(res.statusCode, 200, 'correct status code');
-        st.end();
-      });
+      var build_id = data.id;
+      build_manager.rerun(build_id);
 
-      build_manager.rerun(res);
+      st.equal(build_manager.builds[build_id].ui.status, build_manager.STATUS.ERROR, 'correct build status');
+      st.end();
     });
   });
 
-  t.test('run last build (valid payload)', function (st) {
+  t.test('rerun successful build (valid payload)', function (st) {
     var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
 
     var build_manager = request(payload, function (res, data) {
-      st.equal(data, 'Build queued', 'correct server response');
+      st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
 
-      res = create_res(function (res, data) {
-        st.equal(data, 'Build queued', 'correct server response');
-        st.equal(res.statusCode, 202, 'correct status code');
-        st.end();
-      });
+      var build_id = data.id;
+      build_manager.rerun(build_id);
 
-      build_manager.rerun(res);
+      st.equal(build_manager.builds[build_id].ui.status, build_manager.STATUS.RUNNING, 'correct build status');
+      st.end();
     });
   });
 
 });
 
 
-// TODO: build_manager.queue takes a build ID param
-test.skip('build_manager.queue', function (t) {
+test('build_manager.queue', function (t) {
+  t.test('build undefined', function (st) {
+    var build_manager = new BuildManager();
+    build_manager.queue();
+
+    st.equal(build_manager.running, false, 'no build running');
+    st.end();
+  });
+
   t.test('no waiting', function (st) {
-    var build_manager = new BuildManager(config);
-    var start = Date.now();
+    var build_manager = new BuildManager();
+    var build = {
+      id: 0,
+      ui: {},
+      run: function() {
+        this.ui.status = build_manager.STATUS.RUNNING;
+      }
+    };
 
-    st.equal(build_manager.running, false, 'nothing runnning already');
-    build_manager.queue(function () {
-      var elapsed = Date.now() - start;
+    st.equal(build_manager.running, false, 'no build running');
 
-      st.ok(elapsed < 100, 'callback run immediately');
-      st.end();
-      build_manager.next_in_queue();
-    });
+    build_manager.builds[build.id] = build;
+    build_manager.queue(build.id);
+
+    st.equal(build_manager.running, true, 'build now running');
+    st.equal(build_manager.current, build.id, 'current build set');
+    st.equal(build.ui.status, build_manager.STATUS.RUNNING, 'build status is set');
+
+    build_manager.next_in_queue();
+    st.equal(build_manager.running, false, 'build no longer running');
+
+    st.end();
   });
 
   t.test('wait in queue', function (st) {
-    var build_manager = new BuildManager(config);
-    var first_done = false;
+    var build_manager = new BuildManager();
+    var build = {
+      id: 0,
+      ui: {},
+      run: function() {
+        this.ui.status = build_manager.STATUS.RUNNING;
+      }
+    };
 
-    build_manager.queue(function () {
-      st.equal(build_manager.running, true, 'process running');
+    build_manager.running = true;
 
-      setTimeout(function () {
-        first_done = true;
-        build_manager.next_in_queue();
-      }, 500);
-    });
+    build_manager.builds[build.id] = build;
+    build_manager.queue(build.id);
 
-    build_manager.queue(function () {
-      st.equal(first_done, true, 'process finished running');
-      st.end();
-      build_manager.next_in_queue();
-    });
+    st.equal(build.ui.status, build_manager.STATUS.WAITING, 'build status is set');
+    st.equal(build_manager.waiting.length, 1, 'build in waiting list');
+
+    build_manager.next_in_queue();
+    st.equal(build_manager.running, true, 'build now running');
+    st.equal(build_manager.current, build.id, 'current build set');
+    st.equal(build.ui.status, build_manager.STATUS.RUNNING, 'build status is set');
+
+    st.end();
   });
 
 });
