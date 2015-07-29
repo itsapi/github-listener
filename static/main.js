@@ -1,4 +1,4 @@
-var Build = function(elem, buildManager) {
+var Build = function(elem, build_manager) {
   var self = this;
 
   self.elem = elem;
@@ -6,11 +6,11 @@ var Build = function(elem, buildManager) {
   self.loaded_ui = false;
 
   self.elem.addEventListener('click', function() {
-    buildManager.updateSelected(self.id);
+    build_manager.update_selected(self.id);
     if (!self.loaded_ui) {
       socket.emit('request_update', self.id);
     } else {
-      buildManager.update_info(self.id);
+      build_manager.update_info(self.id);
     }
   });
 };
@@ -87,7 +87,7 @@ var BuildManager = function(elem) {
   });
 
   if (document.body.dataset.current !== undefined) {
-    self.updateSelected(document.body.dataset.current);
+    self.update_selected(document.body.dataset.current);
   }
 
   self.header.elem.querySelector('.rebuild').addEventListener('click', function() {
@@ -100,8 +100,8 @@ var BuildManager = function(elem) {
     if (self.builds[data.build.id] === undefined) {
       console.log('New:', data.build.id);
 
-      self.addBuild(data.build);
-      self.updateSelected(data.build.id);
+      self.add_build(data.build);
+      self.update_selected(data.build.id);
 
     } else {
       console.log(data.build.status, data.build.id);
@@ -110,7 +110,7 @@ var BuildManager = function(elem) {
     self.builds[data.build.id].update_ui(data.build);
     self.builds[data.build.id].loaded_ui = true;
 
-    setStatusTitle(data.status);
+    set_status_title(data.status);
 
     if (self.selected === data.build.id) {
       self.update_info(data.build.id);
@@ -118,7 +118,7 @@ var BuildManager = function(elem) {
   });
 };
 
-BuildManager.prototype.addBuild = function(ui) {
+BuildManager.prototype.add_build = function(ui) {
   var self = this;
 
   var elem = document.createElement('li');
@@ -127,7 +127,7 @@ BuildManager.prototype.addBuild = function(ui) {
   self.builds[ui.id].init(ui);
   self.elem.insertBefore(elem, self.elem.firstChild);
 
-  self.updateSelected(ui.id);
+  self.update_selected(ui.id);
 };
 
 BuildManager.prototype.update_info = function(id) {
@@ -135,7 +135,7 @@ BuildManager.prototype.update_info = function(id) {
 
   var ui = self.builds[id].ui;
 
-  function setInner(elem, html) {
+  function set_inner(elem, html) {
     if (html === '') {
       elem.classList.add('empty');
     } else {
@@ -147,11 +147,11 @@ BuildManager.prototype.update_info = function(id) {
   self.log.innerHTML = toHtml(ui.log);
   window.scrollTo(0, self.log.scrollHeight);
 
-  setInner(self.header.timestamp, ui.timestamp);
-  setInner(self.header.commit, toHtml(ui.data.commit));
-  setInner(self.header.url, toHtml(ui.data.url));
+  set_inner(self.header.timestamp, ui.timestamp);
+  set_inner(self.header.commit, toHtml(ui.data.commit));
+  set_inner(self.header.url, toHtml(ui.data.url));
   if (ui.data.image) {
-    self.header.elem.style.backgroundImage = 'url('+ui.data.image+')';
+    self.header.elem.style.backgroundImage = 'url(' + ui.data.image + ')';
     self.header.elem.classList.add('image');
   } else {
     self.header.elem.style.backgroundImage = '';
@@ -159,7 +159,7 @@ BuildManager.prototype.update_info = function(id) {
   }
 };
 
-BuildManager.prototype.updateSelected = function (id) {
+BuildManager.prototype.update_selected = function (id) {
   var self = this;
 
   if (self.selected !== undefined) {
@@ -187,7 +187,7 @@ function toHtml(string) {
   );
 }
 
-function setStatusTitle(status) {
+function set_status_title(status) {
   document.title = status + ' - Git';
 
   var src = 'icons/' + status.toLowerCase() + '.png';
