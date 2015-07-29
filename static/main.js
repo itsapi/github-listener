@@ -8,7 +8,7 @@ var Build = function(elem, buildManager) {
   self.elem.addEventListener('click', function() {
     buildManager.updateSelected(self.id);
     if (!self.loaded_ui) {
-      socket.emit('refresh', self.id);
+      socket.emit('request_update', self.id);
     } else {
       buildManager.update_info(self.id);
     }
@@ -72,14 +72,14 @@ var BuildManager = function(elem) {
   }
 
   // Get latest updates
-  socket.emit('get_all');
-  socket.on('all', function(data) {
+  socket.emit('request_all');
+  socket.on('send_all', function(data) {
     data = JSON.parse(data);
     console.log('Updates:', data);
 
     for (var id in data) {
       if (self.builds[id] === undefined) {
-        socket.emit('refresh', id);
+        socket.emit('request_update', id);
       } else {
         self.builds[id].update_ui({status: data[id]});
       }
@@ -94,7 +94,7 @@ var BuildManager = function(elem) {
     socket.emit('rerun', self.selected);
   });
 
-  socket.on('refresh', function(data) {
+  socket.on('send_update', function(data) {
     data = JSON.parse(data);
 
     if (self.builds[data.build.id] === undefined) {

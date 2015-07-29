@@ -87,21 +87,21 @@ Server.prototype.start = function () {
       self.build_manager.rerun(build_id);
     });
 
-    socket.on('refresh', function (build_id) {
-      process.emit('refresh', build_id);
+    socket.on('request_update', function (build_id) {
+      process.emit('send_update', build_id);
     });
 
-    socket.on('get_all', function () {
+    socket.on('request_all', function () {
       var statuses = {};
       for (var id in self.build_manager.builds) {
         statuses[id] = self.build_manager.builds[id].ui.status;
       }
-      socket.emit('all', JSON.stringify(statuses));
+      socket.emit('send_all', JSON.stringify(statuses));
     });
 
-    process.on('refresh', function (build_id) {
+    process.on('send_update', function (build_id) {
       logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify({
+      socket.emit('send_update', JSON.stringify({
         status: self.build_manager.running ?
                 self.STATUS.RUNNING : self.STATUS.READY,
         build: self.get_build(build_id)

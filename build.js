@@ -49,7 +49,7 @@ Build.prototype.check_payload = function () {
     self.ui.status = self.build_manager.STATUS.ERROR;
     self.ui.log += message;
     self.build_manager.error(self.res, code, message);
-    process.emit('refresh', self.id);
+    process.emit('send_update', self.id);
   }
 
   if (!self.ui.payload) {
@@ -78,7 +78,7 @@ Build.prototype.check_payload = function () {
 
   self.build_manager.respond(self.res, 202, {msg: 'Build queued', id: self.id});
   self.ui.log += 'Build queued\n';
-  process.emit('refresh', self.id);
+  process.emit('send_update', self.id);
 };
 
 /**
@@ -92,7 +92,7 @@ Build.prototype.run = function () {
 
   self.ui.status = self.build_manager.STATUS.RUNNING;
   self.ui.log += 'Build started\n';
-  process.emit('refresh', self.id);
+  process.emit('send_update', self.id);
 
   // Run script
   var out = '';
@@ -107,7 +107,7 @@ Build.prototype.run = function () {
       self.ui.log += out + '\nBuild Finished';
 
       self.build_manager.next_in_queue();
-      process.emit('refresh', self.id);
+      process.emit('send_update', self.id);
     });
   });
 };
