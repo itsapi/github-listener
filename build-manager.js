@@ -87,8 +87,9 @@ BuildManager.prototype.rerun = function (id) {
 
   if (self.builds[id]) {
     self.queue(id);
+    return true;
   } else {
-    return 'Build does not exist';
+    return false;
   }
 };
 

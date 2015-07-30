@@ -74,7 +74,7 @@ test('build_manager.rerun', function (t) {
   t.test('rerun invalid build ID', function (st) {
     var build_manager = new BuildManager();
 
-    st.equal(build_manager.rerun(), 'Build does not exist', 'correct error message');
+    st.equal(build_manager.rerun(), false, 'correct rerun response');
     st.end();
   });
 
@@ -84,8 +84,8 @@ test('build_manager.rerun', function (t) {
       st.equal(res.statusCode, 400, 'correct status code');
 
       var build_id = data.id;
-      build_manager.rerun(build_id);
 
+      st.equal(build_manager.rerun(build_id), true, 'correct rerun response');
       st.equal(build_manager.builds[build_id].ui.status, build_manager.STATUS.ERROR, 'correct build status');
       st.end();
     });
@@ -102,7 +102,8 @@ test('build_manager.rerun', function (t) {
       var build_id = data.id;
       build_manager.rerun(build_id);
 
-      st.equal(build_manager.builds[build_id].ui.status, build_manager.STATUS.RUNNING, 'correct build status');
+      st.equal(build_manager.rerun(build_id), true, 'correct rerun response');
+      st.equal(build_manager.builds[build_id].ui.status, build_manager.STATUS.WAITING, 'correct build status');
       st.end();
     });
   });

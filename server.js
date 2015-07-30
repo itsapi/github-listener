@@ -84,7 +84,9 @@ Server.prototype.start = function () {
   socketio(self.app).on('connection', function (socket) {
 
     socket.on('rerun', function (build_id) {
-      self.build_manager.rerun(build_id);
+      if (!self.build_manager.rerun(build_id)) {
+        socket.emit('rerun_error', build_id);
+      }
     });
 
     socket.on('request_update', function (build_id) {

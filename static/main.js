@@ -94,6 +94,11 @@ var BuildManager = function(elem) {
     socket.emit('rerun', self.selected);
   });
 
+  socket.on('rerun_error', function (id) {
+    self.builds[id].ui.log = 'Error: Build doen\'t exist! :(';
+    self.update_info(id);
+  });
+
   socket.on('send_update', function(data) {
     data = JSON.parse(data);
 
