@@ -125,7 +125,16 @@ BuildManager.prototype.add_build = function(ui) {
 
   self.builds[ui.id] = new Build(elem, self);
   self.builds[ui.id].init(ui);
-  self.elem.insertBefore(elem, self.elem.firstChild);
+
+  var check_elem = self.elem.firstElementChild;
+  if (check_elem) {
+    while (check_elem.id > ui.id && check_elem.nextElementSibling) {
+      check_elem = check_elem.nextElementSibling;
+    }
+    self.elem.insertBefore(elem, self.builds[check_elem.id].elem);
+  } else {
+    self.elem.appendChild(elem);
+  }
 
   self.update_selected(ui.id);
 };

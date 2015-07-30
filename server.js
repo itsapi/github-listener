@@ -173,13 +173,8 @@ Server.prototype.serve = function (req, res) {
 Server.prototype.render = function () {
   var self = this;
 
-  var builds = [];
-  for (var id in self.build_manager.builds) {
-    builds.push(self.get_build(id));
-  }
-
-  builds.sort(function (b1, b2) {
-    return new Date(b2.timestamp) - new Date(b1.timestamp);
+  var builds = Object.keys(self.build_manager.builds).sort().reverse().map(function(id){
+    return self.get_build(id);
   });
 
   return self.templates.index({
