@@ -1,20 +1,30 @@
 doctype html
 html
-    head
-        title= status + " - Git"
-        link(href='//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
-        link(href='main.css', rel='stylesheet')
-        script(src='socket.io/socket.io.js')
-    body
-        header
-            img
-            button Rebuild
-            p!= header
-        #left
-            h2 Last Payload
-            pre= last_payload
+  head
+    title= status + ' - Git'
 
-        #right
-            h2 Script Output
-            pre!= script_out
-        script(src='main.js')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css', rel='stylesheet')
+    link(href='http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono', rel='stylesheet')
+    link(href='main.css', rel='stylesheet')
+    link(href='icons/' + status.toLowerCase() + '.png', rel='shortcut icon', id='dynamic-favicon')
+    script(src='socket.io/socket.io.js')
+    script(src='main.js')
+
+  body(data-current=current.id)
+    h1.no-builds(class={hide: builds.length > 0}) No builds
+    ul.list
+      each build in builds
+        - var status = 'status-' + build.status.toLowerCase();
+        li.build(id=build.id, class=status)
+          span.slug= build.data.slug
+          span.branch= build.data.branch
+          span.commit= build.data.commit
+
+    .info
+      - var image = current.data.image ? 'url('+current.data.image+')' : null;
+      .header(style={'background-image': image}, class=[{hide: current.empty}, {image: image}])
+        button.rebuild Rebuild
+        span.timestamp(class={hide: current.timestamp === undefined})= current.timestamp
+        span.commit(class={hide: current.data.commit === undefined})= current.data.commit
+        span.url(class={hide: current.data.url === undefined})= current.data.url
+      pre.log!= current.log

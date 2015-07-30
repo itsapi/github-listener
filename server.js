@@ -3,9 +3,10 @@ var http = require('http'),
     url = require('url'),
     jade = require('jade'),
     fs = require('fs'),
-    logging = require('logging-tool'),
-    Listener = require('./listener'),
     async = require('async-tools'),
+    logging = require('logging-tool'),
+    BuildManager = require('./build-manager'),
+    ansi = new (require('ansi-to-html'))(),
     fileserver = new (require('node-static')).Server('./static');
 
 
@@ -26,16 +27,21 @@ var Server = function (options, ready) {
   self.config = options.config;
   logging.silent = !options.logging;
 
-  // Make listener
-  self.listener = new Listener(self.config, options.logging);
+  // Make build_manager
+  self.build_manager = new BuildManager(self.config, options.logging);
   self.ready = ready;
+
+  self.STATUS = {
+    READY: 'Ready',
+    RUNNING: 'Running'
+  };
 
   // Setup server
   self.app = http.createServer(function (req, res) {
     if (req.method === 'GET') {
       self.serve(req, res);
     } else {
-      self.listener.hook(req, res);
+      self.build_manager.hook(req, res);
     }
   });
 
@@ -76,10 +82,34 @@ Server.prototype.start = function () {
 
   // Set up the socket to send new data to the client.
   socketio(self.app).on('connection', function (socket) {
-    process.on('refresh', function () {
-      logging.log('Data sent by socket');
-      socket.emit('refresh', JSON.stringify(self.listener.assemble_data()));
+
+    socket.on('rerun', function (build_id) {
+      if (!self.build_manager.rerun(build_id)) {
+        socket.emit('rerun_error', build_id);
+      }
     });
+
+    socket.on('request_update', function (build_id) {
+      process.emit('send_update', build_id);
+    });
+
+    socket.on('request_all', function () {
+      var statuses = {};
+      for (var id in self.build_manager.builds) {
+        statuses[id] = self.build_manager.builds[id].ui.status;
+      }
+      socket.emit('send_all', JSON.stringify(statuses));
+    });
+
+    process.on('send_update', function (build_id) {
+      logging.log('Data sent by socket');
+      socket.emit('send_update', JSON.stringify({
+        status: self.build_manager.running ?
+                self.STATUS.RUNNING : self.STATUS.READY,
+        build_ui: self.get_build(build_id)
+      }));
+    });
+
     process.on('close', function () {
       socket.disconnect();
     });
@@ -114,17 +144,12 @@ Server.prototype.serve = function (req, res) {
   var url_parts = url.parse(req.url, true);
 
   if (url_parts.pathname === '/') {
-    if (url_parts.query.refresh !== undefined) { // Send the data
-      logging.log('Data requested by GET');
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify(self.listener.assemble_data()));
-
-    } else if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
+    if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
-      self.listener.rerun(res);
+      self.build_manager.rerun(res, parseInt(url_parts.query.rebuild));
 
     } else { // Send the HTML
-      var html = self.templates['index'](self.listener.assemble_data(true));
+      var html = self.render();
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
@@ -139,7 +164,53 @@ Server.prototype.serve = function (req, res) {
       }
     });
   }
+};
 
+/**
+ * Generate DOM to send to UI of builds dashboard
+ * @name Server.render
+ * @function
+ */
+
+Server.prototype.render = function () {
+  var self = this;
+
+  // Sort builds
+  var builds = Object.keys(self.build_manager.builds)
+  .sort(function (a, b) {
+    return parseInt(b) - parseInt(a);
+  }).map(function(id){
+    return self.get_build(id);
+  });
+
+  return self.templates.index({
+    status: self.build_manager.running ?
+            self.STATUS.RUNNING : self.STATUS.READY,
+    builds: builds,
+    current: self.build_manager.current !== undefined ?
+             self.get_build(self.build_manager.current) : {empty: true, data: {}}
+  });
+};
+
+/**
+ * Create an object of data to send to the client
+ * @name Server.get_build
+ * @function
+ * @param {Number} id The ID of the build to be generated
+ */
+
+Server.prototype.get_build = function (id) {
+  var self = this;
+  var build = self.build_manager.builds[id];
+
+  return {
+    id: build.id,
+    payload: JSON.stringify(build.ui.payload, null, '  '),
+    data: build.ui.data,
+    log: ansi.toHtml(build.ui.log),
+    timestamp: build.ui.timestamp.toString(),
+    status: build.ui.status
+  };
 };
 
 

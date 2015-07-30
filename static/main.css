@@ -1,70 +1,128 @@
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
-
 *, *:before, *:after {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    font-family: 'Droid Sans', sans-serif;
-    background-color: rgb(20, 20, 20);
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgb(20, 20, 20);
+  font-family: 'Droid Sans', sans-serif;
 }
 
 ::selection {
   background: rgba(255, 255, 255, 0.6);
 }
 
-header {
-    width: 100%;
-    text-align: center;
-    background-color: rgb(110, 110, 110);
-    margin: 0;
+a {
+  color: rgba(255, 255, 255, 0.4)
+}
+
+.hide {
+  display: none !important;
+}
+
+.no-builds {
+  margin: 20px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  width: 25%;
+  position: fixed;
+  right: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+  .list .build {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 3px solid transparent;
+    padding: .7em;
+    padding-top: .4em;
+    cursor: pointer;
+  }
+  .list .build.selected {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+  .list .build:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+  }
+  .list .build.status-waiting {
+    border-left-color: cyan;
+  }
+  .list .build.status-running {
+    border-left-color: yellow;
+  }
+  .list .build.status-done {
+    border-left-color: green;
+  }
+  .list .build.status-error {
+    border-left-color: red;
+  }
+    .list .slug,
+    .list .branch {
+      font-size: .7em;
+      margin-bottom: .3em;
+      color: rgba(255, 255, 255, .5);
+    }
+    .list .slug {
+      float: left;
+    }
+    .list .branch {
+      float: right;
+    }
+    .list .commit {
+      display: block;
+      clear: both;
+    }
+
+.info {
+  width: 75%;
+  left: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+  .info .header {
+    width: 75%;
+    position: fixed;
+    min-height: 3em;
     color: white;
+    background-color: rgb(110, 110, 110);
     border-bottom: 2px solid rgb(50, 50, 50);
-}
-p {
-    margin: 0;
-    padding: 1em;
-    line-height: 1em;
-}
-img {
-    float: left;
-    height: 3em;
-}
 
-button {
-    float: right;
-    height: 3em;
-    color: black;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.8);
-}
+    display: flex;
+    align-items: center;
 
-button:hover {
-    background-color: rgba(255, 255, 255, 0.6);
-}
-
-#left, #right {
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0;
-    width: 50%;
-    padding: 10px;
-}
-#left {
-    float: left;
-    border-right: 2px solid rgb(50, 50, 50);
-}
-#right {
-    float: right;
-}
-
-pre {
+    background-repeat: no-repeat;
+    background-size: 3em;
+    background-position: center left;
+  }
+  .info .header.image {
+    padding-left: 3em;
+  }
+    .header span {
+      padding: 1em;
+      line-height: 1em;
+      border-left: 1px dashed rgba(255, 255, 255, .3);
+    }
+    .header span:first-of-type {
+      border: none;
+    }
+    .header .rebuild {
+      height: 3em;
+      color: black;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+  .info .log {
     word-wrap: break-word;
     font-family: 'Droid Sans Mono', monospace;
     font-size: 0.8em;
-}
-
-a {
-    color: rgba(255, 255, 255, 0.4)
-}
+    padding: 1em .5em;
+    margin: 0;
+    margin-top: 5em;
+  }

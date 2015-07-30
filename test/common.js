@@ -1,6 +1,6 @@
 var through2 = require('through2'),
     crypto = require('crypto'),
-    Listener = require('../listener');
+    BuildManager = require('../build-manager');
 
 
 function data () {
@@ -13,19 +13,19 @@ function data () {
   };
 
   this.request = function (payload, cb) {
-    var listener = new Listener(self.config);
+    var build_manager = new BuildManager(self.config);
     var req = through2();
 
-    res.end = function (data) { cb(res, data); };
+    res.end = function (data) { cb(res, JSON.parse(data)); };
 
     req.method = self.options.method;
     req.url = self.options.path;
     req.headers = self.options.headers;
 
-    listener.hook(req, res);
+    build_manager.hook(req, res);
     req.end(payload);
 
-    return listener;
+    return build_manager;
   };
 
   this.github_sig = function (secret, payload) {

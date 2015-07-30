@@ -18,7 +18,7 @@ test('pass string as payload', function (t) {
   options.headers['travis-repo-slug'] = 'repo';
 
   request(payload, function (res, data) {
-    t.equal(data, 'Error: Invalid payload', 'correct server response');
+    t.equal(data.err, 'Error: Invalid payload', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
     t.end();
   });
@@ -32,7 +32,7 @@ test('pass invalid data in payload', function (t) {
   options.headers['travis-repo-slug'] = 'repo';
 
   request(payload, function (res, data) {
-    t.equal(data, 'Error: Invalid data', 'correct server response');
+    t.equal(data.err, 'Error: Invalid data', 'correct server response');
     t.equal(res.statusCode, 400, 'correct status code');
     t.end();
   });
@@ -47,8 +47,8 @@ test('pass valid payload but invalid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      t.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
-      t.equal(res.statusCode, 403, 'correct status code');
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
   });
@@ -59,7 +59,7 @@ test('pass valid payload but invalid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
       st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
@@ -70,7 +70,7 @@ test('pass valid payload but invalid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
       st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
@@ -81,7 +81,7 @@ test('pass valid payload but invalid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
       st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
@@ -97,8 +97,8 @@ test('pass valid payload and valid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 202, 'correct status code');
+      st.equal(data.err, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
       st.end();
     });
   });
@@ -109,8 +109,8 @@ test('pass valid payload and valid signature', function (t) {
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
@@ -126,8 +126,8 @@ test('pass custom branch name', function (t) {
     options.path = '/dev';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Branches do not match', 'correct server response');
-      st.equal(res.statusCode, 202, 'correct status code');
+      st.equal(data.err, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
       st.end();
     });
   });
@@ -139,8 +139,8 @@ test('pass custom branch name', function (t) {
     options.path = '/dev';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
@@ -152,8 +152,8 @@ test('pass custom branch name', function (t) {
     options.path = '/dev/';
 
     request(payload, function (res, data) {
-      st.equal(data, 'Waiting for script to finish', 'correct server response');
-      st.equal(res.statusCode, 200, 'correct status code');
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
       st.end();
     });
   });
