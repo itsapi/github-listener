@@ -109,7 +109,7 @@ BuildManager.prototype.queue = function (id) {
 
   build.log = '';
   build.ui.status = self.STATUS.WAITING;
-  process.emit('refresh', id);
+  process.emit('send_update', id);
 
   // Avoids running multiple requests at once.
   if (self.waiting.length || self.running) {
