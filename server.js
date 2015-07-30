@@ -184,7 +184,7 @@ Server.prototype.render = function () {
             self.STATUS.RUNNING : self.STATUS.READY,
     builds: builds,
     current: self.build_manager.current !== undefined ?
-             self.get_build(self.build_manager.current) : {data:{}}
+             self.get_build(self.build_manager.current) : {empty: true, data: {}}
   });
 };
 

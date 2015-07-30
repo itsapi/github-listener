@@ -128,6 +128,8 @@ BuildManager.prototype.add_build = function(ui) {
 
   var elem = document.createElement('li');
 
+  document.querySelector('.no-builds').classList.add('hide');
+
   self.builds[ui.id] = new Build(elem, self);
   self.builds[ui.id].init(ui);
 
@@ -151,10 +153,10 @@ BuildManager.prototype.update_info = function(id) {
 
   function set_inner(elem, html) {
     if (html === '') {
-      elem.classList.add('empty');
+      elem.classList.add('hide');
     } else {
       elem.innerHTML = html;
-      elem.classList.remove('empty');
+      elem.classList.remove('hide');
     }
   }
 
@@ -164,6 +166,7 @@ BuildManager.prototype.update_info = function(id) {
   set_inner(self.header.timestamp, ui.timestamp);
   set_inner(self.header.commit, toHtml(ui.data.commit));
   set_inner(self.header.url, toHtml(ui.data.url));
+  self.header.elem.classList.remove('hide');
   if (ui.data.image) {
     self.header.elem.style.backgroundImage = 'url(' + ui.data.image + ')';
     self.header.elem.classList.add('image');

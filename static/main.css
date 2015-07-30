@@ -18,6 +18,14 @@ a {
   color: rgba(255, 255, 255, 0.4)
 }
 
+.hide {
+  display: none !important;
+}
+
+.no-builds {
+  margin: 20px;
+}
+
 .list {
   list-style: none;
   padding: 0;
@@ -100,9 +108,6 @@ a {
       padding: 1em;
       line-height: 1em;
       border-left: 1px dashed rgba(255, 255, 255, .3);
-    }
-    .header span.empty {
-      display: none;
     }
     .header span:first-of-type {
       border: none;

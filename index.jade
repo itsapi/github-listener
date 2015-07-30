@@ -11,6 +11,7 @@ html
     script(src='main.js')
 
   body(data-current=current.id)
+    h1.no-builds(class={hide: builds.length > 0}) No builds
     ul.list
       each build in builds
         - var status = 'status-' + build.status.toLowerCase();
@@ -20,10 +21,10 @@ html
           span.commit= build.data.commit
 
     .info
-      - var image = current.data.image ? 'url('+current.data.image+')' : '';
-      .header(style={'background-image': image}, class=(image ? 'image' : ''))
+      - var image = current.data.image ? 'url('+current.data.image+')' : null;
+      .header(style={'background-image': image}, class=[{hide: current.empty}, {image: image}])
         button.rebuild Rebuild
-        span.timestamp(class=(current.timestamp === undefined ? 'empty' : ''))= current.timestamp
-        span.commit(class=(current.data.commit === undefined ? 'empty' : ''))= current.data.commit
-        span.url(class=(current.data.url === undefined ? 'empty' : ''))= current.data.url
+        span.timestamp(class={hide: current.timestamp === undefined})= current.timestamp
+        span.commit(class={hide: current.data.commit === undefined})= current.data.commit
+        span.url(class={hide: current.data.url === undefined})= current.data.url
       pre.log!= current.log
