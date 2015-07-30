@@ -96,9 +96,9 @@ Build.prototype.run = function () {
 
   // Run script
   var out = '';
-  self.getter(self.ui.data.repo, self.ui.data.branch, function (getter_out) {
+  self.getter(self.ui.data.slug, self.ui.data.branch, function (getter_out) {
     out += getter_out;
-    self.post_receive(self.ui.data.repo, function (post_receive_out) {
+    self.post_receive(self.ui.data.slug, function (post_receive_out) {
       out += post_receive_out;
       self.build_manager.logging.log('\n' + out);
       self.build_manager.logging.info('Finished processing files\n');
