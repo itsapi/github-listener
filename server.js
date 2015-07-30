@@ -104,7 +104,7 @@ Server.prototype.start = function () {
       socket.emit('send_update', JSON.stringify({
         status: self.build_manager.running ?
                 self.STATUS.RUNNING : self.STATUS.READY,
-        build: self.get_build(build_id)
+        build_ui: self.get_build(build_id)
       }));
     });
 

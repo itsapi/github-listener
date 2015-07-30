@@ -97,23 +97,23 @@ var BuildManager = function(elem) {
   socket.on('send_update', function(data) {
     data = JSON.parse(data);
 
-    if (self.builds[data.build.id] === undefined) {
-      console.log('New:', data.build.id);
+    if (self.builds[data.build_ui.id] === undefined) {
+      console.log('New:', data.build_ui.id);
 
-      self.add_build(data.build);
-      self.update_selected(data.build.id);
+      self.add_build(data.build_ui);
+      self.update_selected(data.build_ui.id);
 
     } else {
-      console.log(data.build.status, data.build.id);
+      console.log(data.build_ui.status, data.build_ui.id);
     }
 
-    self.builds[data.build.id].update_ui(data.build);
-    self.builds[data.build.id].loaded_ui = true;
+    self.builds[data.build_ui.id].update_ui(data.build_ui);
+    self.builds[data.build_ui.id].loaded_ui = true;
 
     set_status_title(data.status);
 
-    if (self.selected === data.build.id) {
-      self.update_info(data.build.id);
+    if (self.selected === data.build_ui.id) {
+      self.update_info(data.build_ui.id);
     }
   });
 };
