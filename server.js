@@ -175,7 +175,11 @@ Server.prototype.serve = function (req, res) {
 Server.prototype.render = function () {
   var self = this;
 
-  var builds = Object.keys(self.build_manager.builds).sort().reverse().map(function(id){
+  // Sort builds
+  var builds = Object.keys(self.build_manager.builds)
+  .sort(function (a, b) {
+    return parseInt(b) - parseInt(a);
+  }).map(function(id){
     return self.get_build(id);
   });
 
