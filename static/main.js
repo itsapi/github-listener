@@ -161,9 +161,6 @@ BuildManager.prototype.update_info = function(id) {
     }
   }
 
-  self.log.innerHTML = toHtml(ui.log);
-  window.scrollTo(0, self.log.scrollHeight);
-
   set_inner(self.header.timestamp, ui.timestamp);
   set_inner(self.header.commit, toHtml(ui.data.commit));
   set_inner(self.header.url, toHtml(ui.data.url));
@@ -175,6 +172,10 @@ BuildManager.prototype.update_info = function(id) {
     self.header.elem.style.backgroundImage = '';
     self.header.elem.classList.remove('image');
   }
+
+  self.log.style.marginTop = self.header.elem.offsetHeight + 'px';
+  self.log.innerHTML = toHtml(ui.log);
+  window.scrollTo(0, self.log.scrollHeight);
 };
 
 BuildManager.prototype.update_selected = function (id) {
