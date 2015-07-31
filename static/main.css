@@ -106,12 +106,17 @@ a {
     .header span {
       display: flex;
       align-items: center;
+      min-width: 10em;
       padding: 1em;
       line-height: 1em;
       border-left: 1px dashed rgba(255, 255, 255, .3);
     }
     .header span:first-of-type {
       border: none;
+    }
+    .header .commit {
+      display: block;
+      word-wrap: break-word;
     }
     .header .rebuild {
       color: black;
@@ -124,5 +129,4 @@ a {
     font-size: 0.8em;
     padding: 1em .5em;
     margin: 0;
-    margin-top: 5em;
   }
