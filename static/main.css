@@ -78,6 +78,7 @@ a {
     .list .commit {
       display: block;
       clear: both;
+      word-wrap: break-word;
     }
 
 .info {
