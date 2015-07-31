@@ -18,13 +18,13 @@ html
         li.build(id=build.id, class=status)
           span.slug= build.data.slug
           span.branch= build.data.branch
-          span.commit= build.data.commit
+          span.commit!= (build.data.commit||'').replace(/\n/g, '<br>')
 
     .info
       - var image = current.data.image ? 'url('+current.data.image+')' : null;
       .header(style={'background-image': image}, class=[{hide: current.empty}, {image: image}])
         button.rebuild Rebuild
         span.timestamp(class={hide: current.timestamp === undefined})= current.timestamp
-        span.commit(class={hide: current.data.commit === undefined})= current.data.commit
+        span.commit(class={hide: current.data.commit === undefined})!= (current.data.commit||'').replace(/\n/g, '<br>')
         span.url(class={hide: current.data.url === undefined})= current.data.url
       pre.log!= current.log

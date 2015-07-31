@@ -24,7 +24,7 @@ Build.prototype.init = function(ui) {
   function span(param) {
     var elem = document.createElement('span');
     elem.className = param;
-    elem.innerHTML = ui.data[param] || '';
+    elem.innerHTML = ui.data[param].replace(/\n/g, '<br>') || '';
     return elem;
   }
 
@@ -155,7 +155,7 @@ BuildManager.prototype.update_info = function(id) {
     if (html === '') {
       elem.classList.add('hide');
     } else {
-      elem.innerHTML = html;
+      elem.innerHTML = html.replace(/\n/g, '<br>');
       elem.classList.remove('hide');
     }
   }
