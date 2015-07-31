@@ -90,13 +90,11 @@ a {
   .info .header {
     width: 75%;
     position: fixed;
-    min-height: 3em;
+    display: flex;
+
     color: white;
     background-color: rgb(110, 110, 110);
     border-bottom: 2px solid rgb(50, 50, 50);
-
-    display: flex;
-    align-items: center;
 
     background-repeat: no-repeat;
     background-size: 3em;
@@ -106,6 +104,8 @@ a {
     padding-left: 3em;
   }
     .header span {
+      display: flex;
+      align-items: center;
       padding: 1em;
       line-height: 1em;
       border-left: 1px dashed rgba(255, 255, 255, .3);
@@ -114,7 +114,6 @@ a {
       border: none;
     }
     .header .rebuild {
-      height: 3em;
       color: black;
       border: none;
       background-color: rgba(255, 255, 255, 0.8);
