@@ -88,6 +88,7 @@ var BuildManager = function(elem) {
 
   if (document.body.dataset.current !== undefined) {
     self.update_selected(document.body.dataset.current);
+    socket.emit('request_update', self.selected);
   }
 
   self.header.elem.querySelector('.rebuild').addEventListener('click', function() {
