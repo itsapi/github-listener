@@ -28,7 +28,7 @@ if (process.argv[2] === 'travis') {
     payload: JSON.stringify({
       repository: { url: url },
       branch: branch + (Math.random() < 0.05 ? 'PING' : ''),
-      message: message,
+      message: message
     })
   });
 
@@ -45,11 +45,12 @@ if (process.argv[2] === 'travis') {
   var branch = selectRnd('master', 'test', 'experimental', 'old', 'really-old', 'really-experimental', 'secret-side-project');
   var message = 'changed ' + selectRnd('all of it', 'most of it', 'the rest of it', 'the main part', 'a bit', 'a lot', 'a little', 'the bottom', 'the middle', 'the good bit', 'the important bit', 'the evil bit') + ' to be ' + selectRnd('better', 'worse', 'really good', 'fast', 'really fast', 'slow', 'really optimised', 'really complex', 'really evil', 'a bit more evil', 'a bit less evil', 'evil', 'obfuscated', 'less obfuscated', 'rabid', 'alive', 'intelligent', 'small') + '.';
   var sender = Math.random() < 0.25 ? { avatar_url: 'http://lorempixel.com/50/50/' } : undefined;
+  var sha = crypto.createHash('sha256').update(slug + ':' + message).digest('hex');
 
   payload = JSON.stringify({
     repository: { full_name: slug, url: url },
     ref: 'refs/heads/' + branch + (Math.random() < 0.05 ? 'BEEP' : ''),
-    head_commit: { message: message },
+    head_commit: { message: message + (Math.random() < 0.1 ? ('\n\n' + sha) : '') },
     sender: sender
   });
 
