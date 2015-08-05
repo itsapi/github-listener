@@ -2,7 +2,7 @@
   "name": "github-listener",
   "repository": {
     "type": "git",
-    "url": "http://github.com/itsapi/github-listener.git"
+    "url": "git+ssh://git@github.com/itsapi/github-listener.git"
   },
   "description": "A Node.js continuous deployment system for Github",
   "version": "2.2.0",
@@ -51,5 +51,6 @@
     "Geraint White <mail@geraintwhite.co.uk>",
     "Oliver Faircliff <mail@oliverfaircliff.com>"
   ],
-  "license": "MIT"
+  "license": "GPL-2.0",
+  "author": "Dvbris <mail@dvbris.com>"
 }
