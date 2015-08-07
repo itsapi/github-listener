@@ -24,7 +24,7 @@ Build.prototype.init = function(ui) {
   function span(param) {
     var elem = document.createElement('span');
     elem.className = param;
-    elem.innerHTML = ui.data[param].replace(/\n/g, '<br>') || '';
+    elem.innerHTML = (ui.data[param] || '').replace(/\n/g, '<br>') || '';
     return elem;
   }
 
