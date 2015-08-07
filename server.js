@@ -183,12 +183,14 @@ Server.prototype.render = function () {
     return self.get_build(id);
   });
 
+  var current = self.build_manager.current !== undefined ?
+                self.get_build(self.build_manager.current) :
+                builds.length ? builds[0] : {empty: true, data: {}};
+
   return self.templates.index({
-    status: self.build_manager.running ?
-            self.STATUS.RUNNING : self.STATUS.READY,
+    status: self.build_manager.running ? self.STATUS.RUNNING : self.STATUS.READY,
     builds: builds,
-    current: self.build_manager.current !== undefined ?
-             self.get_build(self.build_manager.current) : {empty: true, data: {}}
+    current: current
   });
 };
 
