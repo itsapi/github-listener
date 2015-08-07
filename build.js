@@ -95,16 +95,12 @@ Build.prototype.run = function () {
   process.emit('send_update', self.id);
 
   // Run script
-  var out = '';
-  self.getter(self.ui.data.slug, self.ui.data.branch, function (getter_out) {
-    out += getter_out;
-    self.post_receive(self.ui.data.slug, function (post_receive_out) {
-      out += post_receive_out;
-      self.build_manager.logging.log('\n' + out);
+  self.getter(self.ui.data.slug, self.ui.data.branch, function () {
+    self.post_receive(self.ui.data.slug, function () {
       self.build_manager.logging.info('Finished processing files\n');
 
       self.ui.status = self.build_manager.STATUS.DONE;
-      self.ui.log += out + '\nBuild Finished';
+      self.ui.log += '\nBuild Finished';
 
       self.build_manager.next_in_queue();
       process.emit('send_update', self.id);
@@ -132,8 +128,18 @@ Build.prototype.getter = function (repo, branch, cb) {
   });
 
   self.build_manager.logging.log(command);
-  exec(command, function(error, stdout, stderr) {
-    cb(stdout + stderr);
+  self.add_to_log(command + '\n');
+
+  var getter = exec(command);
+
+  getter.stdout.on('data', self.add_to_log.bind(self));
+  getter.stderr.on('data', self.add_to_log.bind(self));
+
+  getter.on('exit', function(code) {
+    var msg = '{} exited with code {}'.format(command, code);
+    self.build_manager.logging.log(msg);
+    self.add_to_log(msg + '\n');
+    cb();
   });
 };
 
@@ -154,9 +160,33 @@ Build.prototype.post_receive = function (repo, cb) {
   });
 
   self.build_manager.logging.log(command);
-  exec(command, function(error, stdout, stderr) {
-    cb(stdout + stderr);
+  self.add_to_log(command + '\n');
+
+  var pr = exec(command);
+
+  pr.stdout.on('data', self.add_to_log.bind(self));
+  pr.stderr.on('data', self.add_to_log.bind(self));
+
+  pr.on('exit', function(code) {
+    var msg = '{} exited with code {}'.format(command, code);
+    self.build_manager.logging.log(msg);
+    self.add_to_log(msg + '\n');
+    cb();
   });
+};
+
+/**
+ * Add data to build log
+ * @name Build.add_to_log
+ * @function
+ * @param {String} data The data to be appended to the log
+ */
+
+Build.prototype.add_to_log = function (data) {
+  var self = this;
+
+  self.ui.log += data;
+  process.emit('send_update', self.id);
 };
 
 module.exports = Build;
