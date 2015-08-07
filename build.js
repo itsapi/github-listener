@@ -127,20 +127,7 @@ Build.prototype.getter = function (repo, branch, cb) {
     branch: branch
   });
 
-  self.build_manager.logging.log(command);
-  self.add_to_log(command + '\n');
-
-  var getter = exec(command);
-
-  getter.stdout.on('data', self.add_to_log.bind(self));
-  getter.stderr.on('data', self.add_to_log.bind(self));
-
-  getter.on('exit', function(code) {
-    var msg = '{} exited with code {}'.format(command, code);
-    self.build_manager.logging.log(msg);
-    self.add_to_log(msg + '\n');
-    cb();
-  });
+  self.run_command(command, cb);
 };
 
 /**
@@ -159,15 +146,29 @@ Build.prototype.post_receive = function (repo, cb) {
     name: repo
   });
 
+  self.run_command(command, cb);
+};
+
+/**
+ * Run a command and log the output
+ * @name Build.post_receive
+ * @function
+ * @param {String} command The command to be executed
+ * @param {Function} cb The callback to be run after the command has finished
+ */
+
+Build.prototype.run_command = function (command, cb) {
+  var self = this;
+
   self.build_manager.logging.log(command);
   self.add_to_log(command + '\n');
 
-  var pr = exec(command);
+  var proc = exec(command);
 
-  pr.stdout.on('data', self.add_to_log.bind(self));
-  pr.stderr.on('data', self.add_to_log.bind(self));
+  proc.stdout.on('data', self.add_to_log.bind(self));
+  proc.stderr.on('data', self.add_to_log.bind(self));
 
-  pr.on('exit', function(code) {
+  proc.on('exit', function(code) {
     var msg = '{} exited with code {}'.format(command, code);
     self.build_manager.logging.log(msg);
     self.add_to_log(msg + '\n');
