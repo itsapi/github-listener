@@ -69,6 +69,14 @@ See the [DOCUMENTATION.md](./DOCUMENTATION.md) file.
 4. Create a pull request here, referencing the original issue
 
 
+### Testing
+
+`npm test` will run some tests which cover the majority of the functionality.
+You can also send test payloads to a server with the [`payload.js`](./payload.js) program to test the front end: `node payload.js [port]`.
+
+`npm start` will start the server.
+
+
 ## License
 
 See the [LICENSE](./LICENSE) file.
