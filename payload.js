@@ -64,7 +64,7 @@ if (type === 'travis') {
   var sha = crypto.createHash('sha256').update(slug + ':' + message).digest('hex');
 
   payload = JSON.stringify({
-    repository: { full_name: slug, url: url },
+    repository: { full_name: slug, url: url + (Math.random() < 0.1 ? ('/' + sha) : '') },
     ref: 'refs/heads/' + branch + (Math.random() < 0.05 ? 'BEEP' : ''),
     head_commit: { message: message + (Math.random() < 0.1 ? ('\n\n' + sha) : '') },
     sender: sender
