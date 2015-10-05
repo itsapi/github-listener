@@ -67,6 +67,7 @@ Build.prototype.check_payload = function () {
   // Check we have the information we need
   self.ui.data = self.parser.extract();
   if (!self.ui.data) {
+    self.ui.data = {};
     return error(400, 'Error: Invalid data');
   }
 
