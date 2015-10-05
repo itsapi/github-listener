@@ -72,7 +72,7 @@ See the [DOCUMENTATION.md](./DOCUMENTATION.md) file.
 ### Testing
 
 `npm test` will run some tests which cover the majority of the functionality.
-You can also send test payloads to a server with the [`payload.js`](./payload.js) program to test the front end: `node payload.js [port]`.
+You can also send test payloads to a server with the [`payload.js`](./payload.js) program to test the front end: `./payload.js --help`.
 
 `npm start` will start the server.
 
