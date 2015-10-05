@@ -29,6 +29,7 @@ Build.prototype.init = function(ui) {
   }
 
   self.elem.id = ui.id;
+  self.elem.title = ui.id;
   self.id = ui.id;
   self.elem.classList.add('build');
 
@@ -86,8 +87,16 @@ var BuildManager = function(elem) {
     }
   });
 
-  if (document.body.dataset.current !== undefined) {
-    self.update_selected(document.body.dataset.current);
+  var hash_current = window.location.hash.substr(1);
+  var data_current = document.body.dataset.current;
+  var current;
+  if (self.builds[hash_current] !== undefined) {
+    current = hash_current;
+  } else if (self.builds[data_current] !== undefined) {
+    current = data_current;
+  }
+  if (current !== undefined) {
+    self.update_selected(current);
     socket.emit('request_update', self.selected);
   }
 
