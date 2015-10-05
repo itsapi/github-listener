@@ -1,24 +1,39 @@
+#!/usr/bin/env node
+
 var http = require('http'),
     qs = require('querystring'),
     crypto = require('crypto'),
-    config = require('./config');
+    config = require('./config'),
+    argv = require('minimist')(process.argv.slice(2));
 
 
 function selectRnd() {
   return arguments[parseInt(Math.random() * arguments.length)];
 }
 
+if (argv.h || argv.help) {
+  console.log('Usage: ' + __filename + ' [options]\n');
+  console.log('-h|--help   display this help message');
+  console.log('-p|--port   port to send payload requests to');
+  console.log('-t|--type   payload type to send (travis | github | error) - default github');
+
+  process.exit();
+}
+
+var type = (argv.t || argv.type || 'github').toLowerCase();
+var port = parseInt(argv.p || argv.port || 6003);
 
 var payload = {};
 var options = {
   hostname: 'localhost',
-  port: parseInt(process.argv[2]) || 6003,
+  port: port,
   path: '/',
   method: 'POST'
 };
 
 
-if (process.argv[2] === 'travis') {
+if (type === 'travis') {
+
   var slug = 'travis/' + selectRnd('foo', 'bar', 'sheep');
   var url = 'http' + (Math.random() < 0.1 ? 's' : '') + '://' + selectRnd('example.com', 'google.com', 'test.co.uk');
   var branch = selectRnd('master', 'testing', 'stable', 'cats');
@@ -39,7 +54,8 @@ if (process.argv[2] === 'travis') {
                      (Math.random() < 0.05 ? 'BLOOP' : '')
   };
 
-} else {
+} else if (type === 'github') {
+
   var slug = 'github/' + selectRnd('death-ray', 'moon-harvester', 'autonomous-dragon', 'evil-plan-2.4', 'sheep-massacre');
   var url = 'http' + (Math.random() < 0.1 ? 's' : '') + '://' + selectRnd('github.com', 'dr-ev.il', 'githug.com', 'sheep-farm.org', 'mars-colony.ms', 'rare-ores.net');
   var branch = selectRnd('master', 'test', 'experimental', 'old', 'really-old', 'really-experimental', 'secret-side-project');
@@ -59,12 +75,25 @@ if (process.argv[2] === 'travis') {
                                  .update(payload).digest('hex') +
                                  (Math.random() < 0.05 ? 'PLOP' : '')
   };
+
+} else if (type === 'error') {
+
+  payload = '{}';
+  options.headers = {
+    'x-hub-signature': 'sha1=' + crypto.createHmac('sha1', config.github_secret)
+                                 .update(payload).digest('hex')
+  };
+
+} else {
+  console.log('Run `' + __filename + ' --help` for usage');
 }
+
 
 if (branch !== 'master' && Math.random() > 0.05) {
   options.path += branch;
 }
 
+console.log('Sending payload', payload);
 http.request(options, function (res) {
   res.on('data', function (data) {
     console.log(data.toString());
