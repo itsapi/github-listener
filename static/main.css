@@ -114,7 +114,7 @@ a {
     .header span:first-of-type {
       border: none;
     }
-    .header .commit {
+    .header .commit, .header .url {
       display: block;
       word-wrap: break-word;
     }
