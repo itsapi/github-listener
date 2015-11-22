@@ -96,12 +96,14 @@ Build.prototype.run = function () {
   process.emit('send_update', self.id);
 
   // Run script
-  self.getter(self.ui.data.slug, self.ui.data.branch, function () {
-    self.post_receive(self.ui.data.slug, function () {
+  self.getter(self.ui.data.slug, self.ui.data.branch, function (getter_exit) {
+    self.post_receive(self.ui.data.slug, function (pr_exit) {
       self.build_manager.logging.info('Finished processing files\n');
 
-      self.ui.status = self.build_manager.STATUS.DONE;
       self.ui.log += '\nBuild Finished';
+      self.ui.status = (getter_exit === 0 && pr_exit === 0) ?
+                       self.build_manager.STATUS.DONE :
+                       self.build_manager.STATUS.ERROR;
 
       self.build_manager.next_in_queue();
       process.emit('send_update', self.id);
@@ -173,7 +175,7 @@ Build.prototype.run_command = function (command, cb) {
     var msg = '{} exited with code {}'.format(command, code);
     self.build_manager.logging.log(msg);
     self.add_to_log(msg + '\n');
-    cb();
+    cb(code);
   });
 };
 
