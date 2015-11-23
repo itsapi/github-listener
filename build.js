@@ -117,7 +117,7 @@ Build.prototype.run = function () {
  * @function
  * @param {String} repo The repo to get from GitHub
  * @param {String} branch The branch to checkout
- * @param {Function} cb The callback to be run with the command output
+ * @param {Function} cb The callback to be run with the command exit code
  */
 
 Build.prototype.getter = function (repo, branch, cb) {
@@ -138,7 +138,7 @@ Build.prototype.getter = function (repo, branch, cb) {
  * @name Build.post_receive
  * @function
  * @param {String} repo The repo name to be passed to post-receive
- * @param {Function} cb The callback to be run with the command output
+ * @param {Function} cb The callback to be run with the command exit code
  */
 
 Build.prototype.post_receive = function (repo, cb) {
@@ -157,7 +157,7 @@ Build.prototype.post_receive = function (repo, cb) {
  * @name Build.post_receive
  * @function
  * @param {String} command The command to be executed
- * @param {Function} cb The callback to be run after the command has finished
+ * @param {Function} cb The callback to be run with the command exit code
  */
 
 Build.prototype.run_command = function (command, cb) {
