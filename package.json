@@ -16,28 +16,24 @@
     "cover": "istanbul cover tape test/*.js",
     "travis": "npm run cover && codeclimate-test-reporter < ./coverage/lcov.info"
   },
-  "pre-commit": "jshint .",
-  "post-commit": "git status",
-  "pre-push": "npm test",
-  "post-merge": "npm install",
   "dependencies": {
     "ansi-to-html": "^0.3.0",
     "async-tools": "^1.2.0",
     "bl": "~1.0.0",
     "jade": "~1.11.0",
     "logging-tool": "~1.2.2",
-    "minimist": "^1.1.2",
+    "minimist": "^1.2.0",
     "node-static": "^0.7.7",
-    "socket.io": "~1.3.6",
+    "socket.io": "~1.3.7",
     "string-format": "~0.5.0"
   },
   "devDependencies": {
-    "codeclimate-test-reporter": "~0.1.0",
-    "istanbul": "~0.3.17",
-    "jshint": "~2.8.0",
-    "pre-git": "^0.6.2",
-    "tap-spec": "~4.0.2",
-    "tape": "~4.0.1",
+    "codeclimate-test-reporter": "~0.1.1",
+    "istanbul": "~0.4.0",
+    "jshint": "~2.9.1-rc1",
+    "pre-git": "^1.3.1",
+    "tap-spec": "~4.1.1",
+    "tape": "~4.2.2",
     "through2": "~2.0.0"
   },
   "bugs": {
@@ -52,5 +48,13 @@
     "Oliver Faircliff <mail@oliverfaircliff.com>"
   ],
   "license": "GPL-2.0",
-  "author": "Dvbris <mail@dvbris.com>"
+  "author": "Dvbris <mail@dvbris.com>",
+  "config": {
+    "pre-git": {
+      "pre-commit": "jshint .",
+      "post-commit": "git status",
+      "pre-push": "npm test",
+      "post-merge": "npm install"
+    }
+  }
 }
