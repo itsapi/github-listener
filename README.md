@@ -6,7 +6,7 @@
 [![Test Coverage](https://img.shields.io/codeclimate/coverage/github/itsapi/github-listener.svg)](https://codeclimate.com/github/itsapi/github-listener)
 [![Dependency Status](https://img.shields.io/david/itsapi/github-listener.svg)](https://david-dm.org/itsapi/github-listener)
 
-A Node.js continuous deployment system for Github and [TravisCI](https://travis-ci.org/). It detects a hook from Github when a repo is pushed, or from Travis when tests are complete, and pulls the changes in the server side repo using [github-getter](http://github.com/itsapi/github-getter). Then it runs the script in [post-receive](http://github.com/itsapi/post-receive) to build and push live.
+A Node.js continuous deployment system for Github and [TravisCI](https://travis-ci.org/). It detects a hook from Github when a repo is pushed, or from Travis when tests are complete, and pulls the changes in the server side repo using [github-getter](https://github.com/itsapi/github-getter). Then it runs the script in [post-receive](https://github.com/itsapi/post-receive) to build and push live.
 
 An example setup script that we use to set up the deployment system can be found [here](https://gist.github.com/grit96/49b91a42007d1c977396).
 
@@ -53,7 +53,7 @@ Example:
 In order for your listener to receive payloads you need to set up a webhook on Github or Travis:
 
 - **Github** - follow the instructions [here](https://developer.github.com/webhooks/creating/) and put the webhook secret in `config.json` as `github_secret`
-- **Travis** - follow the instructions [here](http://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
+- **Travis** - follow the instructions [here](https://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
 
 
 ## Documentation
