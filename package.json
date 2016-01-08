@@ -51,7 +51,7 @@
   "author": "Dvbris <mail@dvbris.com>",
   "config": {
     "pre-git": {
-      "pre-commit": "jshint .",
+      "pre-commit": "git diff --cached --name-only | xargs -l jshint",
       "post-commit": "git status",
       "pre-push": "npm test",
       "post-merge": "npm install"
