@@ -26,6 +26,7 @@ Usage: github-listener [options]
 -h|--help      display this help message
 -v|--version   display the version number
 -q|--quiet     suppress logging
+-p|--port      port to run Github Listener on
 -c|--config    path to JSON config file (default ./config.json)
 ```
 
