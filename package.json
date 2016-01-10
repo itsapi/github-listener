@@ -12,8 +12,8 @@
   "scripts": {
     "start": "./bin/github-listener",
     "lint": "jshint .",
-    "test": "npm run lint && tape tests/*.js | tap-spec",
-    "coverage": "istanbul cover tape tests/*.js",
+    "test": "npm run lint && tape test/*.js | tap-spec",
+    "coverage": "istanbul cover tape test/*.js",
     "coverage:report": "codeclimate-test-reporter < ./coverage/lcov.info",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
