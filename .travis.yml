@@ -6,7 +6,12 @@ node_js:
   - '0.11'
   - '0.12'
 
-script: npm run travis
+script:
+  - npm run coverage
+
+after_success:
+  - npm run coverage:report
+  - npm run semantic-release
 
 notifications:
   webhooks:
