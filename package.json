@@ -54,6 +54,7 @@
   "config": {
     "ghooks": {
       "pre-commit": "npm run lint",
+      "post-commit": "git status",
       "pre-push": "npm test",
       "post-merge": "npm install",
       "commit-msg": "validate-commit-msg"
