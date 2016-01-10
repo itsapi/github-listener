@@ -14,7 +14,9 @@
     "start": "./bin/github-listener",
     "test": "jshint . && tape test/*.js | tap-spec",
     "cover": "istanbul cover tape test/*.js",
-    "travis": "npm run cover && codeclimate-test-reporter < ./coverage/lcov.info"
+    "travis": "npm run cover && codeclimate-test-reporter < ./coverage/lcov.info",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "ansi-to-html": "^0.3.0",
