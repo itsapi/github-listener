@@ -42,7 +42,7 @@ Example:
   "processing": "/home/git/deploy/processing",
   "repo_dir": "/home/git/deploy/repos",
   "getter": ". /home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
-  "post_receive": "python3 /home/git/deploy/post-receive/main.py {dir} {name}",
+  "post_receive": "/home/git/deploy/post-receive/bin/post-receive -p {dir}",
   "github_secret": "HelloWorld",
   "travis_token": "top_secret"
 }
