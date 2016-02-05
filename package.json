@@ -27,7 +27,7 @@
     "node-static": "^0.7.7",
     "socket.io": "~1.4.4",
     "string-format": "~0.5.0",
-    "validate-commit-msg": "^1.0.0"
+    "validate-commit-msg": "^2.0.0"
   },
   "devDependencies": {
     "codeclimate-test-reporter": "~0.3.0",
