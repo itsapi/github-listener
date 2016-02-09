@@ -47,6 +47,45 @@ var GitHub = (function () {
   return gh_parser;
 })();
 
+var GitLab = (function () {
+  var gl_parser = function () { Parser.apply(this, arguments); };
+  util.inherits(gl_parser, Parser);
+
+  gl_parser.prototype.parse_body = function () {
+    try { return (this.payload = JSON.parse(this.body)); }
+    catch (e) { return undefined; }
+  };
+
+  gl_parser.prototype.verify_signature = function () {
+    return true;
+   };
+
+  gl_parser.prototype.extract = function () {
+    if (!(this.payload.repository &&
+          this.payload.repository.git_ssh_url &&
+          this.payload.repository.homepage &&
+          this.payload.ref &&
+          this.payload.total_commits_count &&
+          this.payload.commits)) {
+      return undefined;
+    }
+
+    var slug = this.payload.repository.git_ssh_url.split(':')[1];
+    if (slug.endsWith('.git')) {
+      slug = slug.slice(0,-4);
+    }
+
+    return (this.data = {
+      slug:   slug,
+      branch: this.payload.ref.replace(/^refs\/heads\//, ''),
+      url:    this.payload.repository.homepage,
+      commit: this.payload.total_commits_count > 0 ? this.payload.commits.slice(-1) : undefined
+    });
+  };
+
+  return gl_parser;
+})();
+
 var Travis = (function () {
   var travis_parser = function () { Parser.apply(this, arguments); };
   util.inherits(travis_parser, Parser);
@@ -82,5 +121,6 @@ var Travis = (function () {
 
 module.exports = {
   GitHub: GitHub,
+  GitLab: GitLab,
   Travis: Travis
 };
