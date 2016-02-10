@@ -28,7 +28,7 @@ var Build = function (req, res, payload, build_manager, id) {
   // Load and check payload
   if (req.headers['travis-repo-slug']) {
     self.parser = new parser.Travis(payload, req.headers, self.build_manager.config);
-  } else if (req.headers['X-GitHub-Delivery']) {
+  } else if (req.headers['x-github-delivery']) {
     self.parser = new parser.GitHub(payload, req.headers, self.build_manager.config);
   } else {
     self.parser = new parser.GitLab(payload, req.headers, self.build_manager.config);
