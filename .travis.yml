@@ -28,5 +28,6 @@ notifications:
       - https://git.dvbris.com
       - https://git.geraintwhite.co.uk
       - https://git.oliverfaircliff.com
+      - http://git.books.oliverfaircliff.com
     on_success: always
     on_failure: never
