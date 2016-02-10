@@ -79,7 +79,7 @@ var GitLab = (function () {
       slug:   slug,
       branch: this.payload.ref.replace(/^refs\/heads\//, ''),
       url:    this.payload.repository.homepage,
-      commit: this.payload.total_commits_count > 0 ? this.payload.commits.slice(-1) : undefined
+      commit: this.payload.total_commits_count > 0 ? this.payload.commits.slice(-1).message : undefined
     });
   };
 
