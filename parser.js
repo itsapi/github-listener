@@ -31,6 +31,11 @@ var GitHub = (function () {
   gh_parser.prototype.extract = function () {
     if (!(this.payload.repository &&
           this.payload.repository.full_name &&
+          this.payload.repository.url &&
+          this.payload.head_commit &&
+          this.payload.head_commit.message &&
+          this.payload.sender &&
+          this.payload.sender.avatar_url &&
           this.payload.ref)) {
       return undefined;
     }
@@ -76,10 +81,11 @@ var GitLab = (function () {
     }
 
     return (this.data = {
-      slug:   slug,
-      branch: this.payload.ref.replace(/^refs\/heads\//, ''),
-      url:    this.payload.repository.homepage,
-      commit: this.payload.total_commits_count > 0 ? this.payload.commits.slice(-1).message : undefined
+      slug:    slug,
+      branch:  this.payload.ref.replace(/^refs\/heads\//, ''),
+      url:     this.payload.repository.homepage,
+      get_url: this.payload.repository.git_ssh_url,
+      commit:  this.payload.total_commits_count > 0 ? this.payload.commits.slice(-1).message : undefined
     });
   };
 

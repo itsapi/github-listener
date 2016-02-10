@@ -131,7 +131,8 @@ Build.prototype.getter = function (repo, branch, cb) {
     repo_dir: self.build_manager.config.repo_dir,
     output: self.build_manager.config.processing,
     repo: repo,
-    branch: branch
+    branch: branch,
+    url: self.ui.get_url ? self.ui.get_url : ''
   });
 
   self.run_command(command, cb);
