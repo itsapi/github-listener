@@ -129,10 +129,10 @@ Build.prototype.getter = function (repo, branch, cb) {
 
   var command = self.build_manager.config.getter.format({
     repo_dir: self.build_manager.config.repo_dir,
-    output: self.build_manager.config.processing,
-    repo: repo,
-    branch: branch,
-    url: self.ui.get_url ? self.ui.get_url : ''
+    output:   self.build_manager.config.processing,
+    repo:     repo,
+    branch:   branch,
+    url:      self.ui.get_url ? self.ui.get_url : ''
   });
 
   self.run_command(command, cb);
