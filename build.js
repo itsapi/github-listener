@@ -132,7 +132,7 @@ Build.prototype.getter = function (repo, branch, cb) {
     output:   self.build_manager.config.processing,
     repo:     repo,
     branch:   branch,
-    url:      self.ui.get_url ? self.ui.get_url : ''
+    url:      self.ui.data.get_url
   });
 
   self.run_command(command, cb);
