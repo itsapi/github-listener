@@ -149,10 +149,14 @@ Server.prototype.serve = function (req, res) {
       self.build_manager.rerun(res, parseInt(url_parts.query.rebuild));
 
     } else { // Send the HTML
-      var html = self.render();
+      var html = self.templates.index(self.status());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
+
+  } else if (url_parts.pathname === '/status') {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify(self.status()));
 
   } else { // Serve static files
     logging.log('Serving file: ' + url_parts.pathname);
@@ -167,12 +171,12 @@ Server.prototype.serve = function (req, res) {
 };
 
 /**
- * Generate DOM to send to UI of builds dashboard
- * @name Server.render
+ * Generate data to send to builds dashboardself.templates.index)(
+ * @name Server.status
  * @function
  */
 
-Server.prototype.render = function () {
+Server.prototype.status = function () {
   var self = this;
 
   // Sort builds
@@ -187,11 +191,11 @@ Server.prototype.render = function () {
                 self.get_build(self.build_manager.current) :
                 builds.length ? builds[0] : {empty: true, data: {}};
 
-  return self.templates.index({
+  return {
     status: self.build_manager.running ? self.STATUS.RUNNING : self.STATUS.READY,
     builds: builds,
     current: current
-  });
+  };
 };
 
 /**
