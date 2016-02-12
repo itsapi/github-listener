@@ -94,7 +94,7 @@ test('build_manager.rerun', function (t) {
   t.test('rerun successful build (valid payload)', function (st) {
     var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
-    options.headers['X-GitHub-Delivery'] = 1;
+    options.headers['x-github-delivery'] = 1;
 
     var build_manager = request(payload, function (res, data) {
       st.equal(data.msg, 'Build queued', 'correct server response');
@@ -199,7 +199,7 @@ test('build_manager.data', function (t) {
     });
 
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
-    options.headers['X-GitHub-Delivery'] = 1;
+    options.headers['x-github-delivery'] = 1;
 
     var build_manager = request(payload, function (res, data) {
       var build = build_manager.builds[data.id];
@@ -225,7 +225,7 @@ test('build_manager.data', function (t) {
     });
 
     options.headers['x-hub-signature'] = github_sig(config.github_secret, payload);
-    options.headers['X-GitHub-Delivery'] = 1;
+    options.headers['x-github-delivery'] = 1;
 
     var build_manager = request(payload, function (res, data) {
       var build = build_manager.builds[data.id];

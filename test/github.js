@@ -3,7 +3,7 @@ var test = require('tape'),
 
 
 var options = common.options;
-options.headers['X-GitHub-Delivery'] = 1;
+options.headers['x-github-delivery'] = 1;
 
 var config = common.config;
 var request = common.request;
