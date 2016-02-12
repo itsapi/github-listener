@@ -31,11 +31,6 @@ var GitHub = (function () {
   gh_parser.prototype.extract = function () {
     if (!(this.payload.repository &&
           this.payload.repository.full_name &&
-          this.payload.repository.url &&
-          this.payload.head_commit &&
-          this.payload.head_commit.message &&
-          this.payload.sender &&
-          this.payload.sender.avatar_url &&
           this.payload.ref)) {
       return undefined;
     }
