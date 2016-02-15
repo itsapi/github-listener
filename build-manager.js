@@ -61,6 +61,10 @@ BuildManager.prototype.error = function (res, code, error) {
 BuildManager.prototype.hook = function (req, res) {
   var self = this;
 
+  if (req.query.secret) {
+    req.headers.url_secret = req.query.secret;
+  }
+
   // Get payload
   req.pipe(bl(function (err, data) {
     if (err) {

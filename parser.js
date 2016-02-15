@@ -9,6 +9,11 @@ var Parser = function (data, headers, config) {
   this.config = config;
   this.data = {};
   this.payload = {};
+
+  this.check_url_secret = function () {
+    return !(this.headers.url_secret && this.config.url_secret) ||
+            (this.headers.url_secret === this.config.url_secret);
+  };
 };
 
 var GitHub = (function () {
@@ -21,11 +26,10 @@ var GitHub = (function () {
   };
 
   gh_parser.prototype.verify_signature = function () {
-
     var signature = 'sha1=' + crypto.createHmac('sha1', this.config.github_secret)
                     .update(this.body)
                     .digest('hex');
-    return this.headers['x-hub-signature'] === signature;
+    return this.headers['x-hub-signature'] === signature && this.check_url_secret();
    };
 
   gh_parser.prototype.extract = function () {
@@ -60,7 +64,7 @@ var Travis = (function () {
     var signature = crypto.createHash('sha256')
                     .update(this.headers['travis-repo-slug'] + this.config.travis_token)
                     .digest('hex');
-    return this.headers['authorization'] === signature;
+    return this.headers['authorization'] === signature && this.check_url_secret();
   };
 
   travis_parser.prototype.extract = function () {

@@ -13,15 +13,17 @@ function selectRnd() {
 
 if (argv.h || argv.help) {
   console.log('Usage: ' + __filename + ' [options]\n');
-  console.log('-h|--help   display this help message');
-  console.log('-p|--port   port to send payload requests to');
-  console.log('-t|--type   payload type to send (travis | github | error) - default github');
+  console.log('-h|--help    display this help message');
+  console.log('-p|--port    port to send payload requests to');
+  console.log('-t|--type    payload type to send (travis | github | error) - default github');
+  console.log('-s|--secret  secret to add to URL');
 
   process.exit();
 }
 
 var type = (argv.t || argv.type || 'github').toLowerCase();
 var port = parseInt(argv.p || argv.port || 6003);
+var secret = argv.s || argv.secret;
 
 var payload = {};
 var options = {
@@ -91,6 +93,10 @@ if (type === 'travis') {
 
 if (branch !== 'master' && Math.random() > 0.05) {
   options.path += branch;
+}
+
+if (secret) {
+  options.path += '?secret=' + secret;
 }
 
 console.log('Sending payload', payload);
