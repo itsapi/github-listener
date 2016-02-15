@@ -11,8 +11,7 @@ var Parser = function (data, headers, config) {
   this.payload = {};
 
   this.check_url_secret = function () {
-    return !(this.headers.url_secret && this.config.url_secret) ||
-            (this.headers.url_secret === this.config.url_secret);
+    return !this.config.url_secret || this.headers.url_secret === this.config.url_secret;
   };
 };
 
