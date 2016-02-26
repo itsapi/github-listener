@@ -1,4 +1,4 @@
-var url = require('url'),
+var semver = require('semver'),
     exec = require('child_process').exec,
     parser = require('./parser');
 
@@ -72,8 +72,10 @@ Build.prototype.check_payload = function () {
   }
 
   // Check branch in payload matches branch in URL
-  var branch = url.parse(self.req.url).pathname.replace(/^\/|\/$/g, '') || 'master';
-  if (self.ui.data.branch !== branch) {
+  if (self.req.query.semver === undefined) {
+    self.req.query.branch = (self.req.query.branch || 'master');
+  }
+  if (!semver.valid(self.ui.data.branch) && self.ui.data.branch !== self.req.query.branch) {
     return error(400, 'Branches do not match');
   }
 
