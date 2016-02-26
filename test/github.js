@@ -114,14 +114,121 @@ test('pass custom branch name', function (t) {
     });
   });
 
-  t.test('trailing slash in path', function (st) {
-    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/dev' });
-    options.path = '/dev/';
-    options.headers['x-hub-signature'] = gen_sig(config.github_secret, payload);
+});
+
+test('pass semver flag', function (t) {
+
+  t.test('semver flag passed but invalid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {semver: true};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+
+    request(payload, function (res, data) {
+      st.equal(data.err, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('semver flag passed and valid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/v1.2.3' });
+    options.query = {semver: true};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
 
     request(payload, function (res, data) {
       st.equal(data.msg, 'Build queued', 'correct server response');
       st.equal(res.statusCode, 202, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('semver flag and branch name passed and valid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/v1.2.3' });
+    options.query = {semver: true, branch: 'master'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+
+    request(payload, function (res, data) {
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('semver flag and branch name passed and valid branch ref but not semver', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {semver: true, branch: 'master'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+
+    request(payload, function (res, data) {
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('semver flag and branch name passed but invalid branch ref', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {semver: true, branch: 'dev'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+
+    request(payload, function (res, data) {
+      st.equal(data.err, 'Branches do not match', 'correct server response');
+      st.equal(res.statusCode, 400, 'correct status code');
+      st.end();
+    });
+  });
+
+});
+
+test('pass url_secret', function (t) {
+
+  t.test('pass url_secret in query string but not in config', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {secret: 'password123'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+
+    request(payload, function (res, data) {
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('pass same url_secret in query string as in config', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {secret: 'password123'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+    config.url_secret = 'password123';
+
+    request(payload, function (res, data) {
+      st.equal(data.msg, 'Build queued', 'correct server response');
+      st.equal(res.statusCode, 202, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('url_secret in config but not in query string', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+    config.url_secret = 'password123';
+
+    request(payload, function (res, data) {
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(res.statusCode, 403, 'correct status code');
+      st.end();
+    });
+  });
+
+  t.test('different url_secret in query string than in config', function (st) {
+    var payload = JSON.stringify({ repository: { full_name: 'repo' }, ref: 'refs/heads/master' });
+    options.query = {secret: 'bogus'};
+    options.headers = {'x-hub-signature': gen_sig(config.github_secret, payload)};
+    config.url_secret = 'password123';
+
+    request(payload, function (res, data) {
+      st.equal(data.err, 'Error: Cannot verify payload signature', 'correct server response');
+      st.equal(res.statusCode, 403, 'correct status code');
       st.end();
     });
   });
