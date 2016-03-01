@@ -123,7 +123,7 @@ test('pass custom branch name', function (t) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'master' }) });
     options.headers['authorization'] = gen_sig(config.travis_token, 'repo');
     options.headers['travis-repo-slug'] = 'repo';
-    options.path = '/dev';
+    options.query.branch = 'dev';
 
     request(payload, function (res, data) {
       st.equal(data.err, 'Branches do not match', 'correct server response');
@@ -136,20 +136,7 @@ test('pass custom branch name', function (t) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'dev' }) });
     options.headers['authorization'] = gen_sig(config.travis_token, 'repo');
     options.headers['travis-repo-slug'] = 'repo';
-    options.path = '/dev';
-
-    request(payload, function (res, data) {
-      st.equal(data.msg, 'Build queued', 'correct server response');
-      st.equal(res.statusCode, 202, 'correct status code');
-      st.end();
-    });
-  });
-
-  t.test('trailing slash in path', function (st) {
-    var payload = qs.stringify({ payload: JSON.stringify({ branch: 'dev' }) });
-    options.headers['authorization'] = gen_sig(config.travis_token, 'repo');
-    options.headers['travis-repo-slug'] = 'repo';
-    options.path = '/dev/';
+    options.query.branch = 'dev';
 
     request(payload, function (res, data) {
       st.equal(data.msg, 'Build queued', 'correct server response');
