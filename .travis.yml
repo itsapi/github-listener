@@ -25,8 +25,8 @@ after_success:
 notifications:
   webhooks:
     urls:
-      - https://git.dvbris.com
-      - https://git.geraintwhite.co.uk
-      - https://git.oliverfaircliff.com
+      - https://git.dvbris.com/?semver
+      - https://git.geraintwhite.co.uk/?semver
+      - https://git.oliverfaircliff.com/?semver
     on_success: always
     on_failure: never
