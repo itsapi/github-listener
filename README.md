@@ -59,6 +59,14 @@ In order for your listener to receive payloads you need to set up a webhook on G
 
 If the service you are using does not sign the payloads or provide authorisation headers, you can use the `url_secret` option and add a `?secret=` to the webhook url.
 
+### URL Parameters
+
+- `secret` - verify payload if URL secret in `config.json` matches this
+- `branch` - run build if branch in payload matches this (defaults to master if omitted)
+- `semver` - run build if branch in payload matches semver (e.g. v1.2.3)
+
+Example: `https://git.example.com/?semver&secret=pass1234&branch=dev`
+
 
 ## Documentation
 
