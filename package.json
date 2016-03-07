@@ -30,7 +30,7 @@
     "string-format": "~0.5.0"
   },
   "devDependencies": {
-    "validate-commit-msg": "^2.0.0",
+    "validate-commit-msg": "^2.3.1",
     "codeclimate-test-reporter": "~0.3.0",
     "cracks": "^3.1.2",
     "cz-conventional-changelog": "^1.1.5",
