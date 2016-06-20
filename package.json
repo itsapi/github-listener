@@ -39,7 +39,7 @@
     "jshint": "~2.9.1-rc3",
     "semantic-release": "^4.3.5",
     "tap-spec": "~4.1.1",
-    "tape": "~4.5.0",
+    "tape": "~4.6.0",
     "through2": "~2.0.0"
   },
   "bugs": {
