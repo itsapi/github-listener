@@ -34,7 +34,7 @@
     "codeclimate-test-reporter": "~0.4.0",
     "cracks": "^3.1.2",
     "cz-conventional-changelog": "^1.1.5",
-    "ghooks": "^1.0.3",
+    "ghooks": "^1.2.2",
     "istanbul": "~0.4.2",
     "jshint": "~2.9.1-rc3",
     "semantic-release": "^4.3.5",
