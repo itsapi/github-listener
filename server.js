@@ -38,6 +38,9 @@ var Server = function (options, ready) {
 
   // Setup server
   self.app = http.createServer(function (req, res) {
+    var url_parts = url.parse(req.url, true);
+    for (var key in url_parts) {req[key] = url_parts[key]; }
+
     if (req.method === 'GET') {
       self.serve(req, res);
     } else {
@@ -141,38 +144,41 @@ Server.prototype.stop = function () {
 
 Server.prototype.serve = function (req, res) {
   var self = this;
-  var url_parts = url.parse(req.url, true);
 
-  if (url_parts.pathname === '/') {
-    if (url_parts.query.rebuild !== undefined) { // Rebuild last_payload
+  if (req.pathname === '/') {
+    if (req.query.rebuild !== undefined) { // Rebuild last_payload
       logging.log('Rebuild requested');
-      self.build_manager.rerun(res, parseInt(url_parts.query.rebuild));
+      self.build_manager.rerun(res, parseInt(req.query.rebuild));
 
     } else { // Send the HTML
-      var html = self.render();
+      var html = self.templates.index(self.status());
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.end(html);
     }
 
+  } else if (req.pathname === '/status') {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify(self.status()));
+
   } else { // Serve static files
-    logging.log('Serving file: ' + url_parts.pathname);
+    logging.log('Serving file: ' + req.pathname);
     fileserver.serve(req, res, function(e) {
       if (e && (e.status === 404)) {
-        logging.log('404: ' + url_parts.pathname);
+        logging.log('404: ' + req.pathname);
         res.writeHead(404, {'Content-Type': 'text/plain'});
-        res.end('404 - File not found: ' + url_parts.pathname);
+        res.end('404 - File not found: ' + req.pathname);
       }
     });
   }
 };
 
 /**
- * Generate DOM to send to UI of builds dashboard
- * @name Server.render
+ * Generate data to send to builds dashboardself.templates.index)(
+ * @name Server.status
  * @function
  */
 
-Server.prototype.render = function () {
+Server.prototype.status = function () {
   var self = this;
 
   // Sort builds
@@ -187,11 +193,11 @@ Server.prototype.render = function () {
                 self.get_build(self.build_manager.current) :
                 builds.length ? builds[0] : {empty: true, data: {}};
 
-  return self.templates.index({
+  return {
     status: self.build_manager.running ? self.STATUS.RUNNING : self.STATUS.READY,
     builds: builds,
     current: current
-  });
+  };
 };
 
 /**

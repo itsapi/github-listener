@@ -13,21 +13,26 @@ function selectRnd() {
 
 if (argv.h || argv.help) {
   console.log('Usage: ' + __filename + ' [options]\n');
-  console.log('-h|--help   display this help message');
-  console.log('-p|--port   port to send payload requests to');
-  console.log('-t|--type   payload type to send (travis | github | error) - default github');
+  console.log('-h|--help    display this help message');
+  console.log('-p|--port    port to send payload requests to');
+  console.log('-t|--type    payload type to send (travis | github | error) - default github');
+  console.log('-s|--secret  secret to add to URL');
+  console.log('--semver     match semver branch e.g. v1.2.3');
 
   process.exit();
 }
 
 var type = (argv.t || argv.type || 'github').toLowerCase();
 var port = parseInt(argv.p || argv.port || 6003);
+var secret = argv.s || argv.secret;
+var semver = argv.semver;
 
 var payload = {};
 var options = {
   hostname: 'localhost',
   port: port,
   path: '/',
+  query: {},
   method: 'POST'
 };
 
@@ -90,10 +95,21 @@ if (type === 'travis') {
 
 
 if (branch !== 'master' && Math.random() > 0.05) {
-  options.path += branch;
+  options.query.branch = branch;
 }
 
+if (secret) {
+  options.query.secret = secret;
+}
+
+if (semver) {
+  options.query.semver = true;
+}
+
+options.path += '?' + qs.stringify(options.query);
+
 console.log('Sending payload', payload);
+console.log('HTTP options', options);
 http.request(options, function (res) {
   res.on('data', function (data) {
     console.log(data.toString());

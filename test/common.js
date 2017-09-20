@@ -21,6 +21,7 @@ function data () {
     req.method = self.options.method;
     req.url = self.options.path;
     req.headers = self.options.headers;
+    req.query = self.options.query;
 
     build_manager.hook(req, res);
     req.end(payload);
@@ -50,7 +51,8 @@ function data () {
     path: '/',
     port: '6003',
     method: 'POST',
-    headers: {}
+    headers: {},
+    query: {}
   };
 }
 

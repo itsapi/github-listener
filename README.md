@@ -43,8 +43,9 @@ Example:
   "repo_dir": "/home/git/deploy/repos",
   "getter": "/home/git/deploy/github-getter/get.sh {repo_dir} {output} {repo} {branch}",
   "post_receive": "/home/git/deploy/post-receive/bin/post-receive -p {dir}",
-  "github_secret": "HelloWorld",
-  "travis_token": "top_secret"
+  "github_secret": "secret_github_secret",
+  "travis_token": "secret_travis_token",
+  "url_secret": "secret_url_secret"
 }
 ```
 
@@ -55,6 +56,16 @@ In order for your listener to receive payloads you need to set up a webhook on G
 
 - **Github** - follow the instructions [here](https://developer.github.com/webhooks/creating/) and put the webhook secret in `config.json` as `github_secret`
 - **Travis** - follow the instructions [here](https://docs.travis-ci.com/user/notifications/#Webhook-notification) and put your user token in `config.json` as `travis_token`
+
+If the service you are using does not sign the payloads or provide authorisation headers, you can use the `url_secret` option and add a `?secret=` to the webhook url.
+
+### URL Parameters
+
+- `secret` - verify payload if URL secret in `config.json` matches this
+- `branch` - run build if branch in payload matches this (defaults to master if omitted)
+- `semver` - run build if branch in payload matches semver (e.g. v1.2.3)
+
+Example: `https://git.example.com/?semver&secret=pass1234&branch=dev`
 
 
 ## Documentation

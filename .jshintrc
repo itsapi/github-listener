@@ -8,5 +8,5 @@
   "undef": true,
   "unused": true,
   "maxdepth": 2,
-  "maxcomplexity": 6
+  "maxcomplexity": 7
 }
