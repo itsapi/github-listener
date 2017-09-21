@@ -1,6 +1,6 @@
 var through2 = require('through2'),
     crypto = require('crypto'),
-    BuildManager = require('../build-manager');
+    BuildManager = require('../src/build-manager');
 
 
 function data () {

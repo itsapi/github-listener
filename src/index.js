@@ -1,4 +1,4 @@
-var BuildManager = require('./build-manager.js'),
+var BuildManager = require('./build-manager'),
     Server = require('./server'),
     parser = require('./parser');
 

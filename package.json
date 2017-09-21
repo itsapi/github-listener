@@ -5,15 +5,15 @@
     "url": "https://github.com/itsapi/github-listener.git"
   },
   "description": "A Node.js continuous deployment system for Github",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
     "github-listener": "./bin/github-listener"
   },
   "scripts": {
     "start": "./bin/github-listener",
     "lint": "jshint .",
-    "test": "npm run lint && tape test/*.js | tap-spec",
-    "coverage": "istanbul cover tape test/*.js",
+    "test": "npm run lint && tape tests/*.js | tap-spec",
+    "coverage": "istanbul cover tape tests/*.js",
     "coverage:report": "codeclimate-test-reporter < ./coverage/lcov.info",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -65,13 +65,6 @@
     }
   },
   "release": {
-    "verifyRelease": {
-      "path": "cracks",
-      "paths": [
-        "test",
-        "package.json"
-      ],
-      "silent": true
-    }
+    "verifyRelease": "cracks"
   }
 }

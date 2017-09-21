@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Server = require('../server'),
+var Server = require('../src/server'),
     pkg = require('../package'),
     path = require('path'),
     argv = require('minimist')(process.argv.slice(2));

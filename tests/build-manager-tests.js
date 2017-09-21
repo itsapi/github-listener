@@ -2,7 +2,7 @@ var test = require('tape'),
     qs = require('querystring'),
     through = require('through2'),
     common = require('./common')(),
-    BuildManager = require('../build-manager');
+    BuildManager = require('../src/build-manager');
 
 
 var options = common.options;
