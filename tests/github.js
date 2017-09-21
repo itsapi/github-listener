@@ -3,8 +3,6 @@ var test = require('tape'),
 
 
 var options = common.options;
-options.headers['x-github-delivery'] = 1;
-
 var config = common.config;
 var request = common.request;
 var gen_sig = common.github_sig;
