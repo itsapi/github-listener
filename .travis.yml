@@ -15,7 +15,7 @@ script:
   - npm run coverage
 after_success:
   - npm run coverage:report
-  - TRAVIS_JOB_NUMBER=WORKAROUND.1 npm run semantic-release
+  - npm run semantic-release
 
 notifications:
   webhooks:
