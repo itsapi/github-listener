@@ -63,5 +63,8 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "release": {
+    "verifyRelease": "cracks"
   }
 }
