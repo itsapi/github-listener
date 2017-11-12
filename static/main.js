@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function toHtml(string) {
   // Converts URLs to HTML links
   return (string || '').replace(
-    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?)/g,
+    /((https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.\-\~\?\=]*)*\/?)/g,
     '<a href=\"$1\">$1</a>'
   );
 }
