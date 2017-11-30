@@ -1,4 +1,5 @@
 var http = require('http'),
+    https = require('https'),
     socketio = require('socket.io'),
     url = require('url'),
     jade = require('jade'),
@@ -66,6 +67,18 @@ var Server = function (options, ready) {
     // Server ready!
     self.ready(self);
 
+  });
+
+  // Load Travis public key
+  https.get('https://api.travis-ci.org/config', function (res) {
+    var body = '';
+    res.on('data', function(data) {
+        body += data;
+    });
+    res.on('end', function() {
+      var json = JSON.parse(body);
+      self.config.travis_public_key = json.config.notifications.webhook.public_key;
+    });
   });
 };
 

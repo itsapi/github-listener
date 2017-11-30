@@ -247,7 +247,7 @@ test('build_manager.data', function (t) {
       branch: 'master'
     }) });
 
-    options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
+    options.headers['signature'] = travis_sig(payload);
     options.headers['travis-repo-slug'] = 'repo';
 
     var build_manager = request(payload, function (res, data) {
@@ -271,7 +271,7 @@ test('build_manager.data', function (t) {
       message: 'some commit'
     }) });
 
-    options.headers['authorization'] = travis_sig(config.travis_token, 'repo');
+    options.headers['signature'] = travis_sig(payload);
     options.headers['travis-repo-slug'] = 'repo';
 
     var build_manager = request(payload, function (res, data) {

@@ -100,10 +100,16 @@ var Travis = (function () {
   };
 
   travis_parser.prototype.verify_signature = function () {
-    var signature = crypto.createHash('sha256')
-                    .update(this.headers['travis-repo-slug'] + this.config.travis_token)
-                    .digest('hex');
-    return this.headers['authorization'] === signature && this.check_url_secret();
+    if (!(this.headers['signature'] && this.config.travis_public_key)) {
+      return false;
+    }
+
+    var signature = Buffer.from(this.headers['signature'], 'base64');
+    var verified = crypto.createVerify('sha1')
+                    .update(this.body)
+                    .verify(this.config.travis_public_key, signature);
+
+    return verified && this.check_url_secret();
   };
 
   travis_parser.prototype.extract = function () {
