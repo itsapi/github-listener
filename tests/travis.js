@@ -27,7 +27,7 @@ test('pass string as payload', function (t) {
 test('pass invalid data in payload', function (t) {
 
   var payload = qs.stringify({ payload: JSON.stringify({}) });
-  options.headers['signature'] = gen_sig(payload);
+  options.headers['signature'] = gen_sig(qs.parse(payload).payload);
   options.headers['travis-repo-slug'] = 'repo';
 
   request(payload, function (res, data) {
@@ -54,7 +54,7 @@ test('pass valid payload but invalid signature', function (t) {
 
   t.test('no travis-repo-slug header provided', function (st) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'master' }) });
-    options.headers['signature'] = gen_sig(payload);
+    options.headers['signature'] = gen_sig(qs.parse(payload).payload);
     options.headers['travis-repo-slug'] = null;
 
     request(payload, function (res, data) {
@@ -82,7 +82,7 @@ test('pass valid payload and valid signature', function (t) {
 
   t.test('valid data but mismatching branch', function (st) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'branch' }) });
-    options.headers['signature'] = gen_sig(payload);
+    options.headers['signature'] = gen_sig(qs.parse(payload).payload);
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
@@ -94,7 +94,7 @@ test('pass valid payload and valid signature', function (t) {
 
   t.test('valid data and matching branch', function (st) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'master' }) });
-    options.headers['signature'] = gen_sig(payload);
+    options.headers['signature'] = gen_sig(qs.parse(payload).payload);
     options.headers['travis-repo-slug'] = 'repo';
 
     request(payload, function (res, data) {
@@ -110,7 +110,7 @@ test('pass custom branch name', function (t) {
 
   t.test('mismatching branch in path and branch in payload', function (st) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'master' }) });
-    options.headers['signature'] = gen_sig(payload);
+    options.headers['signature'] = gen_sig(qs.parse(payload).payload);
     options.headers['travis-repo-slug'] = 'repo';
     options.query.branch = 'dev';
 
@@ -123,7 +123,7 @@ test('pass custom branch name', function (t) {
 
   t.test('matching branch in path and branch in payload', function (st) {
     var payload = qs.stringify({ payload: JSON.stringify({ branch: 'dev' }) });
-    options.headers['signature'] = gen_sig(payload);
+    options.headers['signature'] = gen_sig(qs.parse(payload).payload);
     options.headers['travis-repo-slug'] = 'repo';
     options.query.branch = 'dev';
 

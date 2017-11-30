@@ -95,8 +95,12 @@ var Travis = (function () {
   util.inherits(travis_parser, Parser);
 
   travis_parser.prototype.parse_body = function () {
-    try { return (this.payload = JSON.parse(qs.parse(this.body.toString()).payload)); }
-    catch (e) { return undefined; }
+    try {
+      this.body = qs.parse(this.body.toString()).payload;
+      return (this.payload = JSON.parse(this.body));
+    } catch (e) {
+      return undefined;
+    }
   };
 
   travis_parser.prototype.verify_signature = function () {
