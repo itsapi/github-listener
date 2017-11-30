@@ -108,7 +108,7 @@ var Travis = (function () {
       return false;
     }
 
-    var signature = Buffer.from(this.headers['signature'], 'base64');
+    var signature = new Buffer(this.headers['signature'], 'base64');
     var verified = crypto.createVerify('sha1')
                     .update(this.body)
                     .verify(this.config.travis_public_key, signature);
