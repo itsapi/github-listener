@@ -15,7 +15,7 @@
     "test": "npm run lint && tape tests/*.js | tap-spec",
     "coverage": "istanbul cover tape tests/*.js",
     "coverage:report": "codeclimate-test-reporter < ./coverage/lcov.info",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "ansi-to-html": "^0.6.0",
