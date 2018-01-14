@@ -2,9 +2,9 @@
 
 [![NPM Version](https://img.shields.io/npm/v/github-listener.svg)](https://www.npmjs.com/package/github-listener)
 [![Build Status](https://img.shields.io/travis/itsapi/github-listener/master.svg)](https://travis-ci.org/itsapi/github-listener)
-[![Code Climate](https://img.shields.io/codeclimate/github/itsapi/github-listener.svg)](https://codeclimate.com/github/itsapi/github-listener)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/github/itsapi/github-listener.svg)](https://codeclimate.com/github/itsapi/github-listener)
 [![Dependency Status](https://img.shields.io/david/itsapi/github-listener.svg)](https://david-dm.org/itsapi/github-listener)
+[![Maintainability](https://api.codeclimate.com/v1/badges/220c824557a13845bf4f/maintainability)](https://codeclimate.com/github/itsapi/github-listener/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/220c824557a13845bf4f/test_coverage)](https://codeclimate.com/github/itsapi/github-listener/test_coverage)
 
 A Node.js continuous deployment system for Github and [TravisCI](https://travis-ci.org/). It detects a hook from Github when a repo is pushed, or from Travis when tests are complete, and pulls the changes in the server side repo using [github-getter](https://github.com/itsapi/github-getter). Then it runs the script in [post-receive](https://github.com/itsapi/post-receive) to build and push live.
 
