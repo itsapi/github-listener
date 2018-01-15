@@ -1,5 +1,6 @@
 {
   "name": "github-listener",
+  "version": "0.0.0-development",
   "repository": {
     "type": "git",
     "url": "https://github.com/itsapi/github-listener.git"
@@ -15,7 +16,7 @@
     "test": "npm run lint && tape tests/*.js | tap-spec",
     "coverage": "istanbul cover tape tests/*.js",
     "coverage:report": "codeclimate-test-reporter < ./coverage/lcov.info",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "ansi-to-html": "^0.6.0",
