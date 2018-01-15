@@ -32,7 +32,6 @@
   },
   "devDependencies": {
     "codeclimate-test-reporter": "~0.4.0",
-    "cracks": "^3.1.2",
     "cz-conventional-changelog": "^2.0.0",
     "ghooks": "^2.0.0",
     "istanbul": "~0.4.2",
@@ -64,8 +63,5 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
-  },
-  "release": {
-    "verifyRelease": "cracks"
   }
 }
