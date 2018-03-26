@@ -28,7 +28,7 @@
     "node-static": "^0.7.7",
     "semver": "^5.1.0",
     "socket.io": "~2.0.1",
-    "string-format": "~0.5.0"
+    "string-format": "~1.0.0"
   },
   "devDependencies": {
     "codeclimate-test-reporter": "~0.4.0",
