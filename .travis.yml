@@ -5,12 +5,10 @@ cache:
     - node_modules
 
 node_js:
-  - 9
-  - 8 # stable
-  - 7
-  - 6 # LTS
-  - 5
-  - 4 # maintenance
+  - 10
+  - 8
+  - 6
+  - 4
 
 before_install:
   - npm i -g npm@^2.0.0
