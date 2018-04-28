@@ -5,3 +5,4 @@ config.json
 coverage
 npm-debug.log
 .floo*
+package-lock.json
