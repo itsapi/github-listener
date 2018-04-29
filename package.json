@@ -16,8 +16,7 @@
     "test": "npm run lint && tape tests/*.js | tap-spec",
     "coverage": "istanbul cover tape tests/*.js",
     "coverage:report": "codeclimate-test-reporter < ./coverage/lcov.info",
-    "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once"
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "ansi-to-html": "^0.6.4",
@@ -41,8 +40,7 @@
     "tap-spec": "~4.1.1",
     "tape": "~4.9.0",
     "through2": "~2.0.3",
-    "validate-commit-msg": "^2.14.0",
-    "travis-deploy-once": "^4.4.1"
+    "validate-commit-msg": "^2.14.0"
   },
   "bugs": {
     "url": "https://github.com/itsapi/github-listener/issues"
