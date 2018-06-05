@@ -37,7 +37,7 @@
     "istanbul": "~0.4.5",
     "jshint": "~2.9.5",
     "semantic-release": "^15.5.0",
-    "tap-spec": "~4.1.1",
+    "tap-spec": "~5.0.0",
     "tape": "~4.9.0",
     "through2": "~2.0.3",
     "validate-commit-msg": "^2.14.0"
