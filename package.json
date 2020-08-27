@@ -21,7 +21,7 @@
   "dependencies": {
     "ansi-to-html": "^0.6.4",
     "async-tools": "^1.3.0",
-    "bl": "~2.2.0",
+    "bl": "~2.2.1",
     "jade": "~1.11.0",
     "logging-tool": "~1.2.3",
     "minimist": "^1.2.2",
