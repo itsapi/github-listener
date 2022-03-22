@@ -24,7 +24,7 @@
     "bl": "~2.2.1",
     "jade": "~1.11.0",
     "logging-tool": "~1.2.3",
-    "minimist": "^1.2.2",
+    "minimist": "^1.2.6",
     "node-static": "^0.7.10",
     "semver": "^5.5.0",
     "socket.io": "~2.4.1",
