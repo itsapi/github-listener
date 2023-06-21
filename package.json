@@ -26,7 +26,7 @@
     "logging-tool": "~1.2.3",
     "minimist": "^1.2.8",
     "node-static": "^0.7.10",
-    "semver": "^5.5.0",
+    "semver": "^7.5.2",
     "socket.io": "~2.5.0",
     "string-format": "~2.0.0"
   },
